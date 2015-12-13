@@ -10,25 +10,16 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <iostream>
-#include <QObject>
-#include <QDateTime>
+#include <pthread.h>
 
 using namespace std;
-
 
 #define _PORT_NUMBER 8888
 #define _IP_ADDR "192.168.43.219"
 #define _BUFFER_SIZE 0xFF
 
-class ServerCon : public QObject
+class ServerCon
 {
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE void test() const {
-        //1 + 2;
-    }
-
 private:
     int sockfd;
     const int port;
@@ -39,12 +30,13 @@ private:
     void write(char*);
 
 public:
-    ServerCon(QObject *parent = 0);
+    ServerCon();
     ~ServerCon();
 
     void sayHello();
     void openConnection();
     void clockUser(long unsigned int id);
+    void getUserMessages();
 };
 
 #endif // SERVERCON_H

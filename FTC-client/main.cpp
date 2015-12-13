@@ -1,7 +1,8 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include "servercon.h"
 #include <QtQml>
+#include "servercon.h"
+#include "usermessages.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,8 +10,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    qmlRegisterType<ServerCon>("Connection", 1, 0, "Con");
-
+    qmlRegisterType<UserMessages>("UserMessages", 1, 0, "UserMessages");
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 

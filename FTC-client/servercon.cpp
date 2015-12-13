@@ -1,7 +1,7 @@
 #include "servercon.h"
 
-ServerCon::ServerCon(QObject *parent)
-    : port(_PORT_NUMBER), BUFFER_SIZE(_BUFFER_SIZE), QObject(parent)
+ServerCon::ServerCon()
+    : port(_PORT_NUMBER), BUFFER_SIZE(_BUFFER_SIZE)
 {
     openConnection();
 }
@@ -10,7 +10,6 @@ ServerCon::~ServerCon()
 {
     close(sockfd);
 }
-
 
 void ServerCon::openConnection()
 {
@@ -55,13 +54,13 @@ void ServerCon::sayHello()
 
     memset(buffer, 0, buffSize);
 
-   recv(sockfd, buffer, buffSize, 0);
-   if (n < 0){
+    recv(sockfd, buffer, buffSize, 0);
+    if (n < 0){
         cout << "ERROR reading from socket" << endl;
         return;
-   }
+    }
 
-   cout << buffer << endl;
+    cout << buffer << endl;
 }
 
 void ServerCon::write(char* buffer)

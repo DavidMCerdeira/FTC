@@ -51,12 +51,12 @@ ColumnLayout {
         editable: false
     }
 
-    MyTextHolder{
-        Layout.fillHeight: true
-        Layout.preferredHeight: parent.height
-        title: 'Result:'
-        content: 'Worker Worker Worker'
-    }
+//    MyTextHolder{
+//        Layout.fillHeight: true
+//        Layout.preferredHeight: parent.height
+//        title: 'Result:'
+//        //content: 'Worker Worker Worker'
+//    }
 
     MyButton{
         anchors.horizontalCenter: parent.horizontalCenter
