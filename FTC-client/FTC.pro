@@ -4,7 +4,9 @@ QT += qml quick
 CONFIG += c++11
 
 SOURCES += main.cpp \
-    servercon.cpp
+    servercon.cpp \
+    usermessages.cpp \
+    controller.cpp
 
 RESOURCES += qml.qrc
 
@@ -15,4 +17,6 @@ QML_IMPORT_PATH =
 include(deployment.pri)
 
 HEADERS += \
-    servercon.h
+    servercon.h \
+    usermessages.h \
+    controller.h

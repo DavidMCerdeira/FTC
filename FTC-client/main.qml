@@ -1,7 +1,6 @@
 import QtQuick 2.3
 import QtQuick.Window 2.2
 import QtQuick.Layouts 1.2
-import Connection 1.0
 
 
 Window {
@@ -16,8 +15,7 @@ Window {
     MouseArea {
         anchors.fill: parent
         onClicked: {
-           Con.test()
-          //pageLoader.source = 'Home.qml'
+            //pageLoader.source = 'Home.qml'
         }
     }
 
@@ -25,8 +23,6 @@ Window {
 
     Frame{}
     Home{}
-
-
     //Search{}
 
     /*Rectangle{
