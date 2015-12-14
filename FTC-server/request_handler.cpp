@@ -9,11 +9,14 @@ Request_Handler::Request_Handler()
 #ifdef _DEBUG_
     cout << "Request_Handler::Request_Handler" <<endl;
 #endif
+    if(sem_init(&(this->sem_pendingReq), 0, 1) != 0)
+        return;
+
     if(pthread_create(&(this->th_req_interpreter), 0, req_interpreter, static_cast<void*>(this)) != 0)
         return; //*Try catch would be more appropriate
-     if(sem_init(this->sem_pendingReq, 0, MAXNR_OF_REQ) != 0)
-        return;
+    pthread_detach(this->th_req_interpreter);
 }
+
 /*Tranlates the request into a function handler*/
 void* Request_Handler::req_interpreter(void *arg){
     string frame, cmd, cmd_data;
@@ -21,7 +24,7 @@ void* Request_Handler::req_interpreter(void *arg){
     int begin_indx, last_indx;
 
     /*wait for requests*/
-    sem_wait(own->sem_pendingReq);
+    sem_wait(&(own->sem_pendingReq));
     frame = *(own->pendingReq.end());
     own->pendingReq.pop_back();
 
@@ -35,17 +38,18 @@ void* Request_Handler::req_interpreter(void *arg){
     last_indx = frame.find_first_of('\\', begin_indx) - 1; //gets the index of the last letter of data
     cmd_data = cmd.substr(begin_indx, (last_indx - begin_indx + 1));
 
+    /*According to the cmd call the respective handler*/
     if(cmd == "valid") {
-        cout << "Handler of VALID arrived" << endl;
+       own->req_valid(cmd_data);
     }
     else if(cmd == "search"){
-        cout << "Handler of SEARCH arrived" << endl;
+       own->req_search(cmd_data);
     }
     else if(cmd == "message"){
-        cout << "Handler of MESSAGE arrived" << endl;
+       own->req_message(cmd_data);
     }
     else if (cmd == "clock"){
-        cout << "Handler of CLOCK arrived" << endl;
+       own->req_clock(cmd_data);
     }
     else{
         cout<<"error :: no command available"<<endl;
@@ -54,9 +58,33 @@ void* Request_Handler::req_interpreter(void *arg){
     return NULL;
 }
 
-void Request_Handler::add_strToReqList(char*new_rq){
-    string cmd(static_cast<char*>(new_rq));
+void Request_Handler::add_strToReqList(const char* new_rq){
+    string cmd(new_rq);
 
     this->pendingReq.push_back(cmd);
-    sem_post((this->sem_pendingReq));
+    sem_post(&(this->sem_pendingReq));
+}
+
+void Request_Handler::req_valid(const string jsData){
+#ifdef _DEBUG_
+    cout << "Request_Handler::req_valid\n" << "parsed: " << jsData << endl;
+#endif
+}
+
+void Request_Handler::req_search(const string jsData){
+ #ifdef _DEBUG_
+    cout << "Request_Handler::req_search\n" << "parsed: " << jsData << endl;
+  #endif
+}
+
+void Request_Handler::req_message(const string jsData){
+#ifdef _DEBUG_
+    cout << "Request_Handler::req_message\n" << "parsed: " << jsData << endl;
+#endif
+}
+
+void Request_Handler::req_clock(const string jsData){
+#ifdef _DEBUG_
+    cout << "Request_Handler::req_clock\n" << "parsed: " << jsData << endl;
+#endif
 }
