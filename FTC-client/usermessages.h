@@ -2,24 +2,27 @@
 #define USERMESSAGES_H
 
 #include <QAbstractListModel>
-#include "controller.h"
 #include <QList>
 #include <QString>
 #include <QDebug>
+#include "controller.h"
 
-class UserMessages : public QAbstractListModel
+
+class UserMessagesModel : public QAbstractListModel
 {
     Q_OBJECT
 private:
-    Controller *controller;
-    QList<QString> *m_data;
+    QList<QString> m_data;
     static void* getMessages_thread(void *arg);
 
 public:
-    explicit UserMessages(QObject *parent = 0);
+    explicit UserMessagesModel(QObject *parent = 0);
     // QAbstractItemModel interface
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
+
+    void insertData(QString str);
+    void clearData();
 };
 
 #endif // USERMESSAGES_H

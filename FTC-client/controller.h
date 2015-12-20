@@ -4,25 +4,34 @@
 #include <pthread.h>
 #include <QList>
 #include <QString>
-#include "servercon.h"
 #include <QDebug>
+
+#include "usermessages.h"
+#include "login.h"
+#include "servercon.h"
+
+class UserMessagesModel;
+class LoginModel;
 
 class Controller
 {
 private:
     Controller();
     //ServerCon con;
+    UserMessagesModel *usrmsgs;
+    LoginModel *log;
 
 public:
     ~Controller();
     static Controller* getInstance();
     /* Home */
-    QList<QString>* getUserMessages();
-    QString getUserName();
+    void setUserMessagesModel(UserMessagesModel*);
+    void setLoginModel(LoginModel*);
+
 
     /* Search */
 };
 
-static Controller *instance = nullptr;
+static Controller *instance = NULL;
 
 #endif // CONTROLLER_H

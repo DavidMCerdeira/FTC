@@ -6,7 +6,8 @@ CONFIG += c++11
 SOURCES += main.cpp \
     servercon.cpp \
     usermessages.cpp \
-    controller.cpp
+    controller.cpp \
+    login.cpp
 
 RESOURCES += qml.qrc
 
@@ -19,4 +20,5 @@ include(deployment.pri)
 HEADERS += \
     servercon.h \
     usermessages.h \
-    controller.h
+    controller.h \
+    login.h

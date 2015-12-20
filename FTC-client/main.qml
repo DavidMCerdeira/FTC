@@ -3,6 +3,7 @@ import QtQuick.Window 2.2
 import QtQuick.Layouts 1.2
 
 
+
 Window {
     id: w
     visible: true
@@ -12,19 +13,24 @@ Window {
 
     color: 'white'
 
-    MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            //pageLoader.source = 'Home.qml'
-        }
-    }
+//        MouseArea {
+//            anchors.fill: parent
+//            onClicked: {
+//                pageloader.source = 'Search.qml'
+//            }
+//        }
 
-    Loader{ id: pageLoader }
+//        Loader{
+//            id:pageloader
+//            anchors.fill: parent
+//            source: 'Home.qml';
+//        }
 
     Frame{}
-    Home{}
-    //Search{}
 
+    Home{}
+    /*Search{}
+    //*/
     /*Rectangle{
         color: '#90D3D3D3'
         x: parent.width * 2 / 5

@@ -2,27 +2,20 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import Login 1.0
 
 ColumnLayout{
-    id: login
     Layout.margins: 30
     height: parent.Height
     spacing: 5
 
-
-    //    Rectangle
-    //    {
-    //        anchors.horizontalCenter: parent.horizontalCenter
-    //        color: 'lightskyblue'
-    //        width: parent.width
-    //        height: parent.height
-    //    }
-
     Text {
         text: 'Press the image after you\'re done!'
+        anchors.horizontalCenter: parent.horizontalCenter
     }
 
     Rectangle {
+        anchors.horizontalCenter: parent.horizontalCenter
         color: 'white'
         border.color: 'black'
         border.width: 2
@@ -33,7 +26,7 @@ ColumnLayout{
         MouseArea{
             anchors.fill: parent
             onClicked: {
-              Qt.quit()
+                Qt.quit()
             }
         }
     }
@@ -41,13 +34,35 @@ ColumnLayout{
     Text {
         anchors.horizontalCenter: parent.horizontalCenter
         id: recognitionStatus
-        text: 'Facial recognition Status'
+        text: 'Facial recognition Status:'
     }
+
+        ListView{
+            id: wat
+            width: 250
+            Layout.fillHeight: true
+            anchors.horizontalCenter: parent.horizontalCenter
+            clip: true
+            interactive: false
+
+            model: Login{
+                id: messages
+            }
+            delegate: Text{
+                anchors.fill: parent
+                id: logText;
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+                text: display
+                font.pointSize: 15
+            }
+        }
+
+
     Text {
         anchors.horizontalCenter: parent.horizontalCenter
         id: recognitionSuggestion
         verticalAlignment: Text.AlignVCenter
-        text: "Stay still bitch!"
     }
 
     MyButton{

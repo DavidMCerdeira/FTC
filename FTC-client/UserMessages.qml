@@ -17,7 +17,6 @@ ColumnLayout {
         text: title
     }
 
-
     Rectangle {
         id: notesfield
         color: 'white'
@@ -39,7 +38,7 @@ ColumnLayout {
                     id: messages
                 }
                 delegate: Text{
-                    text: index + ' ' + display
+                    text: display
                     font.pointSize: content_pointSize
                 }
             }

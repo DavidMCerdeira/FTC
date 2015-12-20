@@ -19,16 +19,16 @@ Controller* Controller::getInstance()
     return instance;
 }
 
-QList<QString>* Controller::getUserMessages()
+void Controller::setUserMessagesModel(UserMessagesModel *ptr)
 {
-    QList<QString> *temp = new QList<QString>();
-    temp->append("Um dois três");
-    temp->append("Três Dois Um");
+    usrmsgs = ptr;
 
-    return temp;
+    usrmsgs->insertData("Ola! Eu sou uma mensagem :3");
 }
 
-QString Controller::getUserName()
+void Controller::setLoginModel(LoginModel *ptr)
 {
-    return QString("John Doe");
+    log = ptr;
+
+    log->setText("Maria Albertina");
 }

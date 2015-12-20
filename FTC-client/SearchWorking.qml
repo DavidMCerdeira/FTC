@@ -43,10 +43,10 @@ ColumnLayout {
 //        }
     }
 
-    MyTextHolder{
-        Layout.fillHeight: true
-        title: 'Workers'
-        content: 'Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker'
-    }
+//    MyTextHolder{
+//        Layout.fillHeight: true
+//        title: 'Workers'
+//        content: 'Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker'
+//    }
 }
 

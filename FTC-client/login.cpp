@@ -1,31 +1,29 @@
-#include "usermessages.h"
+#include "login.h"
 
-UserMessagesModel::UserMessagesModel(QObject *parent)
+LoginModel::LoginModel(QObject *parent)
     : QAbstractListModel(parent)
 {
-    Controller::getInstance()->setUserMessagesModel(this);
+    text = "";
+    Controller::getInstance()->setLoginModel(this);
 }
 
-int UserMessagesModel::rowCount(const QModelIndex &parent) const
+int LoginModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    // return our data count
-    int i;
 
-    i =  m_data.count();
-
-    return i;
+    /* return 1 element as that's the only one we have */
+    return 1;
 }
 
-QVariant UserMessagesModel::data(const QModelIndex &index, int role) const
+QVariant LoginModel::data(const QModelIndex &index, int role) const
 {
-    qDebug() << "Data requested" << endl;
+    qDebug() << "Login data requested" << endl;
 
     // the index returns the requested row and column information.
     // we ignore the column and only use the row information
     int row = index.row();
     // boundary check for the row
-    if(row < 0 || row >= m_data.count()) {
+    if(row < 0 || row > 1) {
         return QVariant();
     }
     // A model can return data for different roles.
@@ -35,18 +33,14 @@ QVariant UserMessagesModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
         // Return the color name for the particular row
         // Qt automatically converts it to the QVariant type
-        return m_data.value(row);
+        qDebug() << "Returned: " << text << endl;
+        return text;
     }
     // The view asked for other data, just return an empty QVariant
     return QVariant();
 }
 
-void UserMessagesModel::insertData(QString str)
-{
-    m_data.append(str);
-}
-
-void UserMessagesModel::clearData()
-{
-    m_data.clear();
-}
+ void LoginModel::setText(QString str)
+ {
+     text = str;
+ }
