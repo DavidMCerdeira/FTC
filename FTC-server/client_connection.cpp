@@ -5,20 +5,19 @@
 Client_Connection::Client_Connection(int _clSock) : clSock(_clSock)
 {
     int result;
-
+    pthread_attr_t tAttr;
 #ifdef _DEBUG_
     cout<<"\nClient_Connection::Client_Connection\n"<<endl;
 #endif
 
     conState = true;
-
-    result = pthread_create(&this->thread_manage_connection, NULL, &manage_connection, static_cast<void*>(this));
+    pthread_attr_setdetachstate(&tAttr, PTHREAD_CREATE_DETACHED);
+    pthread_attr_init(&tAttr);
+    result = pthread_create(&this->thread_manage_connection, &tAttr, &manage_connection, static_cast<void*>(this));
     if(result != 0){
         /*Couldn't create thread*/
         return;
     }
-
-    pthread_detach(thread_manage_connection);
 }
 
 void* Client_Connection::manage_connection(void *arg){
@@ -35,13 +34,14 @@ void* Client_Connection::manage_connection(void *arg){
         if(status < 0){
            /*Connection unactive*/
            own->conState = false;
-           /*Inform server that this connection is ended*/
+           /*Inform server that this connection has ended*/
            sig_par.sival_int = own->clSock;
            sigqueue(getpid(), SIG_RM_CLIENT, sig_par);
         }
         else if(status > 0){
            /*Call request handler*/
-           own->clReqHandler.add_strToReqList(own->reqBuffer);
+            //own->clReqHandler.add_strToReqList(own->reqBuffer);
+            cout<<"received: "<< own->reqBuffer <<endl;
          }
     }
 

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <pthread.h>
 #include "server.h"
 
 using namespace std;
@@ -6,8 +7,6 @@ using namespace std;
 int main()
 {
     Server myServer(2);
-
-
-    return 0;
+    pthread_exit(0);
 }
 

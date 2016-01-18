@@ -13,7 +13,6 @@ Server::Server(int l_numConnections) : numConnections(l_numConnections)
 #ifdef _DEBUG_
     cout<<"Server::Server\n"<<endl;
 #endif
-
     /*Create a socket*/
     servSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -51,8 +50,6 @@ Server::Server(int l_numConnections) : numConnections(l_numConnections)
         /*Couldn't create thread*/
         return;
     }
-
-    pthread_exit(0);
 }
 
 void* Server::run(void* arg){
@@ -68,7 +65,7 @@ void* Server::run(void* arg){
 
     while(1){
         /*Waits for connection*/
-        newSocket = accept(own->servSocket, (struct sockaddr*)(&(own->address)), &n);
+        newSocket = accept(own->servSocket, reinterpret_cast<struct sockaddr*>(&(own->address)), &n);
 
 #ifdef _DEBUG_
         cout<<"newsocket: " << newSocket << endl; //debug
@@ -82,14 +79,13 @@ void* Server::run(void* arg){
             (own->lClients).push_front(*c);
             pthread_mutex_unlock(&own->lClients_mutex);
 
-            delete c;
+           //delete c;
         }
     }
 
 #ifdef _DEBUG_
     cout << "Out of Run function!\n"<< endl;
 #endif
-    return NULL;
 }
 
  void  Server::removeClient(int sig, siginfo_t *si, void *ucontext){
