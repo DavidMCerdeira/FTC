@@ -9,11 +9,13 @@ Item {
         anchors.fill: parent
 
         SearchEmployee{
+            Layout.fillHeight: true
             Layout.maximumWidth: parent.width * 1 / 3
         }
 
         SearchWorking{
             Layout.fillWidth: true
+            Layout.fillHeight: true
         }
     }
 }

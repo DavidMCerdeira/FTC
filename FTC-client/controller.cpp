@@ -32,3 +32,16 @@ void Controller::setLoginModel(LoginModel *ptr)
 
     log->setText("Maria Albertina");
 }
+
+void Controller::logOut()
+{
+    qDebug() << "Logout";
+    log->setText("Not Logged in");
+}
+
+void Controller::setSearchEmployeeModel(searchEmployeeResultModel *model)
+{
+    employeeRlsts = model;
+
+    model->insertData("O Bóias não trabalha");
+}

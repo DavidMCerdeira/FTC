@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import UserMessages 1.0
 
 ColumnLayout {
     id: root
@@ -51,12 +52,12 @@ ColumnLayout {
         editable: false
     }
 
-//    MyTextHolder{
-//        Layout.fillHeight: true
-//        Layout.preferredHeight: parent.height
-//        title: 'Result:'
-//        //content: 'Worker Worker Worker'
-//    }
+    MyTextHolder{
+        title{
+            text: 'Result'
+        }
+
+    }
 
     MyButton{
         anchors.horizontalCenter: parent.horizontalCenter

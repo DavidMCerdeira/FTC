@@ -10,6 +10,7 @@
 class LoginModel : public QAbstractListModel
 {
     Q_OBJECT
+
 public:
     explicit LoginModel(QObject *parent = 0);
     virtual int rowCount(const QModelIndex &parent) const;
@@ -17,6 +18,8 @@ public:
     virtual QVariant data(const QModelIndex &index, int role) const;
 
     void setText(QString str);
+
+    Q_INVOKABLE void logout();
 
 private:
     QString text;

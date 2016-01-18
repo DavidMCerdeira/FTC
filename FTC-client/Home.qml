@@ -15,5 +15,13 @@ RowLayout{
         id: info
         Layout.fillWidth: true
     }
+
+    /*Rectangle{
+        color: '#90D3D3D3'
+        x: parent.width * 2 / 5
+        y: 0
+        width: parent.width * 3 / 5
+        height: parent.height
+    }*/
 }
 

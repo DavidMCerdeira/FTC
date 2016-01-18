@@ -19,8 +19,6 @@ int UserMessagesModel::rowCount(const QModelIndex &parent) const
 
 QVariant UserMessagesModel::data(const QModelIndex &index, int role) const
 {
-    qDebug() << "Data requested" << endl;
-
     // the index returns the requested row and column information.
     // we ignore the column and only use the row information
     int row = index.row();

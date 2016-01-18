@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.2
+import UserMessages 1.0
 
 ColumnLayout{
     id: personalInfo
@@ -15,11 +16,16 @@ ColumnLayout{
     DateTime{
     }
 
-    UserMessages {
+    MyTextHolder {
         Layout.fillHeight: true
         id: messages
-        title: 'Messages'
-        title_pointSize: 18
+        title{
+            text:  "Messages"
+        }
+        content_model: UserMessages {
+
+        }
+        
     }
 }
 

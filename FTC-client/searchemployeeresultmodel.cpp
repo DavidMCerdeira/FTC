@@ -1,29 +1,25 @@
-#include "login.h"
+#include "searchemployeeresultmodel.h"
 
-LoginModel::LoginModel(QObject *parent)
+searchEmployeeResultModel::searchEmployeeResultModel(QObject *parent)
     : QAbstractListModel(parent)
 {
-    text = "";
-    Controller::getInstance()->setLoginModel(this);
+    Controller::getInstance()->setSearchEmployeeModel(this);
 }
 
-int LoginModel::rowCount(const QModelIndex &parent) const
+int searchEmployeeResultModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
 
-    /* return 1 element as that's the only one we have */
-    return 1;
+    return result.count();
 }
 
-QVariant LoginModel::data(const QModelIndex &index, int role) const
+QVariant searchEmployeeResultModel::data(const QModelIndex &index, int role) const
 {
-    qDebug() << "Login data requested" << endl;
-
     // the index returns the requested row and column information.
     // we ignore the column and only use the row information
     int row = index.row();
     // boundary check for the row
-    if(row < 0 || row > 1) {
+    if(row < 0 || row >= result.count()) {
         return QVariant();
     }
     // A model can return data for different roles.
@@ -33,20 +29,18 @@ QVariant LoginModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
         // Return the color name for the particular row
         // Qt automatically converts it to the QVariant type
-        qDebug() << "Returned: " << text << endl;
-        return text;
+        return result[row];
     }
     // The view asked for other data, just return an empty QVariant
     return QVariant();
 }
 
- void LoginModel::setText(QString str)
- {
-     text = str;
- }
- 
- void LoginModel::logout()
- {
-     Controller::getInstance()->logOut();
-     //QModelIndex idx = new QModelIndex();
- }
+void searchEmployeeResultModel::insertData(QString str)
+{
+    result.append(str);
+}
+
+void searchEmployeeResultModel::clearData()
+{
+    result.clear();
+}

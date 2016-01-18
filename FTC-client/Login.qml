@@ -26,7 +26,8 @@ ColumnLayout{
         MouseArea{
             anchors.fill: parent
             onClicked: {
-                Qt.quit()
+                log.logout()
+                //Qt.quit()   
             }
         }
     }
@@ -37,26 +38,26 @@ ColumnLayout{
         text: 'Facial recognition Status:'
     }
 
-        ListView{
-            id: wat
-            width: 250
-            Layout.fillHeight: true
-            anchors.horizontalCenter: parent.horizontalCenter
-            clip: true
-            interactive: false
+    ListView{
+        id: wat
+        width: 250
+        Layout.fillHeight: true
+        anchors.horizontalCenter: parent.horizontalCenter
+        clip: true
+        interactive: false
 
-            model: Login{
-                id: messages
-            }
-            delegate: Text{
-                anchors.fill: parent
-                id: logText;
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-                text: display
-                font.pointSize: 15
-            }
+        model: Login{
+            id: log
         }
+        delegate: Text{
+            anchors.fill: parent
+            id: logText;
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+            text: display
+            font.pointSize: 15
+        }
+    }
 
 
     Text {

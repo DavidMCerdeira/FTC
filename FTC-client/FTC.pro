@@ -7,7 +7,8 @@ SOURCES += main.cpp \
     servercon.cpp \
     usermessages.cpp \
     controller.cpp \
-    login.cpp
+    login.cpp \
+    searchemployeeresultmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -21,4 +22,5 @@ HEADERS += \
     servercon.h \
     usermessages.h \
     controller.h \
-    login.h
+    login.h \
+    searchemployeeresultmodel.h
