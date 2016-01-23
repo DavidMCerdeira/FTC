@@ -10,10 +10,12 @@
 #include "login.h"
 #include "servercon.h"
 #include "searchemployeeresultmodel.h"
+#include "searchworkingmodel.h"
 
 class UserMessagesModel;
 class LoginModel;
 class searchEmployeeResultModel;
+class SearchWorkingModel;
 
 class Controller
 {
@@ -23,6 +25,7 @@ private:
     UserMessagesModel *usrmsgs;
     LoginModel *log;
     searchEmployeeResultModel *employeeRlsts;
+    SearchWorkingModel *workingRlsts;
 
 public:
     ~Controller();
@@ -35,6 +38,7 @@ public:
 
     /* Search */
     void setSearchEmployeeModel(searchEmployeeResultModel*);
+    void setSearchWorking(SearchWorkingModel*);
 
 };
 

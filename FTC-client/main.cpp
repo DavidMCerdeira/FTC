@@ -2,9 +2,6 @@
 #include <QQmlApplicationEngine>
 #include <QtQml>
 #include "servercon.h"
-#include "usermessages.h"
-//#include "login.h"
-
 #include "controller.h"
 
 int main(int argc, char *argv[])
@@ -17,6 +14,8 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<UserMessagesModel>("UserMessages", 1, 0, "UserMessages");
     qmlRegisterType<LoginModel>("Login", 1, 0, "Login");
+    qmlRegisterType<searchEmployeeResultModel>("SearchEmployeeModel", 1, 0, "SearchEmployeeModel");
+    qmlRegisterType<SearchWorkingModel>("SearchWorkingResult", 1, 0, "SearchWorkingResult");
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 

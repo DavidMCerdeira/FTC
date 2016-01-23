@@ -2,7 +2,7 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import UserMessages 1.0
+import SearchEmployeeModel 1.0
 
 ColumnLayout {
     id: root
@@ -29,12 +29,19 @@ ColumnLayout {
         Layout.minimumHeight: employeeName.height + 20
         border.width: 2
 
-        TextEdit{
-            Layout.fillWidth: true
+        Rectangle{
             anchors.verticalCenter: parent.verticalCenter
-            id: employeeName
-            text: ' Name Surname'
-            font.pointSize: 16
+            width: parent.width - 10
+            Layout.minimumHeight: employeeName.height + 20
+            border.width: 2
+
+            TextEdit{
+                Layout.fillWidth: true
+                anchors.verticalCenter: parent.verticalCenter
+                id: employeeName
+                text: 'Name Surname'
+                font.pointSize: 16
+            }
         }
     }
 
@@ -56,7 +63,7 @@ ColumnLayout {
         title{
             text: 'Result'
         }
-
+        content_model: SearchEmployeeModel{ }
     }
 
     MyButton{

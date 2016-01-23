@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.2
 Window {
     id: w
     visible: true
+    visibility: Window.FullScreen
     width: 800; height: 480
     maximumWidth: 800; maximumHeight: 480
     minimumWidth: 800; minimumHeight: 480
@@ -29,8 +30,6 @@ Window {
         anchors.fill: parent
         source: 'Home.qml'
     }
-
-
 
 //    ListView {
 //        id: views

@@ -45,3 +45,10 @@ void Controller::setSearchEmployeeModel(searchEmployeeResultModel *model)
 
     model->insertData("O Bóias não trabalha");
 }
+
+void Controller::setSearchWorking(SearchWorkingModel *model)
+{
+    workingRlsts = model;
+
+    model->insertData("Loleiras");
+}
