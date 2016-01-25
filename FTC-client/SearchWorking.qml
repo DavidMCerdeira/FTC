@@ -65,6 +65,11 @@ ColumnLayout {
                         checked: false
                     }
                     PropertyChanges {
+                        target: workingRslt
+                        /*set Date*/
+                    }
+
+                    PropertyChanges {
                         target: calendar; visible: false
                     }
             }
@@ -75,7 +80,7 @@ ColumnLayout {
         title{
             text: 'Result'
         }
-        content_model: SearchWorkingResult{}
+        content_model: SearchWorkingResult{id: workingRslt}
     }
 }
 
