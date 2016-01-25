@@ -1,0 +1,15 @@
+top_left:
+X=260
+Y=546
+
+top_right:
+X=3850
+Y=570
+
+bottom_left:
+X=258
+Y=3744
+
+bottom_right:
+X=3843
+Y=3756

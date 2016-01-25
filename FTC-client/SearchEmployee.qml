@@ -29,19 +29,12 @@ ColumnLayout {
         Layout.minimumHeight: employeeName.height + 20
         border.width: 2
 
-        Rectangle{
+        TextEdit{
             anchors.verticalCenter: parent.verticalCenter
-            width: parent.width - 10
-            Layout.minimumHeight: employeeName.height + 20
-            border.width: 2
-
-            TextEdit{
-                Layout.fillWidth: true
-                anchors.verticalCenter: parent.verticalCenter
-                id: employeeName
-                text: 'Name Surname'
-                font.pointSize: 16
-            }
+            anchors.horizontalCenter: parent.horizontalCenter
+            id: employeeName
+            text: 'Name Surname'
+            font.pointSize: 16
         }
     }
 
