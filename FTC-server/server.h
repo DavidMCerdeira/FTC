@@ -12,7 +12,6 @@
 #include "client_connection.h"
 
 #define _LISTENPORT 8888
-//#define _MAXLENGTHBUFF
 #define  DEFAULT_NR_OF_CONS 2
 #define SIG_RM_CLIENT (SIGRTMIN + 1)
 
@@ -28,6 +27,7 @@ private:
     pthread_t thread_remClient;
     static void* removeClient(void *arg);
     static void* run(void* arg);
+    static void server_closed(void*arg);
 
     pthread_t thread_run;
 

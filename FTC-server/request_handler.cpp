@@ -2,6 +2,7 @@
 #define MAXNR_OF_REQ 5
 
 #define _DEBUG_
+#define CHAR_PLOT_DIVIDER 47
 
 Request_Handler::Request_Handler()
 {   // result = pthread_create(&thread_run, NULL, run, static_cast<void*>(this));
@@ -9,7 +10,7 @@ Request_Handler::Request_Handler()
     int result;
     pthread_attr_t tAttr;
 
-    if(sem_init(&(this->sem_pendingReq), 0, MAXNR_OF_REQ) != 0)
+    if(sem_init(&(this->sem_pendingReq), 0, 0) != 0)
         return;
     pthread_mutex_init(&mux_pendingReq, NULL);
 
@@ -22,49 +23,48 @@ Request_Handler::Request_Handler()
 void* Request_Handler::req_interpreter(void *arg){
     string frame, cmd, cmd_data;
     Request_Handler *own = static_cast<Request_Handler*>(arg);
-    int begin_indx, last_indx;
+    int indx1, indx2;
+    while(1){
+        /*wait for requests*/
+        sem_wait(&(own->sem_pendingReq));
+        pthread_mutex_lock(&(own->mux_pendingReq));
 
-    /*wait for requests*/
-    sem_wait(&(own->sem_pendingReq));
-    pthread_mutex_lock(&(own->mux_pendingReq));
+        frame = *(own->pendingReq.begin());
+        own->pendingReq.pop_front();
+        pthread_mutex_unlock(&(own->mux_pendingReq));
 
-    frame = *(own->pendingReq.begin());
-    own->pendingReq.pop_front();
-    pthread_mutex_unlock(&(own->mux_pendingReq));
+        /*get cmd string*/
+        indx1 = frame.find_first_of(CHAR_PLOT_DIVIDER);
+        indx2 = frame.find_first_of(CHAR_PLOT_DIVIDER, indx1 + 1);
+        cmd = frame.substr(indx1 + 1, (indx2 - indx1) - 1);
 
-    /*set cmd string*/
-    begin_indx = frame.find_first_of('\\') + 1; //gets the index to the first letter of the command
-    last_indx = frame.find_first_of('\\', begin_indx) - 1; //gets the index to the last letter of the command
-    cmd = frame.substr(begin_indx, (last_indx - begin_indx + 1));
+        /* get cmd_data string*/
+        indx1 = frame.find_first_of(CHAR_PLOT_DIVIDER, indx2 + 1);
+        cmd_data = frame.substr(indx2 + 1, (indx1 - indx2) - 1);
 
-    /*set cmd_data string*/
-    begin_indx = frame.find_first_of('\\', last_indx + 2) + 1; //gets the index to the first letter of data
-    last_indx = frame.find_first_of('\\', begin_indx) - 1; //gets the index of the last letter of data
-    cmd_data = cmd.substr(begin_indx, (last_indx - begin_indx + 1));
-
-    /*According to the cmd call the respective handler*/
-    if(cmd == "valid") {
-       own->req_valid(cmd_data);
+        /*According to the cmd call the respective handler*/
+        if(cmd == "valid") {
+           own->req_valid(cmd_data);
+        }
+        else if(cmd == "search"){
+           own->req_search(cmd_data);
+        }
+        else if(cmd == "message"){
+           own->req_message(cmd_data);
+        }
+        else if (cmd == "clock"){
+           own->req_clock(cmd_data);
+        }
+        else{
+            cout<<"error :: no command available"<<endl;
+            //throw //Not a command
+        }
     }
-    else if(cmd == "search"){
-       own->req_search(cmd_data);
-    }
-    else if(cmd == "message"){
-       own->req_message(cmd_data);
-    }
-    else if (cmd == "clock"){
-       own->req_clock(cmd_data);
-    }
-    else{
-        cout<<"error :: no command available"<<endl;
-    }
-
     return NULL;
 }
 
 void Request_Handler::add_strToReqList(const char* new_rq){
     string cmd(new_rq);
-
     pthread_mutex_lock(&mux_pendingReq);
     this->pendingReq.push_back(cmd);
     sem_post(&(this->sem_pendingReq));

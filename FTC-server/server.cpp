@@ -8,7 +8,6 @@ Server::Server(int l_numConnections) : numConnections(l_numConnections)
 
     try{
         servSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
         if(!(servSocket > 0)) {
            throw ERROR_LSOCKET_CREATION;
         }
@@ -51,13 +50,14 @@ void* Server::run(void* arg){
     unsigned int n = sizeof(own->address);
     int newSocket;
     Client_Connection* c;
-
+    pthread_cleanup_push(server_closed, own);
+    try{
     while(1){
         /*Waits for connection*/
         newSocket = accept(own->servSocket, reinterpret_cast<struct sockaddr*>(&(own->address)), &n);
         if(newSocket != -1){
             /* Detected connection and creation of a connection with the client*/
-            try{
+
                 c =  new Client_Connection(newSocket);
 
                 if(pthread_mutex_lock(&own->lClients_mutex) != 0)
@@ -68,11 +68,13 @@ void* Server::run(void* arg){
                 if(pthread_mutex_unlock(&own->lClients_mutex))
                     throw ERROR_RUNSERVER_UNMUTEX;
             }
-            catch(int e_ID){
-                own->serv_handler.LogHandler(e_ID);
-            }
         }
     }
+    catch(int e_ID){
+        own->serv_handler.LogHandler(e_ID);
+    }
+    pthread_cleanup_pop(1);
+    pthread_exit(0);
 }
 
 /*
@@ -108,3 +110,8 @@ void*  Server::removeClient(void *arg){
         ;
     }
  }//*/
+
+void Server::server_closed(void*arg){
+    Server *own = static_cast<Server*>(arg);
+    close(own->servSocket);
+}
