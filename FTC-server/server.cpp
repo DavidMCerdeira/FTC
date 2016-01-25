@@ -6,6 +6,7 @@ Server::Server(int l_numConnections) : numConnections(l_numConnections)
 
     countConnections =  0;
 
+
     try{
         servSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -41,6 +42,8 @@ Server::Server(int l_numConnections) : numConnections(l_numConnections)
     catch(ErrorSet e_ID){
         serv_handler.LogHandler(e_ID);
     }
+
+    pthread_exit(0);
 }
 
 void* Server::run(void* arg){

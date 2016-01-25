@@ -1,22 +1,21 @@
 //UserMessages.qml
 import QtQuick 2.0
 import QtQuick.Layouts 1.2
-import UserMessages 1.0
 
 ColumnLayout {
     id: root
 
-    property string title: ''
+    property Text title : Text{ text: ''; font.pointSize: 18}
+    property var content_model
     property int title_pointSize: 16
 
     property int content_pointSize: 14
 
     Text{
         id: _title
-        font.pointSize: {title: '' ? 0 : title_pointSize}
-        text: title
+        font.pointSize: title.font.pointSize
+        text: title.text
     }
-
 
     Rectangle {
         id: notesfield
@@ -30,16 +29,16 @@ ColumnLayout {
             id: inside
             width: parent.width - 10;
             height: parent.height - 10;
-            anchors.centerIn: parent
+            anchors.centerIn: parent 
 
             ListView{
                 anchors.fill: parent
                 clip: true
-                model: UserMessages{
-                    id: messages
-                }
+
+                model: content_model
+
                 delegate: Text{
-                    text: index + ' ' + display
+                    text: display
                     font.pointSize: content_pointSize
                 }
             }

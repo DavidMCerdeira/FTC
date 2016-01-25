@@ -2,6 +2,8 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import SearchWorkingResult 1.0
+
 
 ColumnLayout {
     id: root
@@ -15,38 +17,62 @@ ColumnLayout {
     }
 
     RowLayout{
-        width: parent.width
+        id: pre_results
+        anchors.left: parent.left
+        anchors.right: parent.right
         MyComboBox{
             id: department
-            anchors.left: parent.left
             editable: false
             Layout.minimumWidth: 150
             Layout.minimumHeight: 40
         }
 
-//        Rectangle {
-//            id: spacer
-//            color: transparent
-//            Layout.minimumWidth: root.width - department.width - selectDay.width
-//        }
+        Rectangle {
+            id: spacer
+            color: 'blue'
+            width: root.width - department.width - selectDay.width
+        }
 
-//        MyButton{
-//            id: selectDay
-//            Layout.minimumWidth: 50
-//            Layout.minimumHeight: 50
-//            anchors.right: parent.right
-//            name: 'Select day'
+        MyButton{
+            id: selectDay
+            anchors.right: parent.right
+            name: 'Select day'
+            checkable: true
+        }
+    }
 
-//            states : State {
-//                name: day; when: selectDay.pressed == true
-//            }
-//        }
+    Calendar {
+        id: calendar
+        weekNumbersVisible: true
+        visible: false
+
+        states : [
+            State {
+                name: 'showDays'
+                when: selectDay.checked == true
+                PropertyChanges {
+                    target: calendar; visible: true
+                }
+            },
+            State {
+                name: 'noDays'
+                    when: calendar.selectedDate === true
+                    PropertyChanges {
+                        target: selectDay;
+                        checked: false
+                    }
+                    PropertyChanges {
+                        target: calendar; visible: false
+                    }
+            }
+        ]
     }
 
     MyTextHolder{
-        Layout.fillHeight: true
-        title: 'Workers'
-        content: 'Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker Worker'
+        title{
+            text: 'Result'
+        }
+        content_model: SearchWorkingResult{}
     }
 }
 

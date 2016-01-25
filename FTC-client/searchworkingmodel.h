@@ -1,21 +1,18 @@
-#ifndef USERMESSAGES_H
-#define USERMESSAGES_H
+#ifndef SEARCHWORKINGMODEL_H
+#define SEARCHWORKINGMODEL_H
 
+#include <QObject>
 #include <QAbstractListModel>
-#include <QList>
-#include <QString>
-#include <QDebug>
-#include "controller.h"
+#include <controller.h>
 
-
-class UserMessagesModel : public QAbstractListModel
+class SearchWorkingModel : public QAbstractListModel
 {
     Q_OBJECT
 private:
-    QList<QString> m_data;
+    QList<QString> working;
 
 public:
-    explicit UserMessagesModel(QObject *parent = 0);
+    explicit SearchWorkingModel(QObject *parent = 0);
     // QAbstractItemModel interface
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
@@ -24,4 +21,4 @@ public:
     void clearData();
 };
 
-#endif // USERMESSAGES_H
+#endif // SEARCHWORKINGMODEL_H

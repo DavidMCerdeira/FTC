@@ -3,7 +3,7 @@
         <file>main.qml</file>
         <file>Login.qml</file>
         <file>PersonalInfo.qml</file>
-        <file>UserMessages.qml</file>
+        <file>MyTextHolder.qml</file>
         <file>Search.qml</file>
         <file>SearchEmployee.qml</file>
         <file>SearchWorking.qml</file>
@@ -13,5 +13,6 @@
         <file>Triangle.qml</file>
         <file>Home.qml</file>
         <file>DateTime.qml</file>
+        <file>SwipeDetect.qml</file>
     </qresource>
 </RCC>

@@ -13,13 +13,10 @@ Request_Handler::Request_Handler()
         return;
     pthread_mutex_init(&mux_pendingReq, NULL);
 
-    pthread_attr_setdetachstate(&tAttr, PTHREAD_CREATE_DETACHED);
-    pthread_attr_init(&tAttr);
-    result = pthread_create(&(this->th_req_interpreter), &tAttr, req_interpreter, static_cast<void*>(this));
-    if(result != 0){
-        //cout<<"I'm the one causing error"<<endl;
+    if(pthread_create(&(this->th_req_interpreter), 0, req_interpreter, static_cast<void*>(this)) != 0)
         return; //*Try catch would be more appropriate
-     }
+    pthread_detach(this->th_req_interpreter);
+
 }
 
 /*Tranlates the request into a function handler*/
@@ -60,7 +57,7 @@ void* Request_Handler::req_interpreter(void *arg){
        own->req_clock(cmd_data);
     }
     else{
-       cout<<"error :: no command available"<<endl;
+        cout<<"error :: no command available"<<endl;
     }
 
     return NULL;

@@ -37,3 +37,9 @@ private:
 };
 
 #endif // CLIENT_CONNECTION_H
+
+/*
+-Request and reply struct is required;
+-Object Request Handler
+-Session Info should be stored
+*/

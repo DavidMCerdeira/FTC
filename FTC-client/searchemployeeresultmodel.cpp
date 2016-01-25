@@ -1,25 +1,25 @@
-#include "usermessages.h"
+#include "searchemployeeresultmodel.h"
 
-UserMessagesModel::UserMessagesModel(QObject *parent)
+searchEmployeeResultModel::searchEmployeeResultModel(QObject *parent)
     : QAbstractListModel(parent)
 {
-    Controller::getInstance()->setUserMessagesModel(this);
+    Controller::getInstance()->setSearchEmployeeModel(this);
 }
 
-int UserMessagesModel::rowCount(const QModelIndex &parent) const
+int searchEmployeeResultModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
 
-    return  m_data.count();
+    return result.count();
 }
 
-QVariant UserMessagesModel::data(const QModelIndex &index, int role) const
+QVariant searchEmployeeResultModel::data(const QModelIndex &index, int role) const
 {
     // the index returns the requested row and column information.
     // we ignore the column and only use the row information
     int row = index.row();
     // boundary check for the row
-    if(row < 0 || row >= m_data.count()) {
+    if(row < 0 || row >= result.count()) {
         return QVariant();
     }
     // A model can return data for different roles.
@@ -29,18 +29,18 @@ QVariant UserMessagesModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
         // Return the color name for the particular row
         // Qt automatically converts it to the QVariant type
-        return m_data.value(row);
+        return result[row];
     }
     // The view asked for other data, just return an empty QVariant
     return QVariant();
 }
 
-void UserMessagesModel::insertData(QString str)
+void searchEmployeeResultModel::insertData(QString str)
 {
-    m_data.append(str);
+    result.append(str);
 }
 
-void UserMessagesModel::clearData()
+void searchEmployeeResultModel::clearData()
 {
-    m_data.clear();
+    result.clear();
 }
