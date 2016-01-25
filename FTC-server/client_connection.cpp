@@ -38,7 +38,6 @@ void* Client_Connection::manage_connection(void *arg)
            /*Call request handler*/
             own->clReqHandler.add_strToReqList(own->reqBuffer);
             cout<<"received: "<< own->reqBuffer <<endl;
-
          }
     }
     pthread_exit(0);

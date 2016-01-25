@@ -16,7 +16,6 @@ Request_Handler::Request_Handler()
     if(pthread_create(&(this->th_req_interpreter), 0, req_interpreter, static_cast<void*>(this)) != 0)
         return; //*Try catch would be more appropriate
     pthread_detach(this->th_req_interpreter);
-
 }
 
 /*Tranlates the request into a function handler*/

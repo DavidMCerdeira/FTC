@@ -6,7 +6,6 @@ Server::Server(int l_numConnections) : numConnections(l_numConnections)
 
     countConnections =  0;
 
-
     try{
         servSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
