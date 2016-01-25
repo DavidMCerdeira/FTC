@@ -1,13 +1,14 @@
+
 #include <linux/input.h>
-#include <linux/uinput.h>
+#include <linux/uinput.h> /*uidev*/
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h> /*printf*/
+#include <stdlib.h> 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <string.h>
-#include <unistd.h>
+#include <fcntl.h> /*ioctl*/
+#include <string.h> /**/
+#include <unistd.h> /*__bswap_16*/
 #include <byteswap.h> /*swap*/
 
 struct mouse
@@ -24,6 +25,12 @@ struct mouse
 
 struct uinput_user_dev uidev;
 
+/*define configgurations*/
+//#define CALIBRATE
+#define SMALL_SCREEN
+#define INSENSITIITY 3
+/*end of define configgurations*/
+
 #define device_message_size 22 /*this is in bytes*/
 
 #define mouse_buffer_offset_x   1
@@ -33,37 +40,41 @@ struct uinput_user_dev uidev;
 #define button_pressed   426 //0x01aa
 #define button_released  170 //0x00aa
 
-#define screen_zero_offset_x 260
-#define screen_zero_offset_y 546
+#define screen_zero_offset_x 140
+#define screen_zero_offset_y 370
 
-#define screen_max_x     (3923)
-#define screen_max_y     (3756)
-
-#define SMALL_SCREEN
+#define screen_max_x     (3944)
+#define screen_max_y     (3907)
 
 #ifdef BIG_SCREEN
 	#define abs_max_x        1900
 	#define abs_max_y        1080
 #else
 #ifdef SMALL_SCREEN
-	#define abs_max_x        800
+	#define abs_max_x        799
 	#define abs_max_y        480
 #endif
 #endif
+
+#define abs(a) (((a) < 0) ? -(a) : (a))
 
 /* this function parses buffer to obtain mouse movemnte details */
 /* it also believes everything that buffer contains is true and beatiful */
 void device_parser(uint16_t *buffer, struct mouse* mouse)
 {
 	int pressed = 0;
-	/* update mouse information */
-	mouse->deltaX = mouse->x - mouse->lastX;
-	mouse->deltaY = mouse->y - mouse->lastY;
-	
+
+	/* last data */		
 	mouse->lastX = mouse->x;
 	mouse->lastY = mouse->y;
 	
 	/*bytes come swapped for some reason*/	
+#ifdef CALIBRATE
+		mouse->x = __bswap_16(buffer[mouse_buffer_offset_x]);
+		mouse->y = __bswap_16(buffer[mouse_buffer_offset_y]);
+		printf("CALIBRATION X: %d, Y: %d\n", mouse->x, mouse->y);
+#else
+	
 	//*		 
 	mouse->x = (__bswap_16(buffer[mouse_buffer_offset_x]) - screen_zero_offset_x) / 
 										((double)screen_max_x - screen_zero_offset_x) * abs_max_x;
@@ -71,17 +82,20 @@ void device_parser(uint16_t *buffer, struct mouse* mouse)
 										((double)screen_max_y - screen_zero_offset_y) * abs_max_y;
 	//*/
 	
-	if(mouse->x <= 0){
-		mouse->x = mouse->lastX;
-	}
-	if(mouse->y <= 0){
-		mouse->y = mouse->lastY;
-	}
+	/* update mouse information */
+	mouse->deltaX = mouse->x - mouse->lastX;
+	mouse->deltaY = mouse->y - mouse->lastY;
+
 	
-	/*
-	mouse->x = __bswap_16(buffer[mouse_buffer_offset_x]);
-	mouse->y = __bswap_16(buffer[mouse_buffer_offset_y]);
-	//*/
+	if((mouse->x <= 0) || (mouse->x > abs_max_x) || (abs(mouse->deltaX) < INSENSITIITY)){
+		mouse->x = mouse->lastX;
+		mouse->deltaX = 0;
+	}
+	if((mouse->y <= 0) || (mouse->y > abs_max_y) || (abs(mouse->deltaY) < INSENSITIITY)){
+		mouse->y = mouse->lastY;
+		mouse->deltaY = 0;
+	}	
+
 	
 	if(buffer[cmd_buffer_offset] == (uint16_t)button_pressed){
 		pressed = 1;
@@ -92,6 +106,7 @@ void device_parser(uint16_t *buffer, struct mouse* mouse)
 	}
 	
 	mouse->pressed = pressed;
+#endif
 }
 
 void send_events(int fd, struct mouse* mouse)
@@ -258,8 +273,10 @@ void emulate_mouse(int fd)
 		}
 
 		device_parser(buffer, &mouse);
-		send_events(uFd, &mouse);
-		print_mouse_info(&mouse);
+		#ifndef CALIBRATE
+			send_events(uFd, &mouse);
+			print_mouse_info(&mouse);
+		#endif
 	}
 	
 	ret = ioctl(uFd, UI_DEV_DESTROY);
