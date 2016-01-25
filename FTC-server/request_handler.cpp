@@ -9,11 +9,9 @@ Request_Handler::Request_Handler()
     int result;
     pthread_attr_t tAttr;
 
-#ifdef _DEBUG_
-    cout << "Request_Handler::Request_Handler" <<endl;
-#endif
-    if(sem_init(&(this->sem_pendingReq), 0, 1) != 0)
+    if(sem_init(&(this->sem_pendingReq), 0, MAXNR_OF_REQ) != 0)
         return;
+    pthread_mutex_init(&mux_pendingReq, NULL);
 
     pthread_attr_setdetachstate(&tAttr, PTHREAD_CREATE_DETACHED);
     pthread_attr_init(&tAttr);
@@ -22,7 +20,6 @@ Request_Handler::Request_Handler()
         //cout<<"I'm the one causing error"<<endl;
         return; //*Try catch would be more appropriate
      }
-
 }
 
 /*Tranlates the request into a function handler*/
@@ -33,8 +30,11 @@ void* Request_Handler::req_interpreter(void *arg){
 
     /*wait for requests*/
     sem_wait(&(own->sem_pendingReq));
-    frame = *(own->pendingReq.end());
-    own->pendingReq.pop_back();
+    pthread_mutex_lock(&(own->mux_pendingReq));
+
+    frame = *(own->pendingReq.begin());
+    own->pendingReq.pop_front();
+    pthread_mutex_unlock(&(own->mux_pendingReq));
 
     /*set cmd string*/
     begin_indx = frame.find_first_of('\\') + 1; //gets the index to the first letter of the command
@@ -69,8 +69,10 @@ void* Request_Handler::req_interpreter(void *arg){
 void Request_Handler::add_strToReqList(const char* new_rq){
     string cmd(new_rq);
 
+    pthread_mutex_lock(&mux_pendingReq);
     this->pendingReq.push_back(cmd);
     sem_post(&(this->sem_pendingReq));
+    pthread_mutex_unlock(&mux_pendingReq);
 }
 
 void Request_Handler::req_valid(const string jsData){

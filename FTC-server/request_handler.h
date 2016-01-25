@@ -24,6 +24,7 @@ private:
     void req_clock(const string data);
 
     sem_t sem_pendingReq;
+    pthread_mutex_t mux_pendingReq;
     list<string> pendingReq;
 
 };
