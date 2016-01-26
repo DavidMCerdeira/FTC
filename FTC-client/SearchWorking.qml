@@ -38,6 +38,9 @@ ColumnLayout {
             anchors.right: parent.right
             name: 'Select day'
             checkable: true
+            name_pointSize: 18
+            Layout.minimumWidth: 150
+            Layout.minimumHeight: 50
         }
     }
 
