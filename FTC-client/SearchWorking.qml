@@ -16,7 +16,7 @@ ColumnLayout {
         text: "Employees Working"
     }
 
-    RowLayout{
+    RowLayout {
         id: pre_results
         anchors.left: parent.left
         anchors.right: parent.right
@@ -41,6 +41,10 @@ ColumnLayout {
             name_pointSize: 18
             Layout.minimumWidth: 150
             Layout.minimumHeight: 50
+            onClicked: {
+               if(!calendar.visible)
+                   workingRslt.date = calendar.selectedDate
+            }
         }
     }
 
@@ -59,19 +63,17 @@ ColumnLayout {
             },
             State {
                 name: 'noDays'
-                    when: calendar.selectedDate === true
-                    PropertyChanges {
-                        target: selectDay;
-                        checked: false
-                    }
-                    PropertyChanges {
-                        target: workingRslt
-                        /*set Date*/
-                    }
-
-                    PropertyChanges {
-                        target: calendar; visible: false
-                    }
+                PropertyChanges {
+                    target: selectDay;
+                    checked: false
+                }
+                PropertyChanges {
+                    target: workingRslt
+                    date: calendar.selectedDate
+                }
+                PropertyChanges {
+                    target: calendar; visible: false
+                }
             }
         ]
     }
@@ -80,7 +82,6 @@ ColumnLayout {
         title{
             text: 'Result'
         }
-        content_model: SearchWorkingResult{id: workingRslt}
+        content_model: SearchWorkingResult{id: workingRslt;}
     }
 }
-

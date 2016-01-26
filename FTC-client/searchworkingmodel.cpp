@@ -1,7 +1,7 @@
 #include "searchworkingmodel.h"
 
 SearchWorkingModel::SearchWorkingModel(QObject *parent)
-    : QAbstractListModel(parent)
+    : QAbstractListModel(parent), m_date(QDate())
 {
     Controller::getInstance()->setSearchWorking(this);
 }

@@ -71,14 +71,14 @@ ColumnLayout {
 
     MyComboBox{
         anchors.horizontalCenter: parent.horizontalCenter
-        Layout.minimumWidth: 150
+        Layout.minimumWidth: parent.width
         Layout.minimumHeight: 40
         editable: false
     }
 
     MyComboBox{
         anchors.horizontalCenter: parent.horizontalCenter
-        Layout.minimumWidth: 150
+        Layout.minimumWidth: parent.width
         Layout.minimumHeight: 40
         editable: false
     }

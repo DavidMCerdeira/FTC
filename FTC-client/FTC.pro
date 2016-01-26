@@ -9,7 +9,8 @@ SOURCES += main.cpp \
     controller.cpp \
     login.cpp \
     searchemployeeresultmodel.cpp \
-    searchworkingmodel.cpp
+    searchworkingmodel.cpp \
+    departmentmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -25,4 +26,5 @@ HEADERS += \
     controller.h \
     login.h \
     searchemployeeresultmodel.h \
-    searchworkingmodel.h
+    searchworkingmodel.h \
+    departmentmodel.h

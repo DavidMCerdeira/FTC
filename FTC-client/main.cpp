@@ -8,8 +8,6 @@
 
 int main(int argc, char *argv[])
 {
-    Controller *control = Controller::getInstance();
-
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;

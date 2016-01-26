@@ -39,7 +39,6 @@ public:
     /* Search */
     void setSearchEmployeeModel(searchEmployeeResultModel*);
     void setSearchWorking(SearchWorkingModel*);
-
 };
 
 static Controller *instance = NULL;
