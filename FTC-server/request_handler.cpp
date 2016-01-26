@@ -5,7 +5,7 @@
 #define CHAR_PLOT_DIVIDER 47
 
 Request_Handler::Request_Handler()
-{   // result = pthread_create(&thread_run, NULL, run, static_cast<void*>(this));
+{
     /*Initializes the sem for request handling counter*/
     int result;
     pthread_attr_t tAttr;
@@ -16,6 +16,7 @@ Request_Handler::Request_Handler()
 
     if(pthread_create(&(this->th_req_interpreter), 0, req_interpreter, static_cast<void*>(this)) != 0)
         return; //*Try catch would be more appropriate
+
     pthread_detach(this->th_req_interpreter);
 }
 
@@ -65,9 +66,11 @@ void* Request_Handler::req_interpreter(void *arg){
 
 void Request_Handler::add_strToReqList(const char* new_rq){
     string cmd(new_rq);
+
     pthread_mutex_lock(&mux_pendingReq);
     this->pendingReq.push_back(cmd);
     sem_post(&(this->sem_pendingReq));
+
     pthread_mutex_unlock(&mux_pendingReq);
 }
 

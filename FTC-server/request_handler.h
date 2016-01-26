@@ -15,7 +15,9 @@ class Request_Handler
 public:
     Request_Handler();
     void add_strToReqList(const char *new_req);
+    /*string  get_strOfRespList();*/
 private:
+    /*add response function*/
     /*List of all request handlers*/
     pthread_t th_req_interpreter;
     static void* req_interpreter(void *arg);
