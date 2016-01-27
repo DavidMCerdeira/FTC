@@ -28,7 +28,7 @@ private:
     static void* removeClient(void *arg);
     static void* run(void* arg);
     static void server_closed(void*arg);
-
+    void print_clientsSockets();
     pthread_t thread_run;
 
     int servSocket;

@@ -51,7 +51,8 @@ private:
     /* Receive buffer */
     char reqBuffer[MAX_LINE_BUFF];
     char respBuffer[MAX_LINE_BUFF];
-    Request_Handler clReqHandler;
+
+    Request_Handler *clReqHandler;
 
     bool conState; // Connection state. If true is alive
     int clSock;    // Socket ID

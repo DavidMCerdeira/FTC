@@ -95,29 +95,37 @@ void*  Server::removeClient(void *arg){
     sigemptyset(&unblocked_sig);
     sigaddset(&unblocked_sig, SIG_RM_CLIENT);
     while(1){
-        if(sigwaitinfo(&unblocked_sig, &si) != 0)
-            //throw
-            ;
-            cout << "Signal Received " << (si.si_value).sival_int << endl;
-//    if(pthread_mutex_lock(&own->lClients_mutex) != 0)
-//        //throw
-//        ;
+        if(sigwaitinfo(&unblocked_sig, &si) == -1)
+        //throw
+        ;
+        own->print_clientsSockets();
+        cout << "Signal Received " << (si.si_value).sival_int << endl;
 
-//    if(sig == SIG_RM_CLIENT){
-//    //Find client through socket
-//    for(it = own->lClients.begin(); it != own->lClients.end(); it++)
-//      if(it->get_clientSock() == si.si_val)
-//          break;
-//    lClients.erase(it);
+        //Find client through socket
+        if(pthread_mutex_lock(&own->lClients_mutex) != 0)
+        //throw
+        ;
 
-//    if(pthread_mutex_unlock(&own->lClients_mutex) != 0)
-//        //throw
-//        ;
-//    }
+        for(it = own->lClients.begin(); it != own->lClients.end(); it++)
+            if(it->get_clientSock() == static_cast<int>(si.si_value.sival_int))
+                break;
+        own->lClients.erase(it);
+
+        if(pthread_mutex_unlock(&own->lClients_mutex) != 0)
+        //throw
+        ;
+        own->print_clientsSockets();
     }
  }
 
 void Server::server_closed(void*arg){
     Server *own = static_cast<Server*>(arg);
     close(own->servSocket);
+}
+
+void Server::print_clientsSockets(){
+    cout << "Clients: " << endl;
+    for(list<Client_Connection>::iterator it=this->lClients.begin(); it != this->lClients.end(); it++)
+        cout << "cl: " << it->get_clientSock() << endl;
+    cout << endl;
 }
