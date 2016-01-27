@@ -40,7 +40,7 @@ private:
     const short numConnections;
     unsigned short countConnections;   
 
-    FTC_Error serv_handler;
+    //FTC_Error serv_handler;
 };
 
 

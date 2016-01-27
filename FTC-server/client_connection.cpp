@@ -16,7 +16,8 @@ Client_Connection::Client_Connection(int _clSock) : clSock(_clSock)
     clReqHandler =  new Request_Handler();
 
     if(pthread_create(&this->thread_connection_receive, &tAttr, &connection_receive, static_cast<void*>(this)) != 0)
-        throw ERROR_THCLIENT_CONNECTION;
+        //throw ERROR_THCLIENT_CONNECTION
+        ;
 
     if(pthread_create(&this->thread_connection_send, &tAttr, &connection_send,static_cast<void*>(this)) != 0)
     ;

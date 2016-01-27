@@ -58,7 +58,7 @@ private:
     int clSock;    // Socket ID
     time_t last_communication_time; // Saves the time of last communication
 
-    FTC_Error clCon_errors; // Deals with the errors of this object
+    //FTC_Error clCon_errors; // Deals with the errors of this object
 };
 
 #endif // CLIENT_CONNECTION_H
