@@ -12,22 +12,10 @@ USE `FTCdb` ;
 DROP TABLE IF EXISTS `FTCdb`.`Schedulle` ;
 
 CREATE TABLE IF NOT EXISTS `FTCdb`.`Schedulle` (
-  `idSchedulle` INT NOT NULL,
+  `idSchedulle` INT NOT NULL AUTO_INCREMENT,
   `enterTime` VARCHAR(45) NULL,
   `leaveTime` VARCHAR(45) NULL,
   PRIMARY KEY (`idSchedulle`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `FTCdb`.`Location`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `FTCdb`.`Location` ;
-
-CREATE TABLE IF NOT EXISTS `FTCdb`.`Location` (
-  `idLocation` INT NOT NULL,
-  `name` VARCHAR(45) NULL,
-  PRIMARY KEY (`idLocation`))
 ENGINE = InnoDB;
 
 
@@ -37,22 +25,32 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `FTCdb`.`Jobs` ;
 
 CREATE TABLE IF NOT EXISTS `FTCdb`.`Jobs` (
-  `idJob` INT NOT NULL,
+  `idJob` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NULL,
   PRIMARY KEY (`idJob`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `FTCdb`.`Priveledge`
+-- Table `FTCdb`.`Sys_Privelege`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `FTCdb`.`Priveledge` ;
+DROP TABLE IF EXISTS `FTCdb`.`Sys_Privelege` ;
 
-CREATE TABLE IF NOT EXISTS `FTCdb`.`Priveledge` (
-  `idPrivele` INT NOT NULL,
-  `password` VARCHAR(45) NULL,
+CREATE TABLE IF NOT EXISTS `FTCdb`.`Sys_Privelege` (
+  `idPrivelege` INT NOT NULL AUTO_INCREMENT,
   `description` VARCHAR(45) NULL,
-  PRIMARY KEY (`idPrivele`))
+  PRIMARY KEY (`idPrivelege`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `FTCdb`.`Location`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `FTCdb`.`Location` ;
+
+CREATE TABLE IF NOT EXISTS `FTCdb`.`Location` (
+  `localName` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`localName`))
 ENGINE = InnoDB;
 
 
@@ -62,29 +60,24 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `FTCdb`.`Worker` ;
 
 CREATE TABLE IF NOT EXISTS `FTCdb`.`Worker` (
-  `idWorker` INT NOT NULL,
+  `idWorker` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `gender` VARCHAR(1) NOT NULL,
   `email` VARCHAR(100) NULL,
   `contact_number` VARCHAR(9) NOT NULL,
   `idSchedulle` INT NOT NULL,
-  `idLocation` INT NOT NULL,
+  `localName` VARCHAR(45) NOT NULL,
   `idJob` INT NOT NULL,
   `face` VARCHAR(450) NULL,
-  `idPriveledge` INT NOT NULL,
+  `idPrivelege` INT NOT NULL,
+  `password` VARCHAR(15) NULL,
   PRIMARY KEY (`idWorker`),
   INDEX `fk_Schedulle_idx` (`idSchedulle` ASC),
-  INDEX `fk_Location_idx` (`idLocation` ASC),
   INDEX `fk_Job_idx` (`idJob` ASC),
-  INDEX `fk_Priveledge_idx` (`idPriveledge` ASC),
+  INDEX `fk_Priveledge_idx` (`idPrivelege` ASC),
   CONSTRAINT `fk_Schedulle`
     FOREIGN KEY (`idSchedulle`)
     REFERENCES `FTCdb`.`Schedulle` (`idSchedulle`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Location`
-    FOREIGN KEY (`idLocation`)
-    REFERENCES `FTCdb`.`Location` (`idLocation`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Job`
@@ -92,9 +85,14 @@ CREATE TABLE IF NOT EXISTS `FTCdb`.`Worker` (
     REFERENCES `FTCdb`.`Jobs` (`idJob`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Priveledge`
-    FOREIGN KEY (`idPriveledge`)
-    REFERENCES `FTCdb`.`Priveledge` (`idPrivele`)
+  CONSTRAINT `fk_Privelege`
+    FOREIGN KEY (`idPrivelege`)
+    REFERENCES `FTCdb`.`Sys_Privelege` (`idPrivelege`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Local_`
+    FOREIGN KEY ()
+    REFERENCES `FTCdb`.`Location` ()
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -106,9 +104,8 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `FTCdb`.`Department` ;
 
 CREATE TABLE IF NOT EXISTS `FTCdb`.`Department` (
-  `idDepartment` INT NOT NULL,
-  `name` VARCHAR(45) NULL,
-  PRIMARY KEY (`idDepartment`))
+  `depName` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`depName`))
 ENGINE = InnoDB;
 
 
@@ -118,18 +115,18 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `FTCdb`.`List_Department_Worker` ;
 
 CREATE TABLE IF NOT EXISTS `FTCdb`.`List_Department_Worker` (
-  `idDepartment` INT NOT NULL,
+  `depName` VARCHAR(45) NOT NULL,
   `idWorker` INT NOT NULL,
-  PRIMARY KEY (`idDepartment`, `idWorker`),
+  PRIMARY KEY (`depName`, `idWorker`),
   INDEX `fk_Worker_idx` (`idWorker` ASC),
-  CONSTRAINT `fk_Department`
-    FOREIGN KEY (`idDepartment`)
-    REFERENCES `FTCdb`.`Department` (`idDepartment`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
   CONSTRAINT `fk_Worker_LstDep`
     FOREIGN KEY (`idWorker`)
     REFERENCES `FTCdb`.`Worker` (`idWorker`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Department_`
+    FOREIGN KEY (`depName`)
+    REFERENCES `FTCdb`.`Department` (`depName`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -141,7 +138,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `FTCdb`.`Messages` ;
 
 CREATE TABLE IF NOT EXISTS `FTCdb`.`Messages` (
-  `idMessages` INT NOT NULL,
+  `idMessages` INT NOT NULL AUTO_INCREMENT,
   `content` VARCHAR(45) NULL,
   PRIMARY KEY (`idMessages`))
 ENGINE = InnoDB;
@@ -199,7 +196,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `FTCdb`.`Clock_In` ;
 
 CREATE TABLE IF NOT EXISTS `FTCdb`.`Clock_In` (
-  `idWorker` INT NOT NULL,
+  `idWorker` INT NOT NULL AUTO_INCREMENT,
   `dateTime` DATETIME NULL,
   PRIMARY KEY (`idWorker`),
   CONSTRAINT `fk_Worker_ClkIn`
@@ -216,7 +213,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `FTCdb`.`Clock_Out` ;
 
 CREATE TABLE IF NOT EXISTS `FTCdb`.`Clock_Out` (
-  `idWorker` INT NOT NULL,
+  `idWorker` INT NOT NULL AUTO_INCREMENT,
   `dateTime` DATETIME NULL,
   PRIMARY KEY (`idWorker`),
   CONSTRAINT `fk_Worker__ClkOut`
