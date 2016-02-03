@@ -26,7 +26,7 @@ DROP TABLE IF EXISTS `FTCdb`.`Jobs` ;
 
 CREATE TABLE IF NOT EXISTS `FTCdb`.`Jobs` (
   `idJob` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45) NULL,
+  `jobName` VARCHAR(45) NULL,
   PRIMARY KEY (`idJob`))
 ENGINE = InnoDB;
 
@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS `FTCdb`.`Worker` (
   INDEX `fk_Schedulle_idx` (`idSchedulle` ASC),
   INDEX `fk_Job_idx` (`idJob` ASC),
   INDEX `fk_Priveledge_idx` (`idPrivelege` ASC),
+  INDEX `fk_Local__idx` (`localName` ASC),
   CONSTRAINT `fk_Schedulle`
     FOREIGN KEY (`idSchedulle`)
     REFERENCES `FTCdb`.`Schedulle` (`idSchedulle`)
@@ -91,8 +92,8 @@ CREATE TABLE IF NOT EXISTS `FTCdb`.`Worker` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Local_`
-    FOREIGN KEY ()
-    REFERENCES `FTCdb`.`Location` ()
+    FOREIGN KEY (`localName`)
+    REFERENCES `FTCdb`.`Location` (`localName`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
