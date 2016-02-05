@@ -20,8 +20,14 @@ public:
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
 
+signals:
     void insertData(QString str);
     void clearData();
+
+private slots:
+    void insertNewData(QString str);
+    void clearAllData();
+
 };
 
 #endif // USERMESSAGES_H

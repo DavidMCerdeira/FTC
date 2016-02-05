@@ -27,15 +27,12 @@ Controller* Controller::getInstance()
 void Controller::setUserMessagesModel(UserMessagesModel *ptr)
 {
     usrmsgs = ptr;
-
-    usrmsgs->insertData("Ola! Eu sou uma mensagem!");
 }
 
 void Controller::setLoginModel(LoginModel *ptr)
 {
     log = ptr;
-
-    log->setText("Maria Albertina");
+    emit log->setText("Not Logged in");
 }
 
 void Controller::logOut()
@@ -43,6 +40,7 @@ void Controller::logOut()
     qDebug() << "Logout";
     ftc.explicitLogout();
     log->setText("Not Logged in");
+    usrmsgs->clearData();
 }
 
 void Controller::setSearchEmployeeModel(searchEmployeeResultModel *model)
@@ -81,36 +79,41 @@ void* Controller::ftcListen_thread(void *arg)
     int nRcvd = -1;
 
     while(1){
-        buff = (char*) malloc(buffSize);
+        buff = (char*) calloc(buffSize, sizeof(char));
         if(buff == nullptr){
             err(1, "Error allocating buffer to receive message from message queue %s\n",
                         self->msgQ.getName());
         }
         nRcvd = self->msgQ.getMsg(buff, buffSize);
-        qDebug() << "Received Message: " << buff;
         self->ftcEventHandler(buff, self);
     }
 }
 
 void Controller::ftcEventHandler(char *event, Controller *self)
 {
-    if(strcmp(event, FTC_Events::usr_present) != 0){
+    while(self->log == nullptr);
+    while(self->usrmsgs == nullptr);
+
+    if(strcmp(event, FTC_Events::usr_present) == 0){
         /* notify user it has been detected */
     }
-    else if(strcmp(event, FTC_Events::usr_absent) != 0){
+    else if(strcmp(event, FTC_Events::usr_absent) == 0){
         /* user left so logout */
+        qDebug() << "User walked away";
         self->logOut();
     }
-    else if(strcmp(event, FTC_Events::usr_valid) != 0){
+    else if(strcmp(event, FTC_Events::usr_valid) == 0){
         /* ask for usr id and info */
+        emit self->log->setText("Maria Albertina");
+        self->usrmsgs->insertData("Ola! Eu sou uma mensagem!");
     }
-    else if(strcmp(event, FTC_Events::usr_unkwon) != 0){
+    else if(strcmp(event, FTC_Events::usr_unkwon) == 0){
         /* display some error message */
     }
     else{
         /* literally wtf */
-        err(1, "Unknown message from message queue:%s\n"
-               "Here is the message:%s\n",
+        errx(1, "Unknown message from message queue:%s\n"
+                "Here is the message:%s\n",
                     self->msgQ.getName(), event);
     }
 

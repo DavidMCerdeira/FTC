@@ -3,8 +3,10 @@
 LoginModel::LoginModel(QObject *parent)
     : QAbstractListModel(parent)
 {
-    text = "";
+    connect(this, SIGNAL(setText(QString)), this, SLOT(setNewText(QString)));
     Controller::getInstance()->setLoginModel(this);
+
+    //emit setText("lol");
 }
 
 int LoginModel::rowCount(const QModelIndex &parent) const
@@ -17,8 +19,6 @@ int LoginModel::rowCount(const QModelIndex &parent) const
 
 QVariant LoginModel::data(const QModelIndex &index, int role) const
 {
-    qDebug() << "Login data requested" << endl;
-
     // the index returns the requested row and column information.
     // we ignore the column and only use the row information
     int row = index.row();
@@ -33,20 +33,24 @@ QVariant LoginModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
         // Return the color name for the particular row
         // Qt automatically converts it to the QVariant type
-        qDebug() << "Returned: " << text << endl;
         return text;
     }
     // The view asked for other data, just return an empty QVariant
     return QVariant();
 }
 
- void LoginModel::setText(QString str)
- {
-     text = str;
- }
- 
- void LoginModel::logout()
- {
-     Controller::getInstance()->logOut();
-     //QModelIndex idx = new QModelIndex();
- }
+void LoginModel::setNewText(QString str)
+{
+    text = str;
+
+    qDebug() << "Text changed to: " << str;
+    //emit dataChanged(QModelIndex(), QModelIndex());
+    beginResetModel();
+    endResetModel();
+}
+
+void LoginModel::logout()
+{
+    Controller::getInstance()->logOut();
+    //QModelIndex idx = new QModelIndex();
+}

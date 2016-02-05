@@ -48,7 +48,9 @@ ColumnLayout{
 
         model: Login{
             id: log
+            onDataChanged: update();
         }
+
         delegate: Text{
             anchors.fill: parent
             id: logText;

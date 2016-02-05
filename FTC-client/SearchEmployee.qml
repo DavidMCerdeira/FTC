@@ -38,6 +38,10 @@ ColumnLayout {
         }
     }
 
+    Keyboard{
+        visible: false;
+    }
+
     MyComboBox{
         anchors.horizontalCenter: parent.horizontalCenter
         Layout.minimumWidth: 150

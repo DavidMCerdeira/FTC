@@ -48,7 +48,6 @@ void* FTC::handleUserDetected_thread(void *arg)
 
     self->usrPrsntSemaph.set();
     self->messageQ.sendMsg(FTC_Events::usr_present);
-
     /* set led to detected color */
     self->led.setColor(RGBLed::USR_DETCD);
 
@@ -58,7 +57,7 @@ void* FTC::handleUserDetected_thread(void *arg)
     //int face = capture.captureStableFace();
 
     /* send face to server for recognition */
-    validUsr = false;
+    validUsr = true;
 
     /* evaluate result */
     /* send acceptance to controller */
@@ -80,14 +79,13 @@ void FTC::handleUserLeft()
     usrPrsntSemaph.reset();
     messageQ.sendMsg(FTC_Events::usr_absent);
 
-    /* cancel handle user detected thread */
+    /* cancel handle_user_detected thread */
 }
 
 void* FTC::main_thread(void *arg)
 {
     FTC* self = static_cast<FTC*>(arg);
 
-    self->messageQ.sendMsg("Hello!");
     while(1) {
         /* wait presence */
         self->ds.waitDistanceLessThan(50, 200);
@@ -96,10 +94,13 @@ void* FTC::main_thread(void *arg)
         self->handleUserDetected();
 
         /* wait absence or explicit logout */
+        //sleep(2);
         self->ds.waitDistanceMoreThan(60, 200);
 
         /* deal with absence */
         self->handleUserLeft();
-        while(1);
+        while(1){
+            sleep(60);
+        }
     }
 }

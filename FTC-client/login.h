@@ -17,9 +17,13 @@ public:
     /* this is function is redundant as we only have one element */
     virtual QVariant data(const QModelIndex &index, int role) const;
 
+    Q_INVOKABLE void logout();
+
+signals:
     void setText(QString str);
 
-    Q_INVOKABLE void logout();
+private slots:
+    void setNewText(QString str);
 
 private:
     QString text;

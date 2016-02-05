@@ -4,7 +4,7 @@ MyMessageQueue::MyMessageQueue(const char* name)
     : m_strName(name)
 {
     mq_attr at;
-    at.mq_maxmsg = 10;
+    at.mq_maxmsg = 15;
     at.mq_msgsize = 50;
 
     /* note: numbers beginnign with 0 are interpretd in octal */
@@ -31,17 +31,15 @@ MyMessageQueue::~MyMessageQueue()
 
 void MyMessageQueue::sendMsg(const char *msg)
 {
-    char *holder = const_cast<char*>(msg);
+    int len = strlen(msg);
 
-    int len = strlen(holder);
-    len-=1;
     /* send presence to msgQ */
-    int ret = mq_send(messageQ, holder, len, 0);
+    int ret = mq_send(messageQ, msg, len, 0);
     if(ret < 0){
         kill();
         err(1, "Failure sending message to message queue: %s\n"
                "Here is the message: %s\n",
-                        m_strName, holder);
+                        m_strName, msg);
     }
 }
 

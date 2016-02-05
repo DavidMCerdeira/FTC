@@ -13,6 +13,7 @@ class MyBinarySemaphore
     const char* m_strName;
 
     MyBinarySemaphore();
+    void unlink();
 
 public:
     MyBinarySemaphore(const char *name);
