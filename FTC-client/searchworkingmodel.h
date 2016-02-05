@@ -10,7 +10,9 @@
 class SearchWorkingModel : public QAbstractListModel
 {
     Q_OBJECT
+public:
     Q_PROPERTY(QDate date READ getSearchDate WRITE setSearchDate)
+    Q_INVOKABLE void search();
 
 private:
     QList<QString> working;

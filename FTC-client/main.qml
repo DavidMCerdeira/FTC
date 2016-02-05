@@ -16,19 +16,19 @@ Window {
         // function to switch view on swipe
         function onLeftSwipe() {
             pageloader.source = 'Home.qml'
-            console.log('1');
+            console.log("On home screen");
         }
 
         function onRightSwipe() {
             pageloader.source = 'Search.qml'
-            console.log('2');
+            console.log("On search screen");
         }
     }
 
     Loader{
         id:pageloader
         anchors.fill: parent
-        source: 'Home.qml'
+        source: 'Search.qml'
     }
 
 //    ListView {

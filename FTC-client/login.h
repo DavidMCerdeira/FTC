@@ -18,6 +18,7 @@ public:
     virtual QVariant data(const QModelIndex &index, int role) const;
 
     Q_INVOKABLE void logout();
+    Q_INVOKABLE void clockUser();
 
 signals:
     void setText(QString str);

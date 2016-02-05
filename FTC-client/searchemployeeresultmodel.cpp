@@ -1,19 +1,22 @@
 #include "searchemployeeresultmodel.h"
 
-searchEmployeeResultModel::searchEmployeeResultModel(QObject *parent)
-    : QAbstractListModel(parent)
+SearchEmployeeResultModel::SearchEmployeeResultModel(QObject *parent)
+    : QAbstractListModel(parent), result(), employee("")
 {
-    Controller::getInstance()->setSearchEmployeeModel(this);
+    connect(this, SIGNAL(insertData(QString)), this, SLOT(insertNewData(QString)));
+    connect(this, SIGNAL(clearData()), this, SLOT(clearAllData()));
+
+    //Controller::getInstance()->setSearchEmployeeModel(this);
 }
 
-int searchEmployeeResultModel::rowCount(const QModelIndex &parent) const
+int SearchEmployeeResultModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
 
     return result.count();
 }
 
-QVariant searchEmployeeResultModel::data(const QModelIndex &index, int role) const
+QVariant SearchEmployeeResultModel::data(const QModelIndex &index, int role) const
 {
     // the index returns the requested row and column information.
     // we ignore the column and only use the row information
@@ -35,12 +38,22 @@ QVariant searchEmployeeResultModel::data(const QModelIndex &index, int role) con
     return QVariant();
 }
 
-void searchEmployeeResultModel::insertData(QString str)
+void SearchEmployeeResultModel::insertNewData(QString str)
 {
     result.append(str);
+    beginResetModel();
+    endResetModel();
 }
 
-void searchEmployeeResultModel::clearData()
+void SearchEmployeeResultModel::clearAllData()
 {
     result.clear();
+    beginResetModel();
+    endResetModel();
+}
+
+void SearchEmployeeResultModel::search(QString department, QString job)
+{
+    qDebug() << "Employee:" << employee << "on" << department << "which is:" << job << "search asked.";
+    Controller::getInstance()->searchEmployee(this);
 }

@@ -43,20 +43,6 @@ void Controller::logOut()
     usrmsgs->clearData();
 }
 
-void Controller::setSearchEmployeeModel(searchEmployeeResultModel *model)
-{
-    employeeRlsts = model;
-
-    model->insertData("O Bóias não trabalha");
-}
-
-void Controller::setSearchWorking(SearchWorkingModel *model)
-{
-    workingRlsts = model;
-
-    model->insertData("Loleiras");
-}
-
 QStringList Controller::getDepartments()
 {
     QList<QString> temp;
@@ -118,4 +104,24 @@ void Controller::ftcEventHandler(char *event, Controller *self)
     }
 
     free(event);
+}
+
+void Controller::searchEmployee(SearchEmployeeResultModel *srch)
+{
+    if(srch != NULL){
+        srch->insertData("O Bóias não trabalha");
+    }
+    else{
+        errx(1, "Error: No employee search result model");
+    }
+}
+
+void Controller::searchWorking(SearchWorkingModel *srch)
+{
+    if(srch != NULL){
+        srch->insertData("E@¹¹ tem gases");
+    }
+    else{
+        errx(1, "Error: No employee search result model");
+    }
 }

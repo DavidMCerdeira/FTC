@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<UserMessagesModel>("UserMessages", 1, 0, "UserMessages");
     qmlRegisterType<LoginModel>("Login", 1, 0, "Login");
-    qmlRegisterType<searchEmployeeResultModel>("SearchEmployeeModel", 1, 0, "SearchEmployeeModel");
+    qmlRegisterType<SearchEmployeeResultModel>("SearchEmployeeModel", 1, 0, "SearchEmployeeModel");
     qmlRegisterType<SearchWorkingModel>("SearchWorkingResult", 1, 0, "SearchWorkingResult");
     qmlRegisterType<DepartmentModel>("DepartmentModel", 1, 0, "DepartmentModel");
 

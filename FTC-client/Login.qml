@@ -74,6 +74,10 @@ ColumnLayout{
         name_pointSize: 18
         name: 'Clock In/Out'
         anchors.horizontalCenter: parent.horizontalCenter
+
+        onClicked: {
+            log.clockUser();
+        }
     }
 }
 

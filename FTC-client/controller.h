@@ -6,16 +6,18 @@
 #include <QString>
 #include <QDebug>
 
+class Controller;
+
 #include "usermessages.h"
 #include "login.h"
 #include "servercon.h"
-#include "searchemployeeresultmodel.h"
 #include "searchworkingmodel.h"
+#include "searchemployeeresultmodel.h"
 #include "ftc.h"
 
 class UserMessagesModel;
 class LoginModel;
-class searchEmployeeResultModel;
+class SearchEmployeeResultModel;
 class SearchWorkingModel;
 
 class Controller
@@ -25,8 +27,6 @@ private:
     ServerCon *con;
     UserMessagesModel *usrmsgs;
     LoginModel *log;
-    searchEmployeeResultModel *employeeRlsts;
-    SearchWorkingModel *workingRlsts;
 
     FTC ftc;
     MyMessageQueue msgQ;
@@ -37,17 +37,18 @@ public:
     ~Controller();
     static Controller* getInstance();
 
-    /* Home */
+    /* set Home models */
     void setUserMessagesModel(UserMessagesModel*);
     void setLoginModel(LoginModel*);
+    QStringList getDepartments();
 
+    /* home related functions */
     void logOut();
     void login();
 
-    /* Search */
-    void setSearchEmployeeModel(searchEmployeeResultModel*);
-    void setSearchWorking(SearchWorkingModel*);
-    QStringList getDepartments();
+    /*search related functions */
+    void searchEmployee(SearchEmployeeResultModel* srch);
+    void searchWorking(SearchWorkingModel* srch);
 
     /* not UI */
     static void* ftcListen_thread(void *arg);

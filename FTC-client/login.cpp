@@ -52,5 +52,9 @@ void LoginModel::setNewText(QString str)
 void LoginModel::logout()
 {
     Controller::getInstance()->logOut();
-    //QModelIndex idx = new QModelIndex();
+}
+
+void LoginModel::clockUser()
+{
+    qDebug() << "User asked to clock";
 }
