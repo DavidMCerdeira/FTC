@@ -1,56 +1,54 @@
 #include "server.h"
 
-
-#define _DEBUG_
-
 Server::Server(int l_numConnections) : numConnections(l_numConnections)
 {
-    int result;
     pthread_attr_t tAttr;
 
     countConnections =  0;
 
-#ifdef _DEBUG_
-    cout<<"Server::Server\n"<<endl;
-#endif
+        servSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-    /*Create a socket*/
-    servSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        if(!(servSocket > 0))
+            ERROR_LSOCKET_CREATION();
 
-    if(!(servSocket > 0)) {
-        //perror("FTC Server");
-        return;
-    }
+        address.sin_addr.s_addr = htonl(INADDR_ANY);
+        address.sin_port = htons(_LISTENPORT);
+        address.sin_family = AF_INET;
 
-    address.sin_addr.s_addr = htonl(INADDR_ANY);
-    address.sin_port = htons(_LISTENPORT);
-    address.sin_family = AF_INET;
+        /*Bind the socket to an address*/
+       if(bind(servSocket, (struct sockaddr*) &address, sizeof(address)) != 0)
+       {
+           ERROR_LSOCKET_BIND();
+           pthread_exit(0);
+       }
 
-    /*Bind the socket to an address*/
-    result = bind(servSocket, (struct sockaddr*) &address, sizeof(address));
+       if(listen(servSocket, 5) != 0)
+       {
+           ERROR_LISTEN();
+           pthread_exit(0);
+       }
 
-    if(result != 0){
-        //perror("FTC Server");
-        return;
-    }
+        pthread_attr_init(&tAttr);
+        pthread_attr_setdetachstate(&tAttr, PTHREAD_CREATE_DETACHED);
 
-    result = listen(servSocket, 5);
+        if(pthread_mutex_init(&lClients_mutex, NULL) != 0)
+        {
+            ERROR_LCLIENT_MUTEX();
+            pthread_exit(0);
+        }
 
-    if(result != 0){
-        //perror("FTC Server");
-        return;
-    }
+        if(pthread_create(&thread_remClient, &tAttr, removeClient, static_cast<void*>(this)) != 0)
+        {
+            ERROR_RMCLTHREAD_CREATION();
+            pthread_exit(0);
+        }
 
-    pthread_mutex_init(&lClients_mutex, NULL);
-
-    /*Creating server thread*/
-    pthread_attr_setdetachstate(&tAttr, PTHREAD_CREATE_DETACHED);
-    pthread_attr_init(&tAttr);
-    result = pthread_create(&thread_run, NULL, run, static_cast<void*>(this));
-    if(result != 0){
-        /*Couldn't create thread*/
-        return;
-    }
+        /*Creating server thread*/
+        if(pthread_create(&thread_run, &tAttr, run, static_cast<void*>(this)) != 0)
+        {
+            ERROR_RUNTHREAD_CREATION();
+            pthread_exit(0);
+        }
 
     pthread_exit(0);
 }
@@ -62,47 +60,88 @@ void* Server::run(void* arg){
     int newSocket;
     Client_Connection* c;
 
-#ifdef _DEBUG_
-    cout<<"\nServer::run\n"<<endl;
-#endif
+    pthread_cleanup_push(server_closed, own);
 
-    while(1){
-        /*Waits for connection*/
-        newSocket = accept(own->servSocket, (struct sockaddr*)(&(own->address)), &n);
+        while(1)
+        {
+            /*Waits for connection*/
+            newSocket = accept(own->servSocket, reinterpret_cast<struct sockaddr*>(&(own->address)), &n);
 
-#ifdef _DEBUG_
-        cout<<"newsocket: " << newSocket << endl; //debug
-#endif
+            if(newSocket != -1)
+            {
+                /* Detected connection and creation of a connection with the client*/
+                c =  new Client_Connection(newSocket);
 
-        if(newSocket != -1){
-            /*Detected connection and creation of a connection with the client*/
-            c =  new Client_Connection(newSocket);
+                if(pthread_mutex_lock(&own->lClients_mutex) != 0)
+                {
+                    ERROR_RUNTHREAD_CLNT_LKMUTEX();
+                }
+                else{
+                    (own->lClients).push_front(*c);
 
-            pthread_mutex_lock(&own->lClients_mutex);
-            (own->lClients).push_front(*c);
-            pthread_mutex_unlock(&own->lClients_mutex);
-
-            delete c;
+                    if(pthread_mutex_unlock(&own->lClients_mutex))
+                    {
+                        ERROR_RUNTHREAD_CLNT_ULKMUTEX();
+                        pthread_exit(0);
+                    }
+                }
+            }
         }
-    }
 
-#ifdef _DEBUG_
-    cout << "Out of Run function!\n"<< endl;
-#endif
-    return NULL;
+    pthread_cleanup_pop(1);
+    pthread_exit(0);
 }
 
- void  Server::removeClient(int sig, siginfo_t *si, void *ucontext){
-     list<Client_Connection>::iterator it;
+void*  Server::removeClient(void *arg)
+{
+    list<Client_Connection>::iterator it;
+    sigset_t unblocked_sig;
+    siginfo_t si;
+    Server* own = static_cast<Server*>(arg);
+    int sig;
 
-     if(sig == SIG_RM_CLIENT){
-#ifdef _DEBUG_
-         cout << "Server:removeClient" <<endl;
-#endif
-        /*Find client through socket*/
-        for(it = lClients.begin(); it != lClients.end(); it++)
-          if(it->get_clientSock() == si->si_value.sival_int)
-              break;
-        lClients.erase(it);
-     }
+    ///Unblock the Remove signal
+    sigemptyset(&unblocked_sig);
+    sigaddset(&unblocked_sig, SIG_RM_CLIENT);
+
+    while(1)
+    {
+        if(sigwaitinfo(&unblocked_sig, &si) == -1)
+        {
+          ERROR_RMCLTHREAD_SIGWAIT();
+        }
+        else
+        {
+            //Find client through socket
+            if(pthread_mutex_lock(&own->lClients_mutex) != 0)
+                ERROR_RMCLTHREAD_CLNT_LKMUTEX();
+
+            for(it = own->lClients.begin(); it != own->lClients.end(); it++)
+                if(it->get_clientSock() == static_cast<int>(si.si_value.sival_int))
+                    break;
+            own->lClients.erase(it);
+
+            if(pthread_mutex_unlock(&own->lClients_mutex) != 0)
+                ERROR_RMCLTHREAD_CLNT_ULKMUTEX();
+        }
+    }
  }
+
+void Server::server_closed(void*arg)
+{
+    Server *own = static_cast<Server*>(arg);
+
+    close(own->servSocket);
+
+    pthread_cancel(own->thread_remClient);
+
+    own->lClients.erase(lClients.begin(), lClients.end());
+}
+
+void Server::print_clientsSockets()
+{
+    cout << "Clients: " << endl;
+    for(list<Client_Connection>::iterator it=this->lClients.begin(); it != this->lClients.end(); it++)
+        cout << "cl: " << it->get_clientSock() << endl;
+    cout << endl;
+}
