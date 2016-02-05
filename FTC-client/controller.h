@@ -11,6 +11,7 @@
 #include "servercon.h"
 #include "searchemployeeresultmodel.h"
 #include "searchworkingmodel.h"
+#include "ftc.h"
 
 class UserMessagesModel;
 class LoginModel;
@@ -21,26 +22,36 @@ class Controller
 {
 private:
     Controller();
-    //ServerCon con;
+    ServerCon *con;
     UserMessagesModel *usrmsgs;
     LoginModel *log;
     searchEmployeeResultModel *employeeRlsts;
     SearchWorkingModel *workingRlsts;
 
+    FTC ftc;
+    MyMessageQueue msgQ;
+
+    pthread_t ftcListen_handle;
+
 public:
     ~Controller();
     static Controller* getInstance();
+
     /* Home */
     void setUserMessagesModel(UserMessagesModel*);
     void setLoginModel(LoginModel*);
 
     void logOut();
+    void login();
 
     /* Search */
     void setSearchEmployeeModel(searchEmployeeResultModel*);
     void setSearchWorking(SearchWorkingModel*);
-};
+    QStringList getDepartments();
 
-static Controller *instance = NULL;
+    /* not UI */
+    static void* ftcListen_thread(void *arg);
+    void ftcEventHandler(char *event, Controller *self);
+};
 
 #endif // CONTROLLER_H
