@@ -1,6 +1,7 @@
 #ifndef IMGCAPTURER_H
 #define IMGCAPTURER_H
 
+#include <pthread.h>
 
 class ImgCapturer
 {

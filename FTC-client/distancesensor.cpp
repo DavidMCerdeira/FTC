@@ -17,7 +17,7 @@ void DistanceSensor::waitDistanceLessThan(int cm, int timeSteps)
 
 void* DistanceSensor::waitDistanceLessThan_thread(void *arg)
 {
-
+   pthread_exit(arg);
 }
 
 void DistanceSensor::waitDistanceMoreThan(int cm, int timeSteps)
@@ -28,6 +28,7 @@ void DistanceSensor::waitDistanceMoreThan(int cm, int timeSteps)
 void* DistanceSensor::waitDistanceMoreThan_thread(void *arg)
 {
 
+    pthread_exit(arg);
 }
 
 void stopWaiting()

@@ -23,4 +23,5 @@ void ImgCapturer::stopCapture()
 void* ImgCapturer::captureStableFace_thread(void *arg)
 {
 
+    pthread_exit(arg);
 }

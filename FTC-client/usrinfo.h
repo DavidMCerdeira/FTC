@@ -2,32 +2,51 @@
 #define USRINFO_H
 
 #include <string>
+#include <list>
 #include "mysemaphore.h"
-#include "servercon.h"
+
 
 enum Permissions
 {
-    NON_PRIVELDGED,
+    NON_PRIVILEDGED,
     PRIVILEDGED
+};
+
+struct UserBasicInfo
+{
+    int m_nId;
+    std::string m_strName;
+    Permissions m_permission;
+};
+
+struct Clock
+{
+    /* time */
+
+    /* in/out */
+};
+
+struct UserPersonalInfo
+{
+    std::list<std::string> messages;
+    std::list<Clock> clockEvents;
 };
 
 class UserInfo
 {
-    std::string m_strName;
-    Permissions m_permission;
+    const UserBasicInfo* const m_basicInfo;
     bool m_bClockedIn;
-    int m_nId;
-    bool m_bReady;
-
-    pthread_t fillInfoHanle;
+    const UserPersonalInfo* const m_personalInfo;
 
 public:
-    UserInfo();
+    UserInfo(const UserBasicInfo* const basic, bool clockedIn,
+                const UserPersonalInfo* const personal = NULL);
 
-    std::string getName(){return m_strName;}
-    Permissions getPermission(){return m_permission;}
-    void fillUserInfo(int id);
-    void waitForInfo();
+    std::string getName();
+    Permissions getPermission();
+    std::list<std::string> getMessages();
+    bool isClockedIn();
+    bool clockUser();
 
 private:
     static void* fillUserInfo_thread(void *arg);

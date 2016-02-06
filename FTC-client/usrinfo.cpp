@@ -2,33 +2,34 @@
 
 using namespace std;
 
-UserInfo::UserInfo()
+UserInfo::UserInfo(const UserBasicInfo* const basic, bool clockedIn,
+                   const UserPersonalInfo* const personal)
+    :m_basicInfo(basic), m_bClockedIn(clockedIn), m_personalInfo(personal)
 {
-    m_bReady = false;
+
 }
 
-void UserInfo::fillUserInfo(int id)
+std::string UserInfo::getName()
 {
-    m_bReady = false;
-    m_nId = id;
-    if(pthread_create(&fillInfoHanle, NULL, fillUserInfo_thread, this) < 0){
-        err(1, "Error creating thread...");
-    }
+    return m_basicInfo->m_strName;
 }
 
-void* UserInfo::fillUserInfo_thread(void *arg)
+Permissions UserInfo::getPermission()
 {
-    UserInfo* self = static_cast<UserInfo*>(arg);
-
-    self->m_strName = "Fucking lol";
-    self->m_permission = Permissions::NON_PRIVELDGED;
-    self->m_bClockedIn = false;
-    sleep(1);
-    self->m_bReady = true;
-    pthread_exit(NULL);
+    return m_basicInfo->m_permission;
 }
 
-void UserInfo::waitForInfo()
+std::list<string> UserInfo::getMessages()
 {
-    pthread_join(fillInfoHanle, NULL);
+    return m_personalInfo->messages;
+}
+
+bool UserInfo::isClockedIn()
+{
+    return m_bClockedIn;
+}
+
+bool UserInfo::clockUser()
+{
+    return m_bClockedIn = !m_bClockedIn;
 }

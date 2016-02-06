@@ -9,7 +9,7 @@ char* FTC_Events::usr_infRdy  = const_cast<char*>("USR_INFRDY");
 
 FTC::FTC(ServerCon* serverCon)
     :messageQ(FTC_EVENT_MSGQ_NAME), usrPrsntSemaph(FTC_USR_PRSNC_SEMPH_NAME),
-      m_serverCon(serverCon)
+      m_serverCon(serverCon), m_userInfo(NULL)
 {
 
 }
@@ -30,11 +30,12 @@ FTC::~FTC()
 
 void FTC::explicitLogout()
 {
-
+    delete m_userInfo;
 }
 
 void FTC::handleUserDetected()
 {
+    /* TODO: Set detached */
     int ret = pthread_create(&usrDetectedThread_handle,
                              NULL, FTC::handleUserDetected_thread, this);
     if(ret < 0){
@@ -48,7 +49,7 @@ void* FTC::handleUserDetected_thread(void *arg)
 {
     FTC* self = static_cast<FTC*>(arg);
     bool validUsr = false;
-    int userId = 0;
+    int userId;
 
     self->usrPrsntSemaph.set();
     self->messageQ.sendMsg(FTC_Events::usr_present);
@@ -72,10 +73,20 @@ void* FTC::handleUserDetected_thread(void *arg)
         self->messageQ.sendMsg(FTC_Events::usr_valid);
 
         /* fill info now that we know its a valid user */
-        self->m_userInfo.fillUserInfo(userId);
-        self->m_userInfo.waitForInfo();
-        self->messageQ.sendMsg(FTC_Events::usr_infRdy);
+        //self->m_userInfo = m_serverCon->getUserInfo(int id);
+        /* temporary---> */
+        if(self->m_userInfo != NULL){
+            delete self->m_userInfo;
+            self->m_userInfo = NULL;
+        }
+        UserBasicInfo* basic = new UserBasicInfo;
+        basic->m_nId = userId;
+        basic->m_permission = Permissions::PRIVILEDGED;
+        basic->m_strName = std::string("Rita Gay");
 
+        self->m_userInfo = new UserInfo(basic, false);
+        /* <--- temporary */
+        self->messageQ.sendMsg(FTC_Events::usr_infRdy);
     }
     else {
         self->messageQ.sendMsg(FTC_Events::usr_unkwon);
@@ -99,13 +110,14 @@ void* FTC::main_thread(void *arg)
 
     while(1) {
         /* wait presence */
+        sleep(2);
         self->ds.waitDistanceLessThan(50, 200);
 
         /* deal with user presence */
         self->handleUserDetected();
 
         /* wait absence or explicit logout */
-        sleep(4);
+        sleep(60);
         self->ds.waitDistanceMoreThan(60, 200);
 
         /* deal with absence */
@@ -116,7 +128,8 @@ void* FTC::main_thread(void *arg)
     }
 }
 
-std::string FTC::getUserName()
+UserInfo* FTC::getUserInfo()
 {
-    return m_userInfo.getName();
+   return m_userInfo;
 }
+

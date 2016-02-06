@@ -5,11 +5,12 @@
 LoginModel::LoginModel(QObject *parent)
     : QAbstractListModel(parent)
 {
-    connect(this, SIGNAL(logIn(QString)), this, SLOT(setNewText(QString)));
+    connect(this, SIGNAL(logIn(QString, bool)), this, SLOT(xLogin(QString, bool)));
     connect(this, SIGNAL(explicitLogOut()), this, SLOT(xLogout()));
     Controller::getInstance()->setLoginModel(this);
+    logout();
 
-    setNewText(LogOutMessage);
+    //setNameAndPriv(LogOutMessage, false);
 }
 
 int LoginModel::rowCount(const QModelIndex &parent) const
@@ -42,12 +43,13 @@ QVariant LoginModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void LoginModel::setNewText(QString str)
+void LoginModel::setNameAndPriv(QString str, bool priv)
 {
     text = str;
+    m_bPrivilege = priv;
 
-    qDebug() << "Text changed to: " << str;
-    //emit dataChanged(QModelIndex(), QModelIndex());
+    //qDebug() << "Text changed to:" << str << "Priviledged:" << priv;
+    emit dataChanged(QModelIndex(), QModelIndex());
     beginResetModel();
     endResetModel();
 }
@@ -55,14 +57,28 @@ void LoginModel::setNewText(QString str)
 void LoginModel::logout()
 {
     Controller::getInstance()->logOut();
+    //xLogout();
 }
 
 void LoginModel::xLogout()
 {
-    setNewText(LogOutMessage);
+    m_bLogged = false;
+    setNameAndPriv(LogOutMessage, false);
+}
+
+void LoginModel::xLogin(QString str, bool priv)
+{
+    m_bLogged = true;
+    setNameAndPriv(str, priv);
 }
 
 void LoginModel::clockUser()
 {
-    qDebug() << "User asked to clock";
+    if(m_bLogged){
+        qDebug() << "User asked to clock";
+    }
+    else{
+        qDebug() << "User tried to clock but it's logged in";
+        qDebug() << "Maybe you should tell him...";
+    }
 }

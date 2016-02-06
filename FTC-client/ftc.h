@@ -31,8 +31,8 @@ private:
     MyBinarySemaphore usrPrsntSemaph;
     //ImgCapturer capture;
     //Mat* face;
-    ServerCon* m_serverCon;
-    UserInfo m_userInfo;
+    ServerCon *m_serverCon;
+    UserInfo *m_userInfo;
 
     pthread_t mainThread_handle;
     pthread_t usrDetectedThread_handle;
@@ -42,8 +42,7 @@ public:
     ~FTC();
     void run();
     void explicitLogout();
-    std::string getUserName();
-    Permissions getPermission();
+    UserInfo* getUserInfo();
 
 private:
     void handleUserDetected();

@@ -39,7 +39,9 @@ void Controller::logOut()
     qDebug() << "Logout";
     ftc.explicitLogout();
     log->explicitLogOut();
-    usrmsgs->clearData();
+    if(usrmsgs != NULL){
+        usrmsgs->clearData();
+    }
 }
 
 QStringList Controller::getDepartments()
@@ -70,8 +72,14 @@ void* Controller::ftcListen_thread(void *arg)
                         self->msgQ.getName());
         }
         nRcvd = self->msgQ.getMsg(buff, buffSize);
+        if(nRcvd > buffSize){
+            errx(1, "Message too long on message queue:%s\n",
+                        self->msgQ.getName());
+        }
         self->ftcEventHandler(buff, self);
     }
+
+    pthread_exit(nullptr);
 }
 
 void Controller::ftcEventHandler(char *event, Controller *self)
@@ -88,16 +96,20 @@ void Controller::ftcEventHandler(char *event, Controller *self)
         self->logOut();
     }
     else if(strcmp(event, FTC_Events::usr_valid) == 0){
-        /* show that user is valid while waiting for */
+        /* show that user is valid while waiting for info */
         qDebug() << "User is valid lol";
     }
     else if(strcmp(event, FTC_Events::usr_unkwon) == 0){
         /* display some error message */
     }
     else if(strcmp(event, FTC_Events::usr_infRdy) == 0){
-        /* ask for usr id and info */
-        emit self->log->logIn(QString(ftc.getUserName().c_str()));
-        self->usrmsgs->insertData("Ola! Eu sou uma mensagem!");
+        UserInfo *usr = ftc.getUserInfo();
+        if(usr == NULL){
+            errx(1, "Error, No user info");
+        }
+        bool priv = (usr->getPermission() != Permissions::NON_PRIVILEDGED) ? (true) : (false);
+        self->log->logIn(QString(usr->getName().c_str()), priv);
+        //self->usrmsgs->insertData();
     }
     else{
         /* literally wtf */

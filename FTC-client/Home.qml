@@ -6,9 +6,24 @@ RowLayout{
     anchors.fill: parent
     Layout.margins: 30
 
+    signal logout()
+    signal priviledgedLogIn()
+
     Login{
         id: login
         width: parent.width * 2 / 5
+    }
+
+    Connections{
+        target:login
+        onUsrLogout: {
+            logout()
+        }
+    }
+
+    Connections{
+        target: login
+        onPriviledgedUser: priviledgedLogIn()
     }
 
     PersonalInfo{

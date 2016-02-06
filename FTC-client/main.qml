@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.2
 Window {
     id: w
     visible: true
-//    visibility: Window.FullScreen
+    //    visibility: Window.FullScreen
     width: 800; height: 480
 
     color: 'white'
@@ -13,15 +13,19 @@ Window {
     Frame{}
 
     SwipeDetect{
+        id: swipping
+        property bool allowed: false
         // function to switch view on swipe
         function onLeftSwipe() {
+            console.log("Swipped to home screen");
             pageloader.source = 'Home.qml'
-            console.log("On home screen");
         }
 
         function onRightSwipe() {
-            pageloader.source = 'Search.qml'
-            console.log("On search screen");
+            if(allowed){
+                console.log("Swipped to search screen");
+                pageloader.source = 'Search.qml'
+            }
         }
     }
 
@@ -34,6 +38,21 @@ Window {
         //*
         source: 'Home.qml'
         //*/
+    }
+
+    Connections{
+        target: pageloader.item
+        onLogout: {
+            console.log("No swipping!")
+            swipping.allowed = false;
+        }
+    }
+    Connections{
+        target: pageloader.item
+        onPriviledgedLogIn: {
+            console.log("Login is priviledged, you may swipe")
+            swipping.allowed = true;
+        }
     }
 }
 

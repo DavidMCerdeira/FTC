@@ -4,9 +4,15 @@ UserMessagesModel::UserMessagesModel(QObject *parent)
     : QAbstractListModel(parent)
 {
     connect(this, SIGNAL(insertData(QString)), this, SLOT(insertNewData(QString)));
+    connect(this, SIGNAL(insertData(QStringList)), this, SLOT(insertNewData(QStringList)));
     connect(this, SIGNAL(clearData()), this, SLOT(clearAllData()));
 
     Controller::getInstance()->setUserMessagesModel(this);
+}
+
+UserMessagesModel::~UserMessagesModel()
+{
+    Controller::getInstance()->setUserMessagesModel(NULL);
 }
 
 int UserMessagesModel::rowCount(const QModelIndex &parent) const
@@ -44,6 +50,15 @@ void UserMessagesModel::insertNewData(QString str)
     emit dataChanged(QModelIndex(), QModelIndex());
     beginResetModel();
     endResetModel();
+}
+
+void UserMessagesModel::insertNewData(QStringList str)
+{
+    for(QStringList::iterator it = str.begin();
+            it != str.end(); it++ )
+    {
+        m_data.append(*it);
+    }
 }
 
 void UserMessagesModel::clearAllData()
