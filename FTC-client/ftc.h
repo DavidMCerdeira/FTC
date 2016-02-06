@@ -7,6 +7,9 @@
 #include "distancesensor.h"
 #include "imgcapturer.h"
 #include "servercon.h"
+#include <string.h>
+
+#include "usrinfo.h"
 
 #define FTC_EVENT_MSGQ_NAME      "/ftc_events_msgQ"
 #define FTC_USR_PRSNC_SEMPH_NAME "/user_presence_semaph"
@@ -15,6 +18,7 @@ struct FTC_Events{
     static char *usr_present;
     static char *usr_absent;
     static char *usr_valid;
+    static char *usr_infRdy;
     static char *usr_unkwon;
 };
 
@@ -23,21 +27,23 @@ class FTC
 private:
     RGBLed led;
     DistanceSensor ds;
-    //ImgCapturer capture;
-    //Mat* face;
-    ServerCon* serverCon;
-
     MyMessageQueue messageQ;
     MyBinarySemaphore usrPrsntSemaph;
+    //ImgCapturer capture;
+    //Mat* face;
+    ServerCon* m_serverCon;
+    UserInfo m_userInfo;
 
     pthread_t mainThread_handle;
     pthread_t usrDetectedThread_handle;
 
 public:
-    FTC();
+    FTC(ServerCon* serverCon);
     ~FTC();
     void run();
     void explicitLogout();
+    std::string getUserName();
+    Permissions getPermission();
 
 private:
     void handleUserDetected();

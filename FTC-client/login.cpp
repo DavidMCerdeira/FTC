@@ -1,12 +1,15 @@
 #include "login.h"
 
+#define LogOutMessage "Not Logged In"
+
 LoginModel::LoginModel(QObject *parent)
     : QAbstractListModel(parent)
 {
-    connect(this, SIGNAL(setText(QString)), this, SLOT(setNewText(QString)));
+    connect(this, SIGNAL(logIn(QString)), this, SLOT(setNewText(QString)));
+    connect(this, SIGNAL(explicitLogOut()), this, SLOT(xLogout()));
     Controller::getInstance()->setLoginModel(this);
 
-    //emit setText("lol");
+    setNewText(LogOutMessage);
 }
 
 int LoginModel::rowCount(const QModelIndex &parent) const
@@ -52,6 +55,11 @@ void LoginModel::setNewText(QString str)
 void LoginModel::logout()
 {
     Controller::getInstance()->logOut();
+}
+
+void LoginModel::xLogout()
+{
+    setNewText(LogOutMessage);
 }
 
 void LoginModel::clockUser()

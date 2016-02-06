@@ -21,7 +21,8 @@ SOURCES += main.cpp \
     distancesensor.cpp \
     imgcapturer.cpp \
     mymessagequeue.cpp \
-    mysemaphore.cpp
+    mysemaphore.cpp \
+    usrinfo.cpp
 
 RESOURCES += qml.qrc
 
@@ -44,4 +45,5 @@ HEADERS += \
     distancesensor.h \
     imgcapturer.h \
     mymessagequeue.h \
-    mysemaphore.h
+    mysemaphore.h \
+    usrinfo.h

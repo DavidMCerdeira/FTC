@@ -17,18 +17,22 @@ public:
     /* this is function is redundant as we only have one element */
     virtual QVariant data(const QModelIndex &index, int role) const;
 
+    Q_PROPERTY(QString Priviledged READ getPriviledge);
     Q_INVOKABLE void logout();
     Q_INVOKABLE void clockUser();
 
 signals:
-    void setText(QString str);
+    void logIn(QString str);
+    void explicitLogOut();
 
 private slots:
     void setNewText(QString str);
+    void xLogout();
 
 private:
     QString text;
-    void setStrState(QString state);
+    bool m_bPrivilege;
+    bool getPriviledge(){return m_bPrivilege;};
 };
 
 #endif // LOGIN_H

@@ -24,12 +24,12 @@ class Controller
 {
 private:
     Controller();
-    ServerCon *con;
+    MyMessageQueue msgQ;
+    ServerCon con;
     UserMessagesModel *usrmsgs;
     LoginModel *log;
 
     FTC ftc;
-    MyMessageQueue msgQ;
 
     pthread_t ftcListen_handle;
 

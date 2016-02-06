@@ -3,7 +3,7 @@
 ServerCon::ServerCon()
     : port(_PORT_NUMBER), BUFFER_SIZE(_BUFFER_SIZE)
 {
-    openConnection();
+    //openConnection();
 }
 
 ServerCon::~ServerCon()

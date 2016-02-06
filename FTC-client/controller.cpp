@@ -3,7 +3,7 @@
 static Controller *instance = NULL;
 
 Controller::Controller()
-    : msgQ(FTC_EVENT_MSGQ_NAME)
+    : msgQ(FTC_EVENT_MSGQ_NAME), con(), ftc(&con)
 {
    ftc.run();
 
@@ -32,14 +32,13 @@ void Controller::setUserMessagesModel(UserMessagesModel *ptr)
 void Controller::setLoginModel(LoginModel *ptr)
 {
     log = ptr;
-    emit log->setText("Not Logged in");
 }
 
 void Controller::logOut()
 {
     qDebug() << "Logout";
     ftc.explicitLogout();
-    log->setText("Not Logged in");
+    log->explicitLogOut();
     usrmsgs->clearData();
 }
 
@@ -89,12 +88,16 @@ void Controller::ftcEventHandler(char *event, Controller *self)
         self->logOut();
     }
     else if(strcmp(event, FTC_Events::usr_valid) == 0){
-        /* ask for usr id and info */
-        emit self->log->setText("Maria Albertina");
-        self->usrmsgs->insertData("Ola! Eu sou uma mensagem!");
+        /* show that user is valid while waiting for */
+        qDebug() << "User is valid lol";
     }
     else if(strcmp(event, FTC_Events::usr_unkwon) == 0){
         /* display some error message */
+    }
+    else if(strcmp(event, FTC_Events::usr_infRdy) == 0){
+        /* ask for usr id and info */
+        emit self->log->logIn(QString(ftc.getUserName().c_str()));
+        self->usrmsgs->insertData("Ola! Eu sou uma mensagem!");
     }
     else{
         /* literally wtf */
@@ -119,7 +122,7 @@ void Controller::searchEmployee(SearchEmployeeResultModel *srch)
 void Controller::searchWorking(SearchWorkingModel *srch)
 {
     if(srch != NULL){
-        srch->insertData("E@¹¹ tem gases");
+        srch->insertData("E tem gases");
     }
     else{
         errx(1, "Error: No employee search result model");
