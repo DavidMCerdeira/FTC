@@ -1,6 +1,11 @@
 TEMPLATE = app
 
 QT += qml quick
+QT += widgets
+QT += core gui qml quick
+LIBS += -lrt
+LIBS += -lpthread
+
 CONFIG += c++11
 
 SOURCES += main.cpp \
@@ -9,7 +14,14 @@ SOURCES += main.cpp \
     controller.cpp \
     login.cpp \
     searchemployeeresultmodel.cpp \
-    searchworkingmodel.cpp
+    searchworkingmodel.cpp \
+    departmentmodel.cpp \
+    ftc.cpp \
+    rgbled.cpp \
+    distancesensor.cpp \
+    imgcapturer.cpp \
+    mymessagequeue.cpp \
+    mysemaphore.cpp
 
 RESOURCES += qml.qrc
 
@@ -25,4 +37,11 @@ HEADERS += \
     controller.h \
     login.h \
     searchemployeeresultmodel.h \
-    searchworkingmodel.h
+    searchworkingmodel.h \
+    departmentmodel.h \
+    ftc.h \
+    rgbled.h \
+    distancesensor.h \
+    imgcapturer.h \
+    mymessagequeue.h \
+    mysemaphore.h

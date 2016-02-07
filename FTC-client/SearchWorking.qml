@@ -10,6 +10,16 @@ ColumnLayout {
     spacing: 5
     Layout.margins: 30
 
+    signal search()
+
+    Component.onCompleted: {
+       search.connect(startSearch)
+    }
+
+    function startSearch(){
+        srchWrkngRslt.search();
+    }
+
     Text{
         id: title
         font.pointSize: 24
@@ -56,17 +66,18 @@ ColumnLayout {
                 PropertyChanges {
                     target: calendar; visible: true
                 }
+
             },
             State {
                 name: 'noDays'
-                    when: calendar.selectedDate === true
-                    PropertyChanges {
-                        target: selectDay;
-                        checked: false
-                    }
-                    PropertyChanges {
-                        target: calendar; visible: false
-                    }
+                when: selectDay.checked == false
+                PropertyChanges {
+                    target: calendar; visible: false
+                }
+                PropertyChanges {
+                    target: srchWrkngRslt;
+                    date: calendar.selectedDate;
+                }
             }
         ]
     }
@@ -75,7 +86,8 @@ ColumnLayout {
         title{
             text: 'Result'
         }
-        content_model: SearchWorkingResult{}
+        content_model: SearchWorkingResult{id: srchWrkngRslt}
     }
+
 }
 

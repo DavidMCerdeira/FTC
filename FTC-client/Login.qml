@@ -48,7 +48,9 @@ ColumnLayout{
 
         model: Login{
             id: log
+            onDataChanged: update();
         }
+
         delegate: Text{
             anchors.fill: parent
             id: logText;
@@ -72,6 +74,10 @@ ColumnLayout{
         name_pointSize: 18
         name: 'Clock In/Out'
         anchors.horizontalCenter: parent.horizontalCenter
+
+        onClicked: {
+            log.clockUser();
+        }
     }
 }
 

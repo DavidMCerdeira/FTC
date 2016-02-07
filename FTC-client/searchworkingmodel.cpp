@@ -1,9 +1,9 @@
 #include "searchworkingmodel.h"
 
 SearchWorkingModel::SearchWorkingModel(QObject *parent)
-    : QAbstractListModel(parent)
+    : QAbstractListModel(parent), m_date(QDate())
 {
-    Controller::getInstance()->setSearchWorking(this);
+
 }
 
 int SearchWorkingModel::rowCount(const QModelIndex &parent) const
@@ -38,9 +38,18 @@ QVariant SearchWorkingModel::data(const QModelIndex &index, int role) const
 void SearchWorkingModel::insertData(QString str)
 {
     working.append(str);
+    beginResetModel();
+    endResetModel();
 }
 
 void SearchWorkingModel::clearData()
 {
     working.clear();
+    beginResetModel();
+    endResetModel();
+}
+
+void SearchWorkingModel::search()
+{
+    Controller::getInstance()->searchWorking(this);
 }

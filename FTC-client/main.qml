@@ -5,11 +5,10 @@ import QtQuick.Layouts 1.2
 Window {
     id: w
     visible: true
-    visibility: Window.FullScreen
-//    width: 800; height: 480
+//    visibility: Window.FullScreen
+    width: 800; height: 480
 //    maximumWidth: 800; maximumHeight: 480
 //    minimumWidth: 800; minimumHeight: 480
-
 
     color: 'white'
 
@@ -17,19 +16,19 @@ Window {
         // function to switch view on swipe
         function onLeftSwipe() {
             pageloader.source = 'Home.qml'
-            console.log('1');
+            console.log("On home screen");
         }
 
         function onRightSwipe() {
             pageloader.source = 'Search.qml'
-            console.log('2');
+            console.log("On search screen");
         }
     }
 
     Loader{
         id:pageloader
         anchors.fill: parent
-        source: 'Home.qml'
+        source: 'Search.qml'
     }
 
 //    ListView {

@@ -7,7 +7,41 @@ import SearchEmployeeModel 1.0
 ColumnLayout {
     id: root
     spacing: 5
-    Layout.margins: 30
+
+    signal search()
+
+    Component.onCompleted: {
+       search.connect(startSearch)
+    }
+
+    function startSearch(){
+        if(nameInput.text === ""){
+            console.log("No user name specified");
+            return;
+        }
+
+        searchResult.employeeName = nameInput.text;
+        var depart;
+        var job;
+
+        if(departments.currentIndex === 0){
+            depart = "*";
+        }
+        else{
+            depart = departments.currentText;
+        }
+
+        if(jobs.currentIndex === 0){
+            job = "*";
+        }
+        else{
+           job = jobs.currentText;
+        }
+
+        searchResult.clearResult();
+        searchResult.search(depart, job);
+    }
+
 
     Text{
         anchors.horizontalCenter: parent.horizontalCenter
@@ -24,21 +58,51 @@ ColumnLayout {
     }
 
     Rectangle{
-        anchors.horizontalCenter: parent.horizontalCenter
-        Layout.fillWidth: true
-        Layout.minimumHeight: employeeName.height + 20
-        border.width: 2
+          anchors.horizontalCenter: parent.horizontalCenter
+          Layout.fillWidth: true
+          Layout.minimumHeight: nameInput.height + 20
+          border.width: 2
 
-        TextEdit{
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            id: employeeName
-            text: 'Name Surname'
-            font.pointSize: 16
-        }
-    }
+          MouseArea{
+              id: nameInputArea
+              anchors.fill: parent
+
+              onClicked: {
+                  keyboard.visible = !keyboard.visible
+              }
+
+              TextEdit{
+                  id: nameInput
+                  anchors.verticalCenter: parent.verticalCenter
+                  anchors.horizontalCenter: parent.horizontalCenter
+                  text: ''
+                  font.pointSize: 16
+              }
+          }
+      }
+
+      Keyboard {
+          id: keyboard
+          visible: false
+
+          Component.onCompleted: {
+              keyboard.letterClicked.connect(letterPressed)
+          }
+
+          function letterPressed(letter){
+              if(letter === '←'){
+                  nameInput.text = nameInput.text.substr(0, nameInput.text.length-1)
+                  nameInput.cursorPosition = nameInput.text.length
+              }else if(letter === '┘'){
+                  keyboard.visible = false;
+              }else{
+                  nameInput.insert(nameInput.length, letter);
+              }
+          }
+      }
 
     MyComboBox{
+        id: departments
         anchors.horizontalCenter: parent.horizontalCenter
         Layout.minimumWidth: 150
         Layout.minimumHeight: 40
@@ -46,6 +110,7 @@ ColumnLayout {
     }
 
     MyComboBox{
+        id: jobs
         anchors.horizontalCenter: parent.horizontalCenter
         Layout.minimumWidth: 150
         Layout.minimumHeight: 40
@@ -56,14 +121,6 @@ ColumnLayout {
         title{
             text: 'Result'
         }
-        content_model: SearchEmployeeModel{ }
-    }
-
-    MyButton{
-        anchors.horizontalCenter: parent.horizontalCenter
-        name: 'Search'
-        name_pointSize: 18
-        Layout.minimumWidth: 150
-        Layout.minimumHeight: 50
+        content_model: SearchEmployeeModel{ id: searchResult; }
     }
 }

@@ -3,6 +3,9 @@
 UserMessagesModel::UserMessagesModel(QObject *parent)
     : QAbstractListModel(parent)
 {
+    connect(this, SIGNAL(insertData(QString)), this, SLOT(insertNewData(QString)));
+    connect(this, SIGNAL(clearData()), this, SLOT(clearAllData()));
+
     Controller::getInstance()->setUserMessagesModel(this);
 }
 
@@ -35,12 +38,18 @@ QVariant UserMessagesModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void UserMessagesModel::insertData(QString str)
+void UserMessagesModel::insertNewData(QString str)
 {
     m_data.append(str);
+    emit dataChanged(QModelIndex(), QModelIndex());
+    beginResetModel();
+    endResetModel();
 }
 
-void UserMessagesModel::clearData()
+void UserMessagesModel::clearAllData()
 {
     m_data.clear();
+    emit dataChanged(QModelIndex(), QModelIndex());
+    beginResetModel();
+    endResetModel();
 }
