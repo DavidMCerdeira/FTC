@@ -75,8 +75,10 @@ void* Server::run(void* arg){
                 if(pthread_mutex_lock(&own->lClients_mutex) != 0)
                 {
                     ERROR_RUNTHREAD_CLNT_LKMUTEX();
+                    pthread_exit(0);
                 }
-                else{
+                else
+                {
                     (own->lClients).push_front(*c);
 
                     if(pthread_mutex_unlock(&own->lClients_mutex))

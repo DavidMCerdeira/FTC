@@ -1,0 +1,75 @@
+#FTC-server & client communication plots
+
+--Validation Request:
+  Request Plot:
+    *FTCCLANP/valid/<DATA>/END
+      $DATA:
+        {
+          worker_id: 0,
+          password: "password_example"
+        }
+
+  Response Plot:
+    *FTCCLANP/validsuccess/NULL/END
+    *FTCCLANP/validationunsuccess/NULL/END
+
+--Search Request:
+  Request Plot:
+    *FTCCLANP/search/<DATA>/END
+      $DATA:
+        {
+          name: "exemplo nome",
+          department: "esrg",
+          job: "electrical engineer"
+        }
+  Response Plots:
+    *FTCCLANP/searchsuccess/<data>/END
+      [
+        {
+          name: "Nome",
+          worker_id: 1,
+          clock_in: "13h40",
+          clock_out: "14h00"
+        },
+        #...
+      ]
+    *FTCCLANP/searchunsuccess/<data>/END
+      data -> nothing
+
+--Get basic info request:
+  Request plot_
+    *FTCCLANP/getBasInfo/data/END
+      {
+        user_id: 1
+      }
+  Responses plot:
+    *FTCCLANP/successgetBasInf/data/END
+      {
+        name: "exemplo nome",
+        permission: 0,
+        worker_id: 1        
+      }
+
+--Get messages_
+  Request plot:
+    *FTCCLANP/getmessage/<data>/END
+  {
+    "worker_id":
+  }
+
+  Response plot:
+    *FTCCLANP/getmessagesuccess/<data>/END
+  {
+    "message" : "Message content",
+    "form_worker_id": 0,
+    "data_time": "24/11/2016  00:00"
+  }
+--send message
+  Request plot:
+    *FTCCLANP/sendmessage/<data>/END
+      {
+        from_worker_id: 0,
+        to_worker_id: 1,
+        message: "vai trabalhar"
+      }
+    *FTCCLANP/sendmessagesuccess/NULL/END
