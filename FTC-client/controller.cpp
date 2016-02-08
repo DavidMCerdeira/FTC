@@ -3,7 +3,7 @@
 static Controller *instance = NULL;
 
 Controller::Controller()
-    : msgQ(FTC_EVENT_MSGQ_NAME)
+    : msgQ(FTC_EVENT_MSGQ_NAME), con(), ftc(&con)
 {
    ftc.run();
 
@@ -32,15 +32,16 @@ void Controller::setUserMessagesModel(UserMessagesModel *ptr)
 void Controller::setLoginModel(LoginModel *ptr)
 {
     log = ptr;
-    emit log->setText("Not Logged in");
 }
 
 void Controller::logOut()
 {
     qDebug() << "Logout";
     ftc.explicitLogout();
-    log->setText("Not Logged in");
-    usrmsgs->clearData();
+    log->explicitLogOut();
+    if(usrmsgs != NULL){
+        usrmsgs->clearData();
+    }
 }
 
 QStringList Controller::getDepartments()
@@ -71,8 +72,14 @@ void* Controller::ftcListen_thread(void *arg)
                         self->msgQ.getName());
         }
         nRcvd = self->msgQ.getMsg(buff, buffSize);
+        if(nRcvd > buffSize){
+            errx(1, "Message too long on message queue:%s\n",
+                        self->msgQ.getName());
+        }
         self->ftcEventHandler(buff, self);
     }
+
+    pthread_exit(nullptr);
 }
 
 void Controller::ftcEventHandler(char *event, Controller *self)
@@ -89,12 +96,20 @@ void Controller::ftcEventHandler(char *event, Controller *self)
         self->logOut();
     }
     else if(strcmp(event, FTC_Events::usr_valid) == 0){
-        /* ask for usr id and info */
-        emit self->log->setText("Maria Albertina");
-        self->usrmsgs->insertData("Ola! Eu sou uma mensagem!");
+        /* show that user is valid while waiting for info */
+        qDebug() << "User is valid, waiting info";
     }
     else if(strcmp(event, FTC_Events::usr_unkwon) == 0){
         /* display some error message */
+    }
+    else if(strcmp(event, FTC_Events::usr_infRdy) == 0){
+        UserInfo *usr = ftc.getUserInfo();
+        if(usr == NULL){
+            errx(1, "Error, No user info");
+        }
+        bool priv = (usr->getPermission() != Permissions::NON_PRIVILEDGED) ? (true) : (false);
+        self->log->logIn(QString(usr->getName().c_str()), priv);
+        self->usrmsgs->insertData(usr->getMessages().begin()->c_str());
     }
     else{
         /* literally wtf */
@@ -119,7 +134,7 @@ void Controller::searchEmployee(SearchEmployeeResultModel *srch)
 void Controller::searchWorking(SearchWorkingModel *srch)
 {
     if(srch != NULL){
-        srch->insertData("E@¹¹ tem gases");
+        srch->insertData("E tem gases");
     }
     else{
         errx(1, "Error: No employee search result model");

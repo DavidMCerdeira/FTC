@@ -5,68 +5,54 @@ import QtQuick.Layouts 1.2
 Window {
     id: w
     visible: true
-//    visibility: Window.FullScreen
+    //    visibility: Window.FullScreen
     width: 800; height: 480
-//    maximumWidth: 800; maximumHeight: 480
-//    minimumWidth: 800; minimumHeight: 480
 
     color: 'white'
 
+    Frame{}
+
     SwipeDetect{
+        id: swipping
+        property bool allowed: false
         // function to switch view on swipe
         function onLeftSwipe() {
+            console.log("Swipped to home screen");
             pageloader.source = 'Home.qml'
-            console.log("On home screen");
         }
 
         function onRightSwipe() {
-            pageloader.source = 'Search.qml'
-            console.log("On search screen");
+            if(allowed){
+                console.log("Swipped to search screen");
+                pageloader.source = 'Search.qml'
+            }
         }
     }
 
     Loader{
         id:pageloader
         anchors.fill: parent
+        /*
         source: 'Search.qml'
+        //*/
+        //*
+        source: 'Home.qml'
+        //*/
     }
 
-//    ListView {
-//        id: views
-//        anchors.fill: parent
-//        focus: true
-//        clip: true
-
-//        model: ListModel{
-//            ListElement{page: 'home'}
-//            ListElement{page: 'search'}
-//        }
-////        delegate: Item{
-
-////        }
-
-//        delegate: Item{
-//            id: pages_to_load
-//            states: [
-//                State {
-//                    name: 'home'
-//                    when: (views.currentIndex == 0)
-//                    PropertyChanges { target: pageloader; source: 'Home.qml' }
-//                },
-
-//                State {
-//                    name: 'search'
-//                    when: (views.currentIndex == 1)
-//                    PropertyChanges { target: pageloader; source: 'Search.qml' }
-//                }
-//            ]
-//            onFocusChanged: pages_to_load.state = page
-//        }
-//    }
-
-    Frame{}
-
-    //Home{}
-    //Search{}
+    Connections{
+        target: pageloader.item
+        onLogout: {
+            console.log("No swipping!")
+            swipping.allowed = false;
+        }
+    }
+    Connections{
+        target: pageloader.item
+        onPriviledgedLogIn: {
+            console.log("Login is priviledged, you may swipe")
+            swipping.allowed = true;
+        }
+    }
 }
 

@@ -12,6 +12,8 @@
 #include <iostream>
 #include <pthread.h>
 
+#include "usrinfo.h"
+
 using namespace std;
 
 #define _PORT_NUMBER 8888
@@ -35,6 +37,10 @@ public:
 
     void sayHello();
     void openConnection();
+
+    UserInfo* getUserInfo(int id);
+    UserInfo* getUserLoginInfo(int id);
+
     void clockUser(long unsigned int id);
     void getUserMessages();
 };

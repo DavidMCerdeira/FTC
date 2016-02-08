@@ -4,8 +4,9 @@ MyMessageQueue::MyMessageQueue(const char* name)
     : m_strName(name)
 {
     mq_attr at;
-    at.mq_maxmsg = 15;
+    at.mq_maxmsg = 10;
     at.mq_msgsize = 50;
+    at.mq_flags = 0;
 
     /* note: numbers beginnign with 0 are interpretd in octal */
     if((messageQ = mq_open(m_strName, O_CREAT | O_RDWR, 0600, &at)) < 0){
@@ -16,7 +17,6 @@ MyMessageQueue::MyMessageQueue(const char* name)
 
     if(mq_getattr(messageQ, &at) < 0){
         kill();
-
         err(1, "Error reading attributes from message queue: %s",
                 m_strName);
     }
@@ -58,6 +58,16 @@ int MyMessageQueue::getMsg(char* buff, int len)
 
 void MyMessageQueue::kill()
 {
-    mq_close(messageQ);
-    mq_unlink(m_strName);
+    if(messageQ < 0){
+        return;
+    }
+    if(mq_close(messageQ) < 0){
+        err(1, "Error closing message queue %s\n",
+                    m_strName);
+    }
+
+    if(mq_unlink(m_strName)){
+        err(1, "Error unlinking message queue %s\n",
+                    m_strName);
+    }
 }

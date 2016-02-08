@@ -9,6 +9,9 @@ ColumnLayout{
     height: parent.Height
     spacing: 5
 
+    signal priviledgedUser()
+    signal usrLogout()
+
     Text {
         text: 'Press the image after you\'re done!'
         anchors.horizontalCenter: parent.horizontalCenter
@@ -26,8 +29,8 @@ ColumnLayout{
         MouseArea{
             anchors.fill: parent
             onClicked: {
+                //usrLogout()
                 log.logout()
-                //Qt.quit()   
             }
         }
     }
@@ -48,7 +51,18 @@ ColumnLayout{
 
         model: Login{
             id: log
-            onDataChanged: update();
+            onDataChanged: {
+                if(log.logged){
+                    if(log.priviledged){
+                        priviledgedUser()
+                    }
+                }
+                else{
+                    usrLogout()
+                }
+
+                update();
+            }
         }
 
         delegate: Text{
@@ -76,8 +90,12 @@ ColumnLayout{
         anchors.horizontalCenter: parent.horizontalCenter
 
         onClicked: {
-            log.clockUser();
+            if(log.logged){
+                log.clockUser();
+            }
+            else{
+                console.log("You're not logged in!")
+            }
         }
     }
 }
-
