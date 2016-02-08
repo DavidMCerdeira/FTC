@@ -67,7 +67,7 @@ void ServerCon::write(char* buffer)
 {
     if(strlen(buffer) > BUFFER_SIZE)
     {
-        throw(-1);
+
         return;
     }
     else{
@@ -77,5 +77,29 @@ void ServerCon::write(char* buffer)
             return;
         }
     }
+}
+
+UserInfo* ServerCon::getUserInfo(int id)
+{
+    UserBasicInfo* basic = new UserBasicInfo;
+    basic->m_nId = id;
+    basic->m_permission = Permissions::PRIVILEDGED;
+    basic->m_strName = std::string("Rita Gay");
+
+    return new UserInfo(basic, false);
+}
+
+UserInfo* ServerCon::getUserLoginInfo(int id)
+{
+    UserInfo* usr = getUserInfo(id);
+
+    UserPersonalInfo* personal = new UserPersonalInfo;
+    personal->messages.push_back("lol");
+
+    if(!usr->setPersonalData(personal)){
+        err(1, "Error setting user messages");
+    }
+
+    return usr;
 }
 

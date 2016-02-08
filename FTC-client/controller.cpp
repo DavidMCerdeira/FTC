@@ -97,7 +97,7 @@ void Controller::ftcEventHandler(char *event, Controller *self)
     }
     else if(strcmp(event, FTC_Events::usr_valid) == 0){
         /* show that user is valid while waiting for info */
-        qDebug() << "User is valid lol";
+        qDebug() << "User is valid, waiting info";
     }
     else if(strcmp(event, FTC_Events::usr_unkwon) == 0){
         /* display some error message */
@@ -109,7 +109,7 @@ void Controller::ftcEventHandler(char *event, Controller *self)
         }
         bool priv = (usr->getPermission() != Permissions::NON_PRIVILEDGED) ? (true) : (false);
         self->log->logIn(QString(usr->getName().c_str()), priv);
-        //self->usrmsgs->insertData();
+        self->usrmsgs->insertData(usr->getMessages().begin()->c_str());
     }
     else{
         /* literally wtf */

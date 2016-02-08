@@ -36,11 +36,13 @@ class UserInfo
 {
     const UserBasicInfo* const m_basicInfo;
     bool m_bClockedIn;
-    const UserPersonalInfo* const m_personalInfo;
+    UserPersonalInfo* m_personalInfo;
 
 public:
-    UserInfo(const UserBasicInfo* const basic, bool clockedIn,
-                const UserPersonalInfo* const personal = NULL);
+    UserInfo(UserBasicInfo* const basic, bool clockedIn,
+             UserPersonalInfo* const personal = NULL);
+    ~UserInfo();
+    bool setPersonalData(UserPersonalInfo* personal);
 
     std::string getName();
     Permissions getPermission();

@@ -38,7 +38,8 @@ public:
     void sayHello();
     void openConnection();
 
-    UserInfo* getUsrInfo(int id);
+    UserInfo* getUserInfo(int id);
+    UserInfo* getUserLoginInfo(int id);
 
     void clockUser(long unsigned int id);
     void getUserMessages();

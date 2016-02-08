@@ -30,6 +30,7 @@ FTC::~FTC()
 
 void FTC::explicitLogout()
 {
+    std::cout << "Erasing user data";
     delete m_userInfo;
 }
 
@@ -73,19 +74,11 @@ void* FTC::handleUserDetected_thread(void *arg)
         self->messageQ.sendMsg(FTC_Events::usr_valid);
 
         /* fill info now that we know its a valid user */
-        //self->m_userInfo = m_serverCon->getUserInfo(int id);
-        /* temporary---> */
         if(self->m_userInfo != NULL){
-            delete self->m_userInfo;
-            self->m_userInfo = NULL;
+            err(1, "A user logged on, before another could log out");
         }
-        UserBasicInfo* basic = new UserBasicInfo;
-        basic->m_nId = userId;
-        basic->m_permission = Permissions::PRIVILEDGED;
-        basic->m_strName = std::string("Rita Gay");
+        self->m_userInfo = self->m_serverCon->getUserLoginInfo(userId);
 
-        self->m_userInfo = new UserInfo(basic, false);
-        /* <--- temporary */
         self->messageQ.sendMsg(FTC_Events::usr_infRdy);
     }
     else {
@@ -110,7 +103,7 @@ void* FTC::main_thread(void *arg)
 
     while(1) {
         /* wait presence */
-        sleep(2);
+        sleep(2);//TODO: deal better with logout at the beggining
         self->ds.waitDistanceLessThan(50, 200);
 
         /* deal with user presence */
