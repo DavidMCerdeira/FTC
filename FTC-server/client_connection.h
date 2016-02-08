@@ -11,7 +11,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <ctime>
-#include "request_handler.h"
+#include "request_manager.h"
 #include "ftc_error.h"
 
 #define MAX_LINE_BUFF 1024 //bytes
@@ -20,7 +20,8 @@
 using namespace std;
 
 class Client_Connection
-{
+{    int cur_numConnections;
+
 public:
     Client_Connection(int sock);
     ~Client_Connection();
@@ -31,7 +32,7 @@ public:
      void print_sock();
 
 private:
-    /* Guarantees the reception of data */
+    /* Guarantees the rec1eption of data */
     pthread_t thread_connection_receive;
     static void* connection_receive(void *arg);
 
@@ -43,16 +44,16 @@ private:
     pthread_t thread_connection_send;
     static void* connection_send(void* arg);
     pthread_mutex_t write_mutex;                  // Protects  Write Function
-    bool w_send(string buff);
+    bool c_send(string buff);
 
-    /* Clean up handler */
+    /* Clean up Manager */
     static void connection_ended(void* arg);
 
     /* Receive buffer */
     char reqBuffer[MAX_LINE_BUFF];
     char respBuffer[MAX_LINE_BUFF];
 
-    Request_Handler *clReqHandler;
+    Request_Manager *clReqManager;
 
     bool conState; // Connection state. If true is alive
     int clSock;    // Socket ID
