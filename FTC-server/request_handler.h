@@ -1,45 +1,34 @@
-
 #ifndef REQUEST_HANDLER_H
 #define REQUEST_HANDLER_H
 
-#include <pthread.h>
-#include <list>
-#include <semaphore.h>
-#include <string>
-#include <iostream>
-
-using namespace std;
+#include <json/json.h>
+#include <db_accesser.h>
 
 class Request_Handler
 {
 public:
-    Request_Handler();
-    ~Request_Handler();
-    void add_request(const char *new_req);
-    string get_response();
-    /*string  get_strOfRespList();*/
-private:
-    /*add response function*/
-    /*List of all request handlers*/
-    pthread_t thread_req_interpreter;
-    static void* req_interpreter(void *arg);
+    Request_Handler(string data);
+    string get_specific();
+    string get_result_data();
+    virtual bool handle();
 
-    void add_response(const string resp);
-    string get_request();
+protected:
+    string request;
+    //const string specific;
 
-    void req_valid(const string data);
-    void req_search(const string data);
-    void req_message(const string data);
-    void req_clock(const string data);
+    JSON::value inData;
+    JSON::value outData;
+    JSON::reader inReader;
+    JSON::writer outWriter;
 
-    sem_t sem_pendingReq;
-    pthread_mutex_t mux_pendingReq;
-    list<string> pendingReq;
-
-    sem_t sem_pendingResp;
-    pthread_mutex_t mux_pendingResp;
-    list<string> pendingResp;
+    DB_Accesser *db;
 };
 
-#endif // REQUEST_HANDLER_H
+class Search_Request: public Request_Handler
+{
+public:
+    Search_Request(string data);
+    bool handle();
+}
 
+#endif // REQUEST_HANDLER_H

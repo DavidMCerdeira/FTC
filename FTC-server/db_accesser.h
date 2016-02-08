@@ -10,7 +10,7 @@ using namespace std;
 #define DEF_DB_USER "root"       //
 #define DEF_DB_PASSWORD "123123" //
 #define DEF_DB_HOST ""         //local connection
-#define DEF_DB_PORT 3306         //stablished port
+#define DEF_DB_PORT 3307         //stablished port
 #define DEF_DB_NAME "FTCdb"      //
 
 class DB_Accesser

@@ -36,10 +36,8 @@ private:
     
     list<Client_Connection> lClients;
     pthread_mutex_t lClients_mutex;
-    
-    const short numConnections;
-    unsigned short countConnections;   
-
+    const int max_numConnections;
+    int countConnections;
     //FTC_Error serv_handler;
 };
 

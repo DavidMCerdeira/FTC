@@ -1,6 +1,6 @@
 ﻿#include "client_connection.h"
 
-#define TIMEOUTINTERVAL 2.00
+#define TIMEOUTINTERVAL 60.00
 
 Client_Connection::Client_Connection(int _clSock) : clSock(_clSock)
 {
@@ -13,7 +13,7 @@ Client_Connection::Client_Connection(int _clSock) : clSock(_clSock)
     pthread_attr_setdetachstate(&tAttr, PTHREAD_CREATE_DETACHED);
     pthread_attr_init(&tAttr);
 
-    clReqHandler =  new Request_Handler();
+    clReqManager =  new Request_Manager();
 
     if(pthread_create(&this->thread_connection_receive, &tAttr, &connection_receive, static_cast<void*>(this)) != 0)
         //throw ERROR_THCLIENT_CONNECTION
@@ -39,7 +39,7 @@ Client_Connection::~Client_Connection()
     pthread_cancel(this->thread_connection_receive);
     pthread_cancel(this->thread_connection_send);
     close(this->clSock);
-    delete clReqHandler;
+    delete clReqManager;
 }
 
 void* Client_Connection::connection_receive(void *arg)
@@ -47,7 +47,7 @@ void* Client_Connection::connection_receive(void *arg)
     Client_Connection *own = reinterpret_cast<Client_Connection*>(arg);
     int status;
 
-    /*Prepare Clean Up handler*/
+    /*Prepare Clean Up Manager*/
     //pthread_cleanup_push(connection_ended,static_cast<void*>(own));
 
     /*While connection active*/
@@ -57,8 +57,8 @@ void* Client_Connection::connection_receive(void *arg)
 
         if(status > 0)
         {
-            /*Call request handler*/
-            own->clReqHandler->add_request(own->reqBuffer);
+            /*Call request Manager*/
+            own->clReqManager->add_request(own->reqBuffer);
             time(&(own->last_communication_time));
         }
     }
@@ -74,9 +74,9 @@ void* Client_Connection::connection_send(void *arg)
 
     while(1)
     {
-        send_content = own->clReqHandler->get_response();
+        send_content = own->clReqManager->get_response();
 
-        if(!own->w_send(send_content))
+        if(!own->c_send(send_content))
         //Connection Problems
         ;
     }
@@ -101,7 +101,7 @@ void* Client_Connection::check_connection_state(void *arg){
         if(curInterval >= TIMEOUTINTERVAL)
         {           
             /* Ask the Write function to write and test the communication */
-            if(own->w_send("FTC/TestConnection") > 0)
+            if(own->c_send("FTC/TestConnection") > 0)
                 sleepTime =TIMEOUTINTERVAL;
             else
             {
@@ -119,7 +119,7 @@ void* Client_Connection::check_connection_state(void *arg){
     pthread_exit(0);
 }
 
-bool Client_Connection::w_send(string buff)
+bool Client_Connection::c_send(string buff)
 {
     pthread_mutex_lock(&write_mutex);                  
 
@@ -136,7 +136,7 @@ bool Client_Connection::w_send(string buff)
 //   Client_Connection *own = static_cast<Client_Connection*>(arg);
 
 //   close(own->clSock);
-//   //implement destroy clReqHandler
+//   //implement destroy clReqManager
 //}
 
 int Client_Connection::get_clientSock()
