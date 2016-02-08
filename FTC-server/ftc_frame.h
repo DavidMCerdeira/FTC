@@ -9,7 +9,7 @@ using namespace std;
     in case of being a request or a response frame.
 */
 
-#define CHAR_FRAME_DIVIDER 47  // '/'
+#define CHAR_FRAME_DIVIDER 47  // '/' slash char
 
 class FTC_Frame
 {

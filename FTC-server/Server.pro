@@ -3,7 +3,8 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
-LIBS += -lpthread
+LIBS += -lpthread \
+        -lmysqlclient
 
 SOURCES += main.cpp \
     server.cpp \

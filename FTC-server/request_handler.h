@@ -8,27 +8,28 @@ class Request_Handler
 {
 public:
     Request_Handler(string data);
-    string get_specific();
     string get_result_data();
-    virtual bool handle();
+    string get_respSpecific();
+
+    virtual bool handle() = 0;
 
 protected:
-    string request;
-    //const string specific;
-
-    JSON::value inData;
-    JSON::value outData;
-    JSON::reader inReader;
-    JSON::writer outWriter;
-
+    string reqSpecific;
+    string respProducedSpecific;
+    Json::Value inData;
+    Json::Value outData;
     DB_Accesser *db;
+    bool boolParse;
 };
 
 class Search_Request: public Request_Handler
 {
 public:
-    Search_Request(string data);
+    Search_Request(string data): Request_Handler(data){}
     bool handle();
-}
+    static string get_identifier();
+private:
+    static string identifier;
+};
 
 #endif // REQUEST_HANDLER_H

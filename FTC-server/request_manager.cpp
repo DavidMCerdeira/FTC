@@ -1,9 +1,6 @@
 #include "request_manager.h"
 #define MAXNR_OF_REQ 5
 
-#define _DEBUG_
-
-
 Request_Manager::Request_Manager()
 {
     /* Structures to syncronize the pending request access */
@@ -16,7 +13,7 @@ Request_Manager::Request_Manager()
     pthread_mutex_init(&mux_pendingResp, NULL);
 
     if(pthread_create(&(this->thread_req_interpreter), 0, req_interpreter, static_cast<void*>(this)) != 0)
-        return; //*Try catch would be more appropriate
+        pthread_exit(0); //*Try catch would be more appropriate
 
     pthread_detach(this->thread_req_interpreter);
 }
@@ -34,34 +31,28 @@ void* Request_Manager::req_interpreter(void *arg)
     Request_Manager *own = static_cast<Request_Manager*>(arg);
 
 
-    while(1){
+    while(1)
+    {
         /*wait for requests*/
         cur_request_frame = new FTC_Frame(own->get_request());
 
-//        /*According to the cmd call the respective Manager*/
-//        if(cmd == "valid") {
-//           own->req_valid(cmd_data);
-//           own->add_response(frame);
-//        }
-//        else if(cmd == "search"){
-//           own->req_search(cmd_data);
-//           own->add_response(frame);
-//        }
-//        else if(cmd == "message"){
-//           own->req_message(cmd_data);
-//           own->add_response(frame);
-//        }
-//        else if (cmd == "clock"){
-//           own->req_clock(cmd_data);
-//           own->add_response(frame);
-//        }
-//        else{
-//            cout << "error :: no command available" << endl;
-//            //throw //Not a command
-//        }
+        /* identifie which request was received */
+        own->req_handler = own->factory.which_handler(cur_request_frame);
+
+        /* handle the specific request */
+        if(!own->req_handler->handle())
+            //Error
+            ;
+        else
+        {
+            cur_response_frame = new FTC_Frame(own->req_handler->get_respSpecific(), own->req_handler->get_result_data());
+            own->add_response(cur_response_frame->get_fullFrame());
+            delete cur_response_frame;
+        }
 
         delete cur_request_frame;
     }
+
     return NULL;
 }
 
@@ -71,6 +62,7 @@ void Request_Manager::add_request(const char* new_rq)
 
     pthread_mutex_lock(&mux_pendingReq);
 
+    /* Add to request buffer */
     this->pendingReq.push_back(cmd);
     sem_post(&(this->sem_pendingReq));
 
@@ -79,7 +71,7 @@ void Request_Manager::add_request(const char* new_rq)
 
 string Request_Manager::get_request()
 {
-    string nextReq;
+   string nextReq;
 
     sem_wait(&(this->sem_pendingReq));
     pthread_mutex_lock(&(this->mux_pendingReq));
@@ -114,32 +106,4 @@ string Request_Manager::get_response()
     pthread_mutex_unlock(&mux_pendingResp);
 
     return retResp;
-}
-
-void Request_Manager::req_valid(const string jsData)
-{
-#ifdef _DEBUG_
-    cout << "Request_Manager::req_valid\n" << "parsed: " << jsData << endl;
-#endif
-}
-
-void Request_Manager::req_search(const string jsData)
-{
- #ifdef _DEBUG_
-    cout << "Request_Manager::req_search\n" << "parsed: " << jsData << endl;
-  #endif
-}
-
-void Request_Manager::req_message(const string jsData)
-{
-#ifdef _DEBUG_
-    cout << "Request_Manager::req_message\n" << "parsed: " << jsData << endl;
-#endif
-}
-
-void Request_Manager::req_clock(const string jsData)
-{
-#ifdef _DEBUG_
-    cout << "Request_Manager::req_clock\n" << "parsed: " << jsData << endl;
-#endif
 }

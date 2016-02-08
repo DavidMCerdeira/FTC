@@ -1,6 +1,6 @@
 #include "ftc_frame.h"
 
-string FTC_Frame::frame_header="FTCCLANP/";
+string FTC_Frame::frame_header="FTCCLANP";
 
 FTC_Frame::FTC_Frame(string full_frame)
 {
