@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `FTCdb`.`Worker` (
   `gender` VARCHAR(1) NOT NULL,
   `email` VARCHAR(100) NULL,
   `contact_number` VARCHAR(9) NOT NULL,
-  `idSchedulle` INT NOT NULL,
+  `idSchedulle` INT NULL,
   `localName` VARCHAR(45) NOT NULL,
   `idJob` INT NOT NULL,
   `face` VARCHAR(450) NULL,

@@ -25,11 +25,11 @@ protected:
 class Search_Request: public Request_Handler
 {
 public:
-    Search_Request(string data): Request_Handler(data){}
+    Search_Request(string data): Request_Handler(data){
+        this->reqSpecific = "search";
+        this->respProducedSpecific = this->reqSpecific;
+    }
     bool handle();
-    static string get_identifier();
-private:
-    static string identifier;
 };
 
 #endif // REQUEST_HANDLER_H
