@@ -27,6 +27,7 @@ private:
     MyMessageQueue msgQ;
     ServerCon con;
     UserMessagesModel *usrmsgs;
+
     LoginModel *log;
 
     FTC ftc;

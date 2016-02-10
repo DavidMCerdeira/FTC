@@ -12,7 +12,7 @@ class UserMessagesModel : public QAbstractListModel
 {
     Q_OBJECT
 private:
-    QList<QString> m_data;
+    QStringList m_data;
 
 public:
     explicit UserMessagesModel(QObject *parent = 0);

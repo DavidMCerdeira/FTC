@@ -95,6 +95,11 @@ UserInfo* ServerCon::getUserLoginInfo(int id)
 
     UserPersonalInfo* personal = new UserPersonalInfo;
     personal->messages.push_back("lol");
+    personal->messages.push_back("lol");
+    personal->messages.push_back("lol");
+    personal->messages.push_back("lol");
+    personal->messages.push_back("lol");
+    personal->messages.push_back("lol");
 
     if(!usr->setPersonalData(personal)){
         err(1, "Error setting user messages");
@@ -103,3 +108,12 @@ UserInfo* ServerCon::getUserLoginInfo(int id)
     return usr;
 }
 
+std::list<Clock> getClockHistory(int id)
+{
+    std::list<Clock> clocks;
+    for(int i = 0; i < 10; i++){
+        clocks.push_front(Clock());
+    }
+
+    return clocks;
+}

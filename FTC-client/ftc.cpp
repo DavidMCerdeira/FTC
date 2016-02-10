@@ -28,9 +28,8 @@ FTC::~FTC()
     pthread_cancel(mainThread_handle);
 }
 
-void FTC::explicitLogout()
+void FTC::logout()
 {
-    std::cout << "Erasing user data";
     delete m_userInfo;
 }
 
@@ -92,6 +91,7 @@ void* FTC::handleUserDetected_thread(void *arg)
 void FTC::handleUserLeft()
 {
     usrPrsntSemaph.reset();
+    led.setColor(RGBLed::USR_LEFT);
     messageQ.sendMsg(FTC_Events::usr_absent);
 
     /* cancel handle_user_detected thread */
@@ -103,7 +103,6 @@ void* FTC::main_thread(void *arg)
 
     while(1) {
         /* wait presence */
-        sleep(2);//TODO: deal better with logout at the beggining
         self->ds.waitDistanceLessThan(50, 200);
 
         /* deal with user presence */

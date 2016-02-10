@@ -5,9 +5,9 @@ static Controller *instance = NULL;
 Controller::Controller()
     : msgQ(FTC_EVENT_MSGQ_NAME), con(), ftc(&con)
 {
-   ftc.run();
-
-   pthread_create(&ftcListen_handle, NULL, ftcListen_thread, this);
+    cout << "Controller constructor" << endl;
+    ftc.run();
+    pthread_create(&ftcListen_handle, NULL, ftcListen_thread, this);
 }
 
 Controller::~Controller()
@@ -26,22 +26,28 @@ Controller* Controller::getInstance()
 
 void Controller::setUserMessagesModel(UserMessagesModel *ptr)
 {
+    cout << "Setting user messages model" << endl;
+
     usrmsgs = ptr;
 }
 
 void Controller::setLoginModel(LoginModel *ptr)
 {
+    cout << "Setting login model" << endl;
+
     log = ptr;
 }
 
 void Controller::logOut()
 {
-    qDebug() << "Logout";
-    ftc.explicitLogout();
+    cout << "Controller logout" << endl;
+
+    ftc.logout();
     log->explicitLogOut();
     if(usrmsgs != NULL){
         usrmsgs->clearData();
     }
+
 }
 
 QStringList Controller::getDepartments()
@@ -65,16 +71,28 @@ void* Controller::ftcListen_thread(void *arg)
     char *buff;
     int nRcvd = -1;
 
+    cout << "Controller listening ftc" << endl;
+
+    while(self->log == NULL){ /*TODO: condition variable*/
+        //cout << "Log:" << self->log << endl;
+        sleep(1);
+    }
+    while(self->usrmsgs == NULL){ /*TODO: condition variable*/
+        //cout << "UsrMsg:" << self->usrmsgs << endl;
+        sleep(1);
+    }
+    cout << "Controller broke cycles" << endl;
+
     while(1){
         buff = (char*) calloc(buffSize, sizeof(char));
         if(buff == nullptr){
             err(1, "Error allocating buffer to receive message from message queue %s\n",
-                        self->msgQ.getName());
+                self->msgQ.getName());
         }
         nRcvd = self->msgQ.getMsg(buff, buffSize);
         if(nRcvd > buffSize){
             errx(1, "Message too long on message queue:%s\n",
-                        self->msgQ.getName());
+                 self->msgQ.getName());
         }
         self->ftcEventHandler(buff, self);
     }
@@ -82,10 +100,22 @@ void* Controller::ftcListen_thread(void *arg)
     pthread_exit(nullptr);
 }
 
+QStringList conv(list<string> org)
+{
+    QStringList list;
+
+    for(std::list<std::string>::iterator it = org.begin();
+        it != org.end(); it++)
+    {
+        list.append(it->c_str());
+    }
+    return list;
+}
+
 void Controller::ftcEventHandler(char *event, Controller *self)
 {
-    while(self->log == nullptr);
-    while(self->usrmsgs == nullptr);
+
+    cout << "Controller ftc event handler" << endl;
 
     if(strcmp(event, FTC_Events::usr_present) == 0){
         /* notify user it has been detected */
@@ -109,13 +139,13 @@ void Controller::ftcEventHandler(char *event, Controller *self)
         }
         bool priv = (usr->getPermission() != Permissions::NON_PRIVILEDGED) ? (true) : (false);
         self->log->logIn(QString(usr->getName().c_str()), priv);
-        self->usrmsgs->insertData(usr->getMessages().begin()->c_str());
+        self->usrmsgs->insertData(conv(usr->getMessages()));
     }
     else{
         /* literally wtf */
         errx(1, "Unknown message from message queue:%s\n"
                 "Here is the message:%s\n",
-                    self->msgQ.getName(), event);
+             self->msgQ.getName(), event);
     }
 
     free(event);

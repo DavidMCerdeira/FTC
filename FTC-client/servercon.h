@@ -40,6 +40,7 @@ public:
 
     UserInfo* getUserInfo(int id);
     UserInfo* getUserLoginInfo(int id);
+    std::list<Clock> getClockHistory(int id);
 
     void clockUser(long unsigned int id);
     void getUserMessages();

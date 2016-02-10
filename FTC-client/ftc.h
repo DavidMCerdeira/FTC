@@ -41,7 +41,7 @@ public:
     FTC(ServerCon* serverCon);
     ~FTC();
     void run();
-    void explicitLogout();
+    void logout();
     UserInfo* getUserInfo();
 
 private:

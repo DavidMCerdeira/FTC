@@ -8,7 +8,7 @@ LoginModel::LoginModel(QObject *parent)
     connect(this, SIGNAL(logIn(QString, bool)), this, SLOT(xLogin(QString, bool)));
     connect(this, SIGNAL(explicitLogOut()), this, SLOT(xLogout()));
     Controller::getInstance()->setLoginModel(this);
-    logout();
+    xLogout();
 
     //setNameAndPriv(LogOutMessage, false);
 }
@@ -48,7 +48,6 @@ void LoginModel::setNameAndPriv(QString str, bool priv)
     text = str;
     m_bPrivilege = priv;
 
-    //qDebug() << "Text changed to:" << str << "Priviledged:" << priv;
     emit dataChanged(QModelIndex(), QModelIndex());
     beginResetModel();
     endResetModel();
@@ -56,7 +55,9 @@ void LoginModel::setNameAndPriv(QString str, bool priv)
 
 void LoginModel::logout()
 {
-    Controller::getInstance()->logOut();
+    if(m_bLogged){
+        Controller::getInstance()->logOut();
+    }
     //xLogout();
 }
 

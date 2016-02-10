@@ -10,7 +10,7 @@ Window {
 
     color: 'white'
 
-    Frame{}
+
 
     SwipeDetect{
         id: swipping
@@ -32,10 +32,9 @@ Window {
     Loader{
         id:pageloader
         anchors.fill: parent
-        /*
-        source: 'Search.qml'
-        //*/
         //*
+        source: 'Search.qml'
+        /*/
         source: 'Home.qml'
         //*/
     }
@@ -54,5 +53,7 @@ Window {
             swipping.allowed = true;
         }
     }
+
+    Frame{}
 }
 

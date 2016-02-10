@@ -104,17 +104,15 @@ ColumnLayout {
     MyComboBox{
         id: departments
         anchors.horizontalCenter: parent.horizontalCenter
-        Layout.minimumWidth: 150
-        Layout.minimumHeight: 40
-        editable: false
+        height: 40
+        Layout.fillWidth: true
     }
 
     MyComboBox{
         id: jobs
         anchors.horizontalCenter: parent.horizontalCenter
-        Layout.minimumWidth: 150
-        Layout.minimumHeight: 40
-        editable: false
+        height: 40
+        Layout.fillWidth: true
     }
 
     MyTextHolder{

@@ -14,7 +14,7 @@ Item {
             Layout.fillHeight: true
             Layout.maximumWidth: parent.width * 1 / 3
 
-            SearchEmployee{
+            SearchFilters{
                 id: employee;
                 anchors.fill: parent
                 Layout.fillWidth: true;
@@ -35,7 +35,7 @@ Item {
             }
         }
 
-        SearchWorking{
+        SearchResults{
             id: working
             //anchors.left: employee.right
             Layout.fillWidth: true

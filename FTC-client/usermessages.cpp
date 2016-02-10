@@ -54,11 +54,10 @@ void UserMessagesModel::insertNewData(QString str)
 
 void UserMessagesModel::insertNewData(QStringList str)
 {
-    for(QStringList::iterator it = str.begin();
-            it != str.end(); it++ )
-    {
-        m_data.append(*it);
-    }
+    m_data = str;
+    emit dataChanged(QModelIndex(), QModelIndex());
+    beginResetModel();
+    endResetModel();
 }
 
 void UserMessagesModel::clearAllData()

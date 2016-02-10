@@ -5,8 +5,6 @@
         <file>PersonalInfo.qml</file>
         <file>MyTextHolder.qml</file>
         <file>Search.qml</file>
-        <file>SearchEmployee.qml</file>
-        <file>SearchWorking.qml</file>
         <file>MyButton.qml</file>
         <file>Frame.qml</file>
         <file>MyComboBox.qml</file>
@@ -15,5 +13,7 @@
         <file>DateTime.qml</file>
         <file>SwipeDetect.qml</file>
         <file>Keyboard.qml</file>
+        <file>SearchFilters.qml</file>
+        <file>SearchResults.qml</file>
     </qresource>
 </RCC>
