@@ -2,7 +2,8 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import SearchEmployeeModel 1.0
+import JobsModel 1.0
+import DepartmentsModel 1.0
 
 ColumnLayout {
     id: root
@@ -104,21 +105,35 @@ ColumnLayout {
     MyComboBox{
         id: departments
         anchors.horizontalCenter: parent.horizontalCenter
-        height: 40
+        height: 120
         Layout.fillWidth: true
+        thisModel: DepartmentsModel{
+            id: dprts
+        }
     }
 
     MyComboBox{
         id: jobs
         anchors.horizontalCenter: parent.horizontalCenter
-        height: 40
+        height: 120
         Layout.fillWidth: true
+        thisModel: JobsModel{
+            id: jbs
+        }
     }
 
-    MyTextHolder{
-        title{
-            text: 'Result'
+    Connections{
+        target: departments
+        onCurItemChanged: {
+            dprts.currentItemChanged(idx)
+            jbs.departmentChanged(idx)
         }
-        content_model: SearchEmployeeModel{ id: searchResult; }
+    }
+
+    Connections{
+        target: jobs
+        onCurItemChanged: {
+            jbs.currentItemChanged(idx)
+        }
     }
 }

@@ -13,16 +13,16 @@ SOURCES += main.cpp \
     usermessages.cpp \
     controller.cpp \
     login.cpp \
-    searchemployeeresultmodel.cpp \
-    searchworkingmodel.cpp \
-    departmentmodel.cpp \
     ftc.cpp \
     rgbled.cpp \
     distancesensor.cpp \
     imgcapturer.cpp \
     mymessagequeue.cpp \
     mysemaphore.cpp \
-    usrinfo.cpp
+    usrinfo.cpp \
+    departmentsmodel.cpp \
+    jobsmodel.cpp \
+    searchresultmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -37,13 +37,13 @@ HEADERS += \
     usermessages.h \
     controller.h \
     login.h \
-    searchemployeeresultmodel.h \
-    searchworkingmodel.h \
-    departmentmodel.h \
     ftc.h \
     rgbled.h \
     distancesensor.h \
     imgcapturer.h \
     mymessagequeue.h \
     mysemaphore.h \
-    usrinfo.h
+    usrinfo.h \
+    departmentsmodel.h \
+    jobsmodel.h \
+    searchresultmodel.h

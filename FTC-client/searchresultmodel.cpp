@@ -1,28 +1,28 @@
-#include "usermessages.h"
+#include "searchresultmodel.h"
 
-UserMessagesModel::UserMessagesModel(QObject *parent)
-    : QAbstractListModel(parent)
+SearchResultModel::SearchResultModel(QObject *parent)
 {
     connect(this, SIGNAL(insertData(QString)), this, SLOT(insertNewData(QString)));
     connect(this, SIGNAL(insertData(QStringList)), this, SLOT(insertNewData(QStringList)));
     connect(this, SIGNAL(clearData()), this, SLOT(clearAllData()));
-
-    Controller::getInstance()->setUserMessagesModel(this);
 }
 
-UserMessagesModel::~UserMessagesModel()
+void SearchResultModel::search()
 {
-    Controller::getInstance()->resetUserMessagesModel();
+    qDebug() << "Search";
+    m_data = Controller::getInstance()->search();
+    beginResetModel();
+    endResetModel();
 }
 
-int UserMessagesModel::rowCount(const QModelIndex &parent) const
+int SearchResultModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
 
     return  m_data.count();
 }
 
-QVariant UserMessagesModel::data(const QModelIndex &index, int role) const
+QVariant SearchResultModel::data(const QModelIndex &index, int role) const
 {
     // the index returns the requested row and column information.
     // we ignore the column and only use the row information
@@ -44,7 +44,7 @@ QVariant UserMessagesModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void UserMessagesModel::insertNewData(QString str)
+void SearchResultModel::insertNewData(QString str)
 {
     m_data.append(str);
     emit dataChanged(QModelIndex(), QModelIndex());
@@ -52,7 +52,7 @@ void UserMessagesModel::insertNewData(QString str)
     endResetModel();
 }
 
-void UserMessagesModel::insertNewData(QStringList str)
+void SearchResultModel::insertNewData(QStringList str)
 {
     m_data = str;
     emit dataChanged(QModelIndex(), QModelIndex());
@@ -60,7 +60,7 @@ void UserMessagesModel::insertNewData(QStringList str)
     endResetModel();
 }
 
-void UserMessagesModel::clearAllData()
+void SearchResultModel::clearAllData()
 {
     m_data.clear();
     emit dataChanged(QModelIndex(), QModelIndex());

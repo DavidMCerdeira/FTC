@@ -6,19 +6,24 @@
 #include <QString>
 #include <QDebug>
 
-class Controller;
-
+#include "searchresultmodel.h"
 #include "usermessages.h"
 #include "login.h"
 #include "servercon.h"
-#include "searchworkingmodel.h"
-#include "searchemployeeresultmodel.h"
 #include "ftc.h"
 
 class UserMessagesModel;
 class LoginModel;
 class SearchEmployeeResultModel;
 class SearchWorkingModel;
+class SearchResultModel;
+
+struct SearchParams
+{
+    std::string name;
+    std::string department;
+    std::string job;
+};
 
 class Controller
 {
@@ -26,13 +31,17 @@ private:
     Controller();
     MyMessageQueue msgQ;
     ServerCon con;
-    UserMessagesModel *usrmsgs;
-
-    LoginModel *log;
-
     FTC ftc;
 
+    UserMessagesModel *usrmsgs;
+    LoginModel *log;
+    pthread_mutex_t models_mutex;
+    pthread_mutex_t modelsCond_mutex;
+    pthread_cond_t modelsRdy_cond;
+
     pthread_t ftcListen_handle;
+
+    SearchParams srchParams;
 
 public:
     ~Controller();
@@ -40,20 +49,27 @@ public:
 
     /* set Home models */
     void setUserMessagesModel(UserMessagesModel*);
+    void resetUserMessagesModel();
     void setLoginModel(LoginModel*);
+    void resetLoginModel();
     QStringList getDepartments();
-
+    QStringList getJobs();
+    QStringList search();
     /* home related functions */
     void logOut();
     void login();
 
     /*search related functions */
-    void searchEmployee(SearchEmployeeResultModel* srch);
-    void searchWorking(SearchWorkingModel* srch);
+    void setEmployee(QString name);
+    void setDepartment(int idx);
+    void setJob(int i);
 
+private:
     /* not UI */
     static void* ftcListen_thread(void *arg);
     void ftcEventHandler(char *event, Controller *self);
+
+    void checkModelsCondition();
 };
 
 #endif // CONTROLLER_H

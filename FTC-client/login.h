@@ -13,6 +13,7 @@ class LoginModel : public QAbstractListModel
 
 public:
     explicit LoginModel(QObject *parent = 0);
+    ~LoginModel();
     virtual int rowCount(const QModelIndex &parent) const;
     /* this is function is redundant as we only have one element */
     virtual QVariant data(const QModelIndex &index, int role) const;

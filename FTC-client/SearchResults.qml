@@ -2,7 +2,7 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import SearchWorkingResult 1.0
+import SearchResultModel 1.0
 
 
 ColumnLayout {
@@ -12,13 +12,6 @@ ColumnLayout {
 
     signal search()
 
-    Component.onCompleted: {
-       search.connect(startSearch)
-    }
-
-    function startSearch(){
-        srchWrkngRslt.search();
-    }
 
     RowLayout{
         id: pre_results
@@ -45,10 +38,10 @@ ColumnLayout {
                     PropertyChanges {
                         target: calendar; visible: false
                     }
-                    PropertyChanges {
-                        target: srchWrkngRslt;
-                        date: calendar.selectedDate;
-                    }
+//                    PropertyChanges {
+//                        target: srchWrkngRslt;
+//                        date: calendar.selectedDate;
+//                    }
                 }
             ]
         }
@@ -70,7 +63,23 @@ ColumnLayout {
         title{
             text: 'Result'
         }
-        content_model: SearchWorkingResult{id: srchWrkngRslt}
+        content_model: SearchResulModel{
+            id: rslt
+        }
+    }
+
+//    Connections{
+//        target: rslt
+//        onSearch: rslt.search()
+//    }
+
+
+    Component.onCompleted: {
+       search.connect(startSearch)
+    }
+
+    function startSearch(){
+        rslt.search();
     }
 
 }

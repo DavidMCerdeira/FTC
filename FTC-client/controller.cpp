@@ -3,7 +3,10 @@
 static Controller *instance = NULL;
 
 Controller::Controller()
-    : msgQ(FTC_EVENT_MSGQ_NAME), con(), ftc(&con)
+    : msgQ(FTC_EVENT_MSGQ_NAME), con(), ftc(&con),
+      models_mutex(PTHREAD_MUTEX_INITIALIZER),
+      modelsCond_mutex(PTHREAD_MUTEX_INITIALIZER),
+      modelsRdy_cond(PTHREAD_COND_INITIALIZER)
 {
     cout << "Controller constructor" << endl;
     ftc.run();
@@ -28,14 +31,41 @@ void Controller::setUserMessagesModel(UserMessagesModel *ptr)
 {
     cout << "Setting user messages model" << endl;
 
+    pthread_mutex_lock(&models_mutex);
     usrmsgs = ptr;
+    pthread_mutex_unlock(&models_mutex);
+    checkModelsCondition();
+}
+
+void Controller::resetUserMessagesModel()
+{
+    pthread_mutex_lock(&models_mutex);
+    usrmsgs = NULL;
+    pthread_mutex_unlock(&models_mutex);
 }
 
 void Controller::setLoginModel(LoginModel *ptr)
 {
     cout << "Setting login model" << endl;
 
+    pthread_mutex_lock(&models_mutex);
     log = ptr;
+    pthread_mutex_unlock(&models_mutex);
+    checkModelsCondition();
+}
+
+void Controller::resetLoginModel()
+{
+    log = NULL;
+}
+
+void Controller::checkModelsCondition()
+{
+    pthread_mutex_lock(&modelsCond_mutex);
+    if(log != NULL && usrmsgs != NULL){
+        pthread_cond_signal(&modelsRdy_cond);
+    }
+    pthread_mutex_unlock(&modelsCond_mutex);
 }
 
 void Controller::logOut()
@@ -47,7 +77,6 @@ void Controller::logOut()
     if(usrmsgs != NULL){
         usrmsgs->clearData();
     }
-
 }
 
 QStringList Controller::getDepartments()
@@ -55,10 +84,24 @@ QStringList Controller::getDepartments()
     QList<QString> temp;
 
     /*ask server*/
-    temp.append("lol1");
+    temp.append("Recursos Humanos");
+    temp.append("Logistica");
+    temp.append("Electrões");
+    temp.append("Mucânicos");
+
+    return temp;
+}
+
+
+QStringList Controller::getJobs()
+{
+    QList<QString> temp;
+
+    /*ask server*/
+    temp.append("lol4");
     temp.append("lol2");
     temp.append("lol3");
-    temp.append("lol4");
+    temp.append("lol1");
 
     return temp;
 }
@@ -72,16 +115,6 @@ void* Controller::ftcListen_thread(void *arg)
     int nRcvd = -1;
 
     cout << "Controller listening ftc" << endl;
-
-    while(self->log == NULL){ /*TODO: condition variable*/
-        //cout << "Log:" << self->log << endl;
-        sleep(1);
-    }
-    while(self->usrmsgs == NULL){ /*TODO: condition variable*/
-        //cout << "UsrMsg:" << self->usrmsgs << endl;
-        sleep(1);
-    }
-    cout << "Controller broke cycles" << endl;
 
     while(1){
         buff = (char*) calloc(buffSize, sizeof(char));
@@ -117,6 +150,13 @@ void Controller::ftcEventHandler(char *event, Controller *self)
 
     cout << "Controller ftc event handler" << endl;
 
+    pthread_mutex_lock(&modelsCond_mutex);
+    if(log == NULL || usrmsgs == NULL){
+        pthread_cond_wait(&modelsRdy_cond, &modelsCond_mutex);
+    }
+    pthread_mutex_unlock(&modelsCond_mutex);
+    pthread_mutex_lock(&models_mutex);
+
     if(strcmp(event, FTC_Events::usr_present) == 0){
         /* notify user it has been detected */
     }
@@ -147,26 +187,32 @@ void Controller::ftcEventHandler(char *event, Controller *self)
                 "Here is the message:%s\n",
              self->msgQ.getName(), event);
     }
-
+    pthread_mutex_unlock(&models_mutex);
     free(event);
 }
 
-void Controller::searchEmployee(SearchEmployeeResultModel *srch)
+void Controller::setEmployee(QString name)
 {
-    if(srch != NULL){
-        srch->insertData("O Bóias não trabalha");
-    }
-    else{
-        errx(1, "Error: No employee search result model");
-    }
+    srchParams.name = name.toStdString();
 }
 
-void Controller::searchWorking(SearchWorkingModel *srch)
+void Controller::setDepartment(int idx)
 {
-    if(srch != NULL){
-        srch->insertData("E tem gases");
-    }
-    else{
-        errx(1, "Error: No employee search result model");
-    }
+    qDebug() << "setting department";
+    //srchParams.department = department.toStdString();
+}
+
+void Controller::setJob(int idx)
+{
+    qDebug() << "setting job" << idx;
+    //srchParams.department = job.toStdString();
+}
+
+QStringList Controller::search()
+{
+    QStringList temp;
+
+    temp.append("Saiu");
+    temp.append("kek");
+    return temp;
 }

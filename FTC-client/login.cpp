@@ -13,6 +13,11 @@ LoginModel::LoginModel(QObject *parent)
     //setNameAndPriv(LogOutMessage, false);
 }
 
+LoginModel::~LoginModel()
+{
+    Controller::getInstance()->resetLoginModel();
+}
+
 int LoginModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);

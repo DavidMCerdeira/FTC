@@ -32,7 +32,7 @@ Window {
     Loader{
         id:pageloader
         anchors.fill: parent
-        //*
+        /*
         source: 'Search.qml'
         /*/
         source: 'Home.qml'

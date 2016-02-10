@@ -29,7 +29,6 @@ Item {
                 Layout.minimumHeight: 50
 
                 onClicked: {
-                    employee.search();
                     working.search();
                 }
             }

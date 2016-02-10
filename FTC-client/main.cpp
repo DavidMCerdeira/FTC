@@ -6,22 +6,21 @@
 #include <QQmlContext>
 #include "servercon.h"
 #include "controller.h"
-#include "departmentmodel.h"
+#include "departmentsmodel.h"
+#include "jobsmodel.h"
+#include "searchresultmodel.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    DepartmentModel::setDepartments(Controller::getInstance()->getDepartments());
-
     QQmlApplicationEngine engine;
 
     qmlRegisterType<UserMessagesModel>("UserMessages", 1, 0, "UserMessages");
     qmlRegisterType<LoginModel>("Login", 1, 0, "Login");
-    qmlRegisterType<SearchEmployeeResultModel>("SearchEmployeeModel", 1, 0, "SearchEmployeeModel");
-    qmlRegisterType<SearchWorkingModel>("SearchWorkingResult", 1, 0, "SearchWorkingResult");
-    qmlRegisterType<DepartmentModel>("DepartmentModel", 1, 0, "DepartmentModel");
-
+    qmlRegisterType<JobsModel>("JobsModel", 1, 0, "JobsModel");
+    qmlRegisterType<DepartmentsModel>("DepartmentsModel", 1, 0, "DepartmentsModel");
+    qmlRegisterType<SearchResultModel>("SearchResultModel", 1, 0, "SearchResulModel");
     /*make cursor inivisible*/
 //    QPixmap nullCursor(16, 16);
 //    nullCursor.fill(Qt::transparent);
