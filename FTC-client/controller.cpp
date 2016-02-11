@@ -6,7 +6,8 @@ Controller::Controller()
     : msgQ(FTC_EVENT_MSGQ_NAME), con(), ftc(&con),
       models_mutex(PTHREAD_MUTEX_INITIALIZER),
       modelsCond_mutex(PTHREAD_MUTEX_INITIALIZER),
-      modelsRdy_cond(PTHREAD_COND_INITIALIZER)
+      modelsRdy_cond(PTHREAD_COND_INITIALIZER),
+      usrmsgs(NULL), log(NULL), srchParams({"", 0, 0})
 {
     cout << "Controller constructor" << endl;
 
@@ -150,9 +151,9 @@ QStringList conv(list<string> org)
 
 void Controller::ftcEventHandler(char *event, Controller *self)
 {
-
     cout << "Controller ftc event handler" << endl;
 
+    qDebug() << "User messages" << (self->usrmsgs == NULL);
 
     if(strcmp(event, FTC_Events::usr_present) == 0){
         /* notify user it has been detected */
@@ -177,7 +178,7 @@ void Controller::ftcEventHandler(char *event, Controller *self)
         /* display some error message */
     }
     else if(strcmp(event, FTC_Events::usr_infRdy) == 0){
-
+        qDebug() << "User info is ready";
         pthread_mutex_lock(&modelsCond_mutex);
         if(log == NULL || usrmsgs == NULL){
             pthread_cond_wait(&modelsRdy_cond, &modelsCond_mutex);
@@ -188,9 +189,13 @@ void Controller::ftcEventHandler(char *event, Controller *self)
         if(usr == NULL){
             errx(1, "Error, No user info");
         }
+
         bool priv = (usr->getPermission() != Permissions::NON_PRIVILEDGED) ? (true) : (false);
+        qDebug() << "usr" << usr->getName().c_str();
         self->log->logIn(QString(usr->getName().c_str()), priv);
+        qDebug() << "before";
         self->usrmsgs->insertData(conv(usr->getMessages()));
+        qDebug() << "after";
     }
     else{
         /* literally wtf */
@@ -204,6 +209,7 @@ void Controller::ftcEventHandler(char *event, Controller *self)
 
 void Controller::setEmployee(QString name)
 {
+    qDebug() << "Name" << name << "controller" << endl;
     srchParams.name = name.toStdString();
 }
 
@@ -222,13 +228,17 @@ void Controller::setJob(int idx)
 QStringList Controller::search()
 {
     list<string> temp = con.getSearchResult(srchParams.name,
-                               departments[srchParams.department],
-                               jobs[srchParams.job]);
+                                            departments[srchParams.department],
+            jobs[srchParams.job]);
 
     QStringList a;
 
+    qDebug() << "Name" << srchParams.name.c_str();
+    qDebug() << "Departs" << srchParams.department;
+    qDebug() << "Job" << srchParams.job;
+
     for(list<string>::iterator it = temp.begin();
-            it != temp.end(); it++)
+        it != temp.end(); it++)
     {
         a.append(it->c_str());
     }

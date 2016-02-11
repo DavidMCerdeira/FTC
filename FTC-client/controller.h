@@ -20,7 +20,7 @@ class SearchResultModel;
 
 struct SearchParams
 {
-    std::string name;
+    string name;
     int department;
     int job;
 };

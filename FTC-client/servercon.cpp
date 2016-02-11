@@ -139,14 +139,14 @@ vector<string> ServerCon::getJobs()
 
 list<string> ServerCon::getSearchResult(string name, string department, string job)
 {
-    if(!name.compare("")){
+    if(!name.compare("\0")){
         name = "*";
     }
     if(!department.compare("Any")){
-        name = "*";
+        department = "*";
     }
     if(!job.compare("Any")){
-        name = "*";
+        job = "*";
     }
     /* ask server */
 

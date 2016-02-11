@@ -275,7 +275,8 @@ void emulate_mouse(int fd)
 		device_parser(buffer, &mouse);
 		#ifndef CALIBRATE
 			send_events(uFd, &mouse);
-			print_mouse_info(&mouse);
+			
+			//print_mouse_info(&mouse);
 		#endif
 	}
 	
@@ -290,7 +291,7 @@ int main(int argc, char *argv[])
 	if(argc < 2){
 		printf("Not enough inputs!\n");
 		printf("Use: mouseDriver <device>\n");
-		printf("<device> = /dev/hidraw0, for example\n");
+		printf("<device> = /dev/hidraw1, for example\n");
 		exit(1);
 	}
 	
