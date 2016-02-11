@@ -1,9 +1,14 @@
 #include "db_accesser.h"
+#include <iostream>
+
+using namespace std;
 
 DB_Accesser* DB_Accesser::_instance = NULL;
 
-DB_Accesser* DB_Accesser::instance(){
-    if(DB_Accesser::_instance == NULL){
+DB_Accesser* DB_Accesser::instance()
+{
+    if(DB_Accesser::_instance == NULL)
+    {
         DB_Accesser::_instance = new DB_Accesser();
     }
     return DB_Accesser::_instance;
@@ -32,19 +37,33 @@ db_name(i_db_name), db_host(i_db_host), db_user_name(i_user_name), db_user_passw
                        0);
 }
 
-DB_Accesser::~DB_Accesser(){
-    //mysql_drop_db(&this->cur_DB, this->db_name); //mysql_query("Drop db Query instead");
+DB_Accesser::~DB_Accesser()
+{
+    mysql_close(&cur_DB);
 }
 
-MYSQL_RES* DB_Accesser::db_query(string query){
-    MYSQL_RES *retResult;
+int DB_Accesser::db_query(string query, MYSQL_RES** retResult)
+{
+    int ret;
 
     pthread_mutex_lock(&this->access_mutex);
 
-    mysql_real_query(&(this->cur_DB), query.c_str(), query.length()); //Don't forget to anallyze the error
-    retResult = mysql_use_result(&(this->cur_DB));
+    /* Run query */
+    ret = mysql_real_query(&(this->cur_DB), query.c_str(), query.length());
+
+    /* fetch and store result of the previous query */
+    *retResult = mysql_store_result(&(this->cur_DB));
+
+    /* In case the previous function returns NULL returns a value diferent than 0 */
+    if(*retResult == NULL)
+        ret = 1;
 
     pthread_mutex_unlock(&this->access_mutex);
 
-    return retResult;
+    return ret;
+}
+
+MYSQL* DB_Accesser::get_MYSQL_db()
+{
+    return &(this->cur_DB);
 }

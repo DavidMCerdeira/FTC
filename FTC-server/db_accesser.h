@@ -9,7 +9,7 @@ using namespace std;
 
 #define DEF_DB_USER "root"       //
 #define DEF_DB_PASSWORD "123123" //
-#define DEF_DB_HOST ""         //local connection
+#define DEF_DB_HOST ""           //local connection
 #define DEF_DB_PORT 3307         //stablished port
 #define DEF_DB_NAME "FTCdb"      //
 
@@ -19,7 +19,8 @@ public:
     static DB_Accesser* instance();
     ~DB_Accesser();
 
-    MYSQL_RES* db_query(string query);
+    int db_query(string query, MYSQL_RES **retResult);
+    MYSQL* get_MYSQL_db();
 
 protected:
     DB_Accesser(string i_db_name = DEF_DB_NAME,

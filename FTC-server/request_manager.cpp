@@ -10,6 +10,7 @@ Request_Manager::Request_Manager()
 
     /* Structures to syncronize the pending responses list access */
     if(sem_init(&sem_pendingResp, 0, 0) != 0);
+
     pthread_mutex_init(&mux_pendingResp, NULL);
 
     if(pthread_create(&(this->thread_req_interpreter), 0, req_interpreter, static_cast<void*>(this)) != 0)
@@ -18,7 +19,8 @@ Request_Manager::Request_Manager()
     pthread_detach(this->thread_req_interpreter);
 }
 
-Request_Manager::~Request_Manager(){
+Request_Manager::~Request_Manager()
+{
     pthread_cancel(this->thread_req_interpreter);
     this->pendingReq.erase(this->pendingReq.begin(), this->pendingReq.end());
     this->pendingResp.erase(this->pendingResp.begin(), this->pendingResp.end());
@@ -30,7 +32,6 @@ void* Request_Manager::req_interpreter(void *arg)
     FTC_Frame *cur_request_frame, *cur_response_frame;
     Request_Manager *own = static_cast<Request_Manager*>(arg);
 
-
     while(1)
     {
         /*wait for requests*/
@@ -40,15 +41,17 @@ void* Request_Manager::req_interpreter(void *arg)
         own->req_handler = own->factory.which_handler(cur_request_frame);
 
         /* handle the specific request */
-        if(!own->req_handler->handle())
+        if(own->req_handler->handler())
+            cur_response_frame = new FTC_Frame(own->req_handler->get_reqSpecific()+"_success", own->req_handler->get_result_data())
             //Error
             ;
         else
-        {
-            cur_response_frame = new FTC_Frame(own->req_handler->get_respSpecific(), own->req_handler->get_result_data());
-            own->add_response(cur_response_frame->get_fullFrame());
-            delete cur_response_frame;
-        }
+            cur_response_frame = new FTC_Frame(own->req_handler->get_reqSpecific()+"_unsuccess", "{\"nothing\":0}");
+
+        /* Store the response to the send thread */
+        own->add_response(cur_response_frame->get_fullFrame());
+
+        delete cur_response_frame;
 
         delete cur_request_frame;
     }

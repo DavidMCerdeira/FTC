@@ -11,5 +11,21 @@ Request_Handler* Handler_Factory::which_handler(FTC_Frame *frame)
     {
         return new Search_Request(frame->get_frameData());
     }
+    else if(frame->get_frameSpecific() == "getBasicInfo")
+    {
+        return new GetBasicInfo_Request(frame->get_frameData());
+    }
+    else if(frame->get_frameSpecific() == "getMessages")
+    {
+        return new GetMessages_Request(frame->get_frameData());
+    }
+    else if(frame->get_frameSpecific() == "clockIn")
+    {
+        return new Clock_Request(frame->get_frameData(), "clockIn");
+    }
+    else if(frame->get_frameSpecific() == "clockOut")
+    {
+        return new Clock_Request(frame->get_frameData(), "clockOut");
+    }
     return NULL;
 }

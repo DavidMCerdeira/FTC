@@ -16,6 +16,7 @@ class FTC_Frame
 public:
     FTC_Frame(string full_frame);
     FTC_Frame(string frame_Specific, string data);
+    ~FTC_Frame(){}
 
     string get_fullFrame();
     string get_frameData();
