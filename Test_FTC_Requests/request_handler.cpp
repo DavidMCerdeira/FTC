@@ -167,6 +167,7 @@ bool Clock_Request::get_workerClockState(int worker_id, DB_Accesser *db, bool *c
 
         queryRet = db->db_query(query, &qResult[i]);
 
+        /* Everything went well */
         if(!queryRet)
         {
             row[i] = mysql_fetch_row(qResult[i]);
@@ -282,9 +283,39 @@ bool GetBasicInfo_Request::handler()
     return ret;
 }
 
-bool GetMessages_Request:handler()
+bool GetMessages_Request::handler()
 {
+    MYSQL_RES *qResult = NULL;
+    MYSQL_ROW row = NULL;
+    Json::Value msgInfo;
+    string query = "SELECT lrm.idMessages, m.content, lsm.dateTime, w.name "
+                   "FROM Messages m, List_Sent_Messages lsm, List_Rcvd_Messages lrm, Worker w "
+                   "WHERE lsm.idMessages=lrm.idMessages "
+                   "AND w.idWorker=lsm.idFromWorker "
+                   "AND lrm.isRead=0 "
+                   "AND lrm.idToWorker=";
 
+    if(!boolParse)
+       return false;
 
-    return true;
+   query += inData["worker_id"].asString();
+
+   if(db->db_query(query, &qResult))
+    return false;
+
+    outData["msgs_array"] = Json::Value(Json::arrayValue);
+
+    while ((row = mysql_fetch_row(qResult)) != NULL)
+    {
+       msgInfo["msg_id"] = atoi(row[0]);
+       msgInfo["msg_content"] = row[1];
+       msgInfo["msg_sent_time"] = atoi(row[2]);
+       msgInfo["msg_sender"] = row[3];
+
+       outData["msgs_array"].append(msgInfo);
+    }
+
+   mysql_free_result(qResult);
+
+   return true;
 }

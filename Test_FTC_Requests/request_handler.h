@@ -15,7 +15,6 @@ public:
     string get_result_data();
     string get_reqSpecific();
     virtual bool handler() = 0;
-
 protected:
     string reqSpecific;
     Json::Value inData;

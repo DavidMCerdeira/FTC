@@ -17,7 +17,7 @@ Request_Handler* Handler_Factory::which_handler(FTC_Frame *frame)
     }
     else if(frame->get_frameSpecific() == "getMessages")
     {
-
+        return new GetMessages_Request(frame->get_frameData());
     }
     else if(frame->get_frameSpecific() == "clockIn")
     {

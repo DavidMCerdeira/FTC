@@ -9,7 +9,7 @@ int main()
 {
     string response;
     Request_Manager manager;
-    FTC_Frame frame("getBasicInfo","{\"worker_id\": 1}");//, \"department\":1,\"job\":1}");
+    FTC_Frame frame("getBasicInfo","{\"worker_id\": 2}");//, \"department\":1,\"job\":1}");
 
     mysql_library_init(0, NULL, NULL);
 

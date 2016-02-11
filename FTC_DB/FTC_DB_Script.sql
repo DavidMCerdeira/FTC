@@ -154,6 +154,7 @@ DROP TABLE IF EXISTS `FTCdb`.`List_Sent_Messages` ;
 CREATE TABLE IF NOT EXISTS `FTCdb`.`List_Sent_Messages` (
   `idMessages` INT NOT NULL,
   `idFromWorker` INT NOT NULL,
+  `dateTime` DATETIME NOT NULL,
   PRIMARY KEY (`idMessages`, `idFromWorker`),
   INDEX `fk_Worker_idx` (`idFromWorker` ASC),
   CONSTRAINT `fk_Messages_sent`
@@ -177,7 +178,7 @@ DROP TABLE IF EXISTS `FTCdb`.`List_Rcvd_Messages` ;
 CREATE TABLE IF NOT EXISTS `FTCdb`.`List_Rcvd_Messages` (
   `idMessages` INT NOT NULL,
   `idToWorker` INT NOT NULL,
-  `itIsRead` TINYINT(1) NOT NULL DEFAULT False,
+  `isRead` TINYINT(1) NOT NULL DEFAULT False,
   PRIMARY KEY (`idMessages`, `idToWorker`),
   INDEX `fk_Worker_idx` (`idToWorker` ASC),
   CONSTRAINT `fk_Messages_rcvd`

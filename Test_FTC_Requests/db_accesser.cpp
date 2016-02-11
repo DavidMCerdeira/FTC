@@ -1,4 +1,7 @@
 #include "db_accesser.h"
+#include <iostream>
+
+using namespace std;
 
 DB_Accesser* DB_Accesser::_instance = NULL;
 
@@ -44,6 +47,7 @@ int DB_Accesser::db_query(string query, MYSQL_RES** retResult)
     int ret;
 
     pthread_mutex_lock(&this->access_mutex);
+
     /* Run query */
     ret = mysql_real_query(&(this->cur_DB), query.c_str(), query.length());
 
