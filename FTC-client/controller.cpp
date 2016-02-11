@@ -9,6 +9,9 @@ Controller::Controller()
       modelsRdy_cond(PTHREAD_COND_INITIALIZER)
 {
     cout << "Controller constructor" << endl;
+
+    jobs = con.getJobs();
+    departments = con.getDepartments();
     ftc.run();
     pthread_create(&ftcListen_handle, NULL, ftcListen_thread, this);
 }
@@ -81,13 +84,13 @@ void Controller::logOut()
 
 QStringList Controller::getDepartments()
 {
-    QList<QString> temp;
+    QStringList temp;
 
-    /*ask server*/
-    temp.append("Recursos Humanos");
-    temp.append("Logistica");
-    temp.append("Electrões");
-    temp.append("Mucânicos");
+    for(vector<string>::iterator it = departments.begin();
+        it != departments.end(); it++)
+    {
+        temp.append(it->c_str());
+    }
 
     return temp;
 }
@@ -95,13 +98,13 @@ QStringList Controller::getDepartments()
 
 QStringList Controller::getJobs()
 {
-    QList<QString> temp;
+    QStringList temp;
 
-    /*ask server*/
-    temp.append("lol4");
-    temp.append("lol2");
-    temp.append("lol3");
-    temp.append("lol1");
+    for(vector<string>::iterator it = jobs.begin();
+        it != jobs.end(); it++)
+    {
+        temp.append(it->c_str());
+    }
 
     return temp;
 }
@@ -150,17 +153,18 @@ void Controller::ftcEventHandler(char *event, Controller *self)
 
     cout << "Controller ftc event handler" << endl;
 
-    pthread_mutex_lock(&modelsCond_mutex);
-    if(log == NULL || usrmsgs == NULL){
-        pthread_cond_wait(&modelsRdy_cond, &modelsCond_mutex);
-    }
-    pthread_mutex_unlock(&modelsCond_mutex);
-    pthread_mutex_lock(&models_mutex);
 
     if(strcmp(event, FTC_Events::usr_present) == 0){
         /* notify user it has been detected */
     }
     else if(strcmp(event, FTC_Events::usr_absent) == 0){
+
+        pthread_mutex_lock(&modelsCond_mutex);
+        if(log == NULL || usrmsgs == NULL){
+            pthread_cond_wait(&modelsRdy_cond, &modelsCond_mutex);
+        }
+        pthread_mutex_unlock(&modelsCond_mutex);
+        pthread_mutex_lock(&models_mutex);
         /* user left so logout */
         qDebug() << "User walked away";
         self->logOut();
@@ -173,6 +177,13 @@ void Controller::ftcEventHandler(char *event, Controller *self)
         /* display some error message */
     }
     else if(strcmp(event, FTC_Events::usr_infRdy) == 0){
+
+        pthread_mutex_lock(&modelsCond_mutex);
+        if(log == NULL || usrmsgs == NULL){
+            pthread_cond_wait(&modelsRdy_cond, &modelsCond_mutex);
+        }
+        pthread_mutex_unlock(&modelsCond_mutex);
+        pthread_mutex_lock(&models_mutex);
         UserInfo *usr = ftc.getUserInfo();
         if(usr == NULL){
             errx(1, "Error, No user info");
@@ -199,20 +210,27 @@ void Controller::setEmployee(QString name)
 void Controller::setDepartment(int idx)
 {
     qDebug() << "setting department";
-    //srchParams.department = department.toStdString();
+    srchParams.department = idx;
 }
 
 void Controller::setJob(int idx)
 {
     qDebug() << "setting job" << idx;
-    //srchParams.department = job.toStdString();
+    srchParams.job = idx;
 }
 
 QStringList Controller::search()
 {
-    QStringList temp;
+    list<string> temp = con.getSearchResult(srchParams.name,
+                               departments[srchParams.department],
+                               jobs[srchParams.job]);
 
-    temp.append("Saiu");
-    temp.append("kek");
-    return temp;
+    QStringList a;
+
+    for(list<string>::iterator it = temp.begin();
+            it != temp.end(); it++)
+    {
+        a.append(it->c_str());
+    }
+    return a;
 }

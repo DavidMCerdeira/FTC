@@ -11,6 +11,7 @@
 #include <netdb.h>
 #include <iostream>
 #include <pthread.h>
+#include <vector>
 
 #include "usrinfo.h"
 
@@ -40,10 +41,13 @@ public:
 
     UserInfo* getUserInfo(int id);
     UserInfo* getUserLoginInfo(int id);
-    std::list<Clock> getClockHistory(int id);
+    //list<Clock> getClockHistory(int id);
 
     void clockUser(long unsigned int id);
     void getUserMessages();
+    vector<string> getDepartments();
+    vector<string> getJobs();
+    list<string> getSearchResult(string name, string department, string job);
 };
 
 #endif // SERVERCON_H

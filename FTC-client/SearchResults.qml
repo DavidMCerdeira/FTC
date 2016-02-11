@@ -13,51 +13,51 @@ ColumnLayout {
     signal search()
 
 
-    RowLayout{
-        id: pre_results
-        anchors.left: parent.left
-        anchors.right: parent.right
+//    RowLayout{
+//        id: pre_results
+//        anchors.left: parent.left
+//        anchors.right: parent.right
 
-        Calendar {
-            id: calendar
-            weekNumbersVisible: true
-            visible: false
+//        Calendar {
+//            id: calendar
+//            weekNumbersVisible: true
+//            visible: false
 
-            states : [
-                State {
-                    name: 'showDays'
-                    when: selectDay.checked == true
-                    PropertyChanges {
-                        target: calendar; visible: true
-                    }
-
-                },
-                State {
-                    name: 'noDays'
-                    when: selectDay.checked == false
-                    PropertyChanges {
-                        target: calendar; visible: false
-                    }
+//            states : [
+//                State {
+//                    name: 'showDays'
+//                    when: selectDay.checked == true
 //                    PropertyChanges {
-//                        target: srchWrkngRslt;
-//                        date: calendar.selectedDate;
+//                        target: calendar; visible: true
 //                    }
-                }
-            ]
-        }
 
-        MyButton{
-            id: selectDay
-            anchors.top: parent.top
-            anchors.right: parent.right
-            name: 'Select day'
-            checkable: true
-            name_pointSize: 18
-            Layout.minimumWidth: 130
-            Layout.minimumHeight: 50
-        }
+//                },
+//                State {
+//                    name: 'noDays'
+//                    when: selectDay.checked == false
+//                    PropertyChanges {
+//                        target: calendar; visible: false
+//                    }
+////                    PropertyChanges {
+////                        target: srchWrkngRslt;
+////                        date: calendar.selectedDate;
+////                    }
+//                }
+//            ]
+//        }
 
-    }
+//        MyButton{
+//            id: selectDay
+//            anchors.top: parent.top
+//            anchors.right: parent.right
+//            name: 'Select day'
+//            checkable: true
+//            name_pointSize: 18
+//            Layout.minimumWidth: 130
+//            Layout.minimumHeight: 50
+//        }
+
+//    }
 
     MyTextHolder{
         title{

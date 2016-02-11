@@ -108,6 +108,55 @@ UserInfo* ServerCon::getUserLoginInfo(int id)
     return usr;
 }
 
+
+vector<string> ServerCon::getDepartments()
+{
+    vector<string> temp;
+    /*ask server*/
+
+    temp.push_back("Any");
+    temp.push_back("Mecaninca");
+    temp.push_back("Electronica");
+    temp.push_back("Materiais");
+    temp.push_back("Arquitectura");
+    return temp;
+
+}
+
+vector<string> ServerCon::getJobs()
+{
+    vector<string> temp;
+    /*ask server*/
+
+    temp.push_back("Any");
+    temp.push_back("rececionista");
+    temp.push_back("investigador");
+    temp.push_back("limpador");
+    temp.push_back("arrumador");
+    return temp;
+
+}
+
+list<string> ServerCon::getSearchResult(string name, string department, string job)
+{
+    if(!name.compare("")){
+        name = "*";
+    }
+    if(!department.compare("Any")){
+        name = "*";
+    }
+    if(!job.compare("Any")){
+        name = "*";
+    }
+    /* ask server */
+
+    list<string> temp;
+    for(int i = 0; i < 10; i++){
+        temp.push_back(name + " " + department + " " + job);
+    }
+    return temp;
+}
+
 std::list<Clock> getClockHistory(int id)
 {
     std::list<Clock> clocks;

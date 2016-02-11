@@ -9,6 +9,7 @@
 #include "departmentsmodel.h"
 #include "jobsmodel.h"
 #include "searchresultmodel.h"
+#include "setnameforsearch.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<JobsModel>("JobsModel", 1, 0, "JobsModel");
     qmlRegisterType<DepartmentsModel>("DepartmentsModel", 1, 0, "DepartmentsModel");
     qmlRegisterType<SearchResultModel>("SearchResultModel", 1, 0, "SearchResulModel");
+    qmlRegisterType<setNameForSearch>("SetNameForSearch", 1, 0, "SetNameForSearch");
     /*make cursor inivisible*/
 //    QPixmap nullCursor(16, 16);
 //    nullCursor.fill(Qt::transparent);

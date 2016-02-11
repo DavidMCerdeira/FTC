@@ -22,7 +22,8 @@ SOURCES += main.cpp \
     usrinfo.cpp \
     departmentsmodel.cpp \
     jobsmodel.cpp \
-    searchresultmodel.cpp
+    searchresultmodel.cpp \
+    setnameforsearch.cpp
 
 RESOURCES += qml.qrc
 
@@ -46,4 +47,5 @@ HEADERS += \
     usrinfo.h \
     departmentsmodel.h \
     jobsmodel.h \
-    searchresultmodel.h
+    searchresultmodel.h \
+    setnameforsearch.h

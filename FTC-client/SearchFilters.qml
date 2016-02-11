@@ -4,45 +4,11 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import JobsModel 1.0
 import DepartmentsModel 1.0
+import SetNameForSearch 1.0
 
 ColumnLayout {
     id: root
     spacing: 5
-
-    signal search()
-
-    Component.onCompleted: {
-       search.connect(startSearch)
-    }
-
-    function startSearch(){
-        if(nameInput.text === ""){
-            console.log("No user name specified");
-            return;
-        }
-
-        searchResult.employeeName = nameInput.text;
-        var depart;
-        var job;
-
-        if(departments.currentIndex === 0){
-            depart = "*";
-        }
-        else{
-            depart = departments.currentText;
-        }
-
-        if(jobs.currentIndex === 0){
-            job = "*";
-        }
-        else{
-           job = jobs.currentText;
-        }
-
-        searchResult.clearResult();
-        searchResult.search(depart, job);
-    }
-
 
     Text{
         anchors.horizontalCenter: parent.horizontalCenter
@@ -96,11 +62,17 @@ ColumnLayout {
                   nameInput.cursorPosition = nameInput.text.length
               }else if(letter === '┘'){
                   keyboard.visible = false;
+                  setName.setName(nameInput.text)
               }else{
                   nameInput.insert(nameInput.length, letter);
               }
           }
       }
+
+      SetNameForSearch{
+          id: setName;
+      }
+
 
     MyComboBox{
         id: departments

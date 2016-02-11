@@ -21,8 +21,8 @@ class SearchResultModel;
 struct SearchParams
 {
     std::string name;
-    std::string department;
-    std::string job;
+    int department;
+    int job;
 };
 
 class Controller
@@ -40,8 +40,10 @@ private:
     pthread_cond_t modelsRdy_cond;
 
     pthread_t ftcListen_handle;
-
     SearchParams srchParams;
+
+    vector<string> departments;
+    vector<string> jobs;
 
 public:
     ~Controller();
