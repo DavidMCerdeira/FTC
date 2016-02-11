@@ -46,8 +46,8 @@
     *FTCCLANP/successgetBasInf/data/END
       {
         name: "exemplo nome",
-        permission: 0,
-        worker_id: 1        
+        privelege: 0,
+        worker_id: 1
       }
 
 --Get messages_
@@ -73,3 +73,17 @@
         message: "vai trabalhar"
       }
     *FTCCLANP/sendmessagesuccess/NULL/END
+
+--clock in:
+  Request plot:
+    *FTCCLANP/clockIn/<data>/END
+    {
+      user_id: 1,
+      clock_state: 1
+    }
+  Response plot:
+    *FTCCLANP/clockOut/<data>/END
+    {
+      user_id: 1,
+      clock_state: 0
+    }

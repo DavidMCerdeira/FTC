@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `FTCdb`.`Worker` (
   `gender` VARCHAR(1) NOT NULL,
   `email` VARCHAR(100) NULL,
   `contact_number` VARCHAR(9) NOT NULL,
-  `idSchedulle` INT NOT NULL,
+  `idSchedulle` INT NULL,
   `localName` VARCHAR(45) NOT NULL,
   `idJob` INT NOT NULL,
   `face` VARCHAR(450) NULL,
@@ -106,7 +106,8 @@ DROP TABLE IF EXISTS `FTCdb`.`Department` ;
 
 CREATE TABLE IF NOT EXISTS `FTCdb`.`Department` (
   `depName` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`depName`))
+  `idDepartment` INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`idDepartment`))
 ENGINE = InnoDB;
 
 
@@ -116,9 +117,9 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `FTCdb`.`List_Department_Worker` ;
 
 CREATE TABLE IF NOT EXISTS `FTCdb`.`List_Department_Worker` (
-  `depName` VARCHAR(45) NOT NULL,
+  `idDepartment` INT NOT NULL,
   `idWorker` INT NOT NULL,
-  PRIMARY KEY (`depName`, `idWorker`),
+  PRIMARY KEY (`idDepartment`, `idWorker`),
   INDEX `fk_Worker_idx` (`idWorker` ASC),
   CONSTRAINT `fk_Worker_LstDep`
     FOREIGN KEY (`idWorker`)
@@ -126,8 +127,8 @@ CREATE TABLE IF NOT EXISTS `FTCdb`.`List_Department_Worker` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Department_`
-    FOREIGN KEY (`depName`)
-    REFERENCES `FTCdb`.`Department` (`depName`)
+    FOREIGN KEY (`idDepartment`)
+    REFERENCES `FTCdb`.`Department` (`idDepartment`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -153,6 +154,7 @@ DROP TABLE IF EXISTS `FTCdb`.`List_Sent_Messages` ;
 CREATE TABLE IF NOT EXISTS `FTCdb`.`List_Sent_Messages` (
   `idMessages` INT NOT NULL,
   `idFromWorker` INT NOT NULL,
+  `dateTime` DATETIME NOT NULL,
   PRIMARY KEY (`idMessages`, `idFromWorker`),
   INDEX `fk_Worker_idx` (`idFromWorker` ASC),
   CONSTRAINT `fk_Messages_sent`
@@ -176,6 +178,7 @@ DROP TABLE IF EXISTS `FTCdb`.`List_Rcvd_Messages` ;
 CREATE TABLE IF NOT EXISTS `FTCdb`.`List_Rcvd_Messages` (
   `idMessages` INT NOT NULL,
   `idToWorker` INT NOT NULL,
+  `isRead` TINYINT(1) NOT NULL DEFAULT False,
   PRIMARY KEY (`idMessages`, `idToWorker`),
   INDEX `fk_Worker_idx` (`idToWorker` ASC),
   CONSTRAINT `fk_Messages_rcvd`
@@ -198,8 +201,8 @@ DROP TABLE IF EXISTS `FTCdb`.`Clock_In` ;
 
 CREATE TABLE IF NOT EXISTS `FTCdb`.`Clock_In` (
   `idWorker` INT NOT NULL AUTO_INCREMENT,
-  `dateTime` DATETIME NULL,
-  PRIMARY KEY (`idWorker`),
+  `dateTime` DATETIME NOT NULL,
+  PRIMARY KEY (`idWorker`, `dateTime`),
   CONSTRAINT `fk_Worker_ClkIn`
     FOREIGN KEY (`idWorker`)
     REFERENCES `FTCdb`.`Worker` (`idWorker`)
@@ -215,8 +218,8 @@ DROP TABLE IF EXISTS `FTCdb`.`Clock_Out` ;
 
 CREATE TABLE IF NOT EXISTS `FTCdb`.`Clock_Out` (
   `idWorker` INT NOT NULL AUTO_INCREMENT,
-  `dateTime` DATETIME NULL,
-  PRIMARY KEY (`idWorker`),
+  `dateTime` DATETIME NOT NULL,
+  PRIMARY KEY (`idWorker`, `dateTime`),
   CONSTRAINT `fk_Worker__ClkOut`
     FOREIGN KEY (`idWorker`)
     REFERENCES `FTCdb`.`Worker` (`idWorker`)

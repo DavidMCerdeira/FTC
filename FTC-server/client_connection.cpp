@@ -144,6 +144,3 @@ int Client_Connection::get_clientSock()
     return this->clSock;
 }
 
-//void Client_Connection::print_sock(){
-//    cout<<"Client_Socket: "<< this->clSock << endl;
-//}*/
