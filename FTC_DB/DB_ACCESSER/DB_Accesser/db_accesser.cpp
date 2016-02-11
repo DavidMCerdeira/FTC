@@ -17,9 +17,8 @@ DB_Accesser::DB_Accesser(string i_db_name,
                          ):
 db_name(i_db_name), db_host(i_db_host), db_user_name(i_user_name), db_user_password(i_password) ,db_port(i_db_port)
 {
-    my_bool bool_ = 1;
     mysql_init(&(this->cur_DB));
-  //  mysql_autocommit(&(this->cur_DB), bool_);
+    //mysql_autocommit(&this->cur_DB, true);
 
     pthread_mutex_init(&this->access_mutex,  NULL);
 
@@ -37,15 +36,19 @@ DB_Accesser::~DB_Accesser(){
     //mysql_drop_db(&this->cur_DB, this->db_name); //mysql_query("Drop db Query instead");
 }
 
-MYSQL_RES* DB_Accesser::db_query(string query){
-    MYSQL_RES *retResult;
+int DB_Accesser::db_query(string query, MYSQL_RES** retResult){
+    int ret;
+    pthread_mutex_lock(&this->access_mutex);
 
-    pthread_mutex_lock(&(this->access_mutex));
+    ret = mysql_real_query(&(this->cur_DB), query.c_str(), query.length()); //Don't forget to anallyze the error
+    *retResult = mysql_store_result(&(this->cur_DB));
+    if(*retResult == NULL)
+        ret = 1;
+    pthread_mutex_unlock(&this->access_mutex);
 
-    mysql_real_query(&(this->cur_DB), query.c_str(), query.length()); //Don't forget to anallyze the error
-    retResult = mysql_use_result(&(this->cur_DB));
+    return ret;
+}
 
-    pthread_mutex_unlock(&(this->access_mutex));
-
-    return retResult;
+MYSQL* DB_Accesser::get_MYSQL_db(){
+    return &(this->cur_DB);
 }

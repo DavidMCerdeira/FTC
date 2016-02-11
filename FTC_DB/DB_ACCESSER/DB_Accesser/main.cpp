@@ -11,10 +11,13 @@ int main(int argc, char *argv[])
     int nrFields;
     MYSQL_ROW row;
 
+
+
     myDB = DB_Accesser::instance();
 
-    qResult = myDB->db_query("SELECT * FROM Jobs");
-    //qResult = mysql_use_result(&FTC_con);
+    myDB->db_query("SELECT MAX(UNIX_TIMESTAMP(clk.dateTime)) \
+                   FROM Clock_In clk \
+                   WHERE idWorker = 2", &qResult);
 
     nrFields = mysql_num_fields(qResult);
 
@@ -28,3 +31,7 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
+//SELECT MAX(UNIX_TIMESTAMP(clk.dateTime))
+//FROM Clock_In clk
+//WHERE idWorker = 2
