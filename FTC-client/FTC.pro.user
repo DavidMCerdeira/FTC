@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 3.6.0, 2016-02-11T15:13:31. -->
+<!-- Written by QtCreator 3.6.0, 2016-02-12T19:08:03. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -542,7 +542,7 @@
        <value type="QString">/mnt/Data/Universidade/MESTRADO_EEIC/EMBEBIDOS/projecto_embebidos/buildroot/buildroot-2015.08.1/output/staging</value>
       </valuelist>
       <valuelist type="QVariantList" key="Qt4ProjectManager.MaemoRunConfiguration.LastDeployedTimes">
-       <value type="QDateTime">2016-02-11T14:24:15</value>
+       <value type="QDateTime">2016-02-12T19:04:19</value>
       </valuelist>
       <value type="bool" key="RemoteLinux.GenericDirectUploadStep.IgnoreMissingFiles">false</value>
       <value type="bool" key="RemoteLinux.GenericDirectUploadStep.Incremental">true</value>

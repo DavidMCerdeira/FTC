@@ -11,12 +11,14 @@
 #include "login.h"
 #include "servercon.h"
 #include "ftc.h"
+#include "camcap.h"
 
 class UserMessagesModel;
 class LoginModel;
 class SearchEmployeeResultModel;
 class SearchWorkingModel;
 class SearchResultModel;
+class CamCap;
 
 struct SearchParams
 {
@@ -35,6 +37,8 @@ private:
 
     UserMessagesModel *usrmsgs;
     LoginModel *log;
+    CamCap* cam;
+
     pthread_mutex_t models_mutex;
     pthread_mutex_t modelsCond_mutex;
     pthread_cond_t modelsRdy_cond;
@@ -54,6 +58,9 @@ public:
     void resetUserMessagesModel();
     void setLoginModel(LoginModel*);
     void resetLoginModel();
+    void setCamCap(CamCap*);
+    void resetCamCap();
+
     QStringList getDepartments();
     QStringList getJobs();
     QStringList search();

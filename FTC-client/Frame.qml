@@ -22,4 +22,3 @@ Item {
         color:'transparent'
     }
 }
-

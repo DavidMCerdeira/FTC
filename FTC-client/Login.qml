@@ -3,6 +3,7 @@ import QtQuick.Layouts 1.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import Login 1.0
+//import CameraCapture 1.0
 
 ColumnLayout{
     Layout.margins: 30
@@ -25,6 +26,22 @@ ColumnLayout{
 
         Layout.minimumWidth: 250
         Layout.minimumHeight: 250
+
+        //CameraCapture{id: cam}
+
+        Image {
+            id: image
+            cache: false;
+            anchors.fill: parent
+        }
+
+        Timer{
+            interval: 100; running: true; repeat: true
+            onTriggered: {
+                image.source = "image://WebCam/" + Math.random();
+                console.log("Update image");
+            }
+        }
 
         MouseArea{
             anchors.fill: parent

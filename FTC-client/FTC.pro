@@ -5,6 +5,9 @@ QT += widgets
 QT += core gui qml quick
 LIBS += -lrt
 LIBS += -lpthread
+LIBS += -lopencv_highgui
+LIBS += -lopencv_core
+LIBS += -lopencv_imgproc
 
 CONFIG += c++11
 
@@ -23,7 +26,8 @@ SOURCES += main.cpp \
     departmentsmodel.cpp \
     jobsmodel.cpp \
     searchresultmodel.cpp \
-    setnameforsearch.cpp
+    setnameforsearch.cpp \
+    camcap.cpp
 
 RESOURCES += qml.qrc
 
@@ -48,4 +52,5 @@ HEADERS += \
     departmentsmodel.h \
     jobsmodel.h \
     searchresultmodel.h \
-    setnameforsearch.h
+    setnameforsearch.h \
+    camcap.h

@@ -4,10 +4,11 @@ static Controller *instance = NULL;
 
 Controller::Controller()
     : msgQ(FTC_EVENT_MSGQ_NAME), con(), ftc(&con),
+      usrmsgs(nullptr), log(nullptr), cam(nullptr),
       models_mutex(PTHREAD_MUTEX_INITIALIZER),
       modelsCond_mutex(PTHREAD_MUTEX_INITIALIZER),
       modelsRdy_cond(PTHREAD_COND_INITIALIZER),
-      usrmsgs(NULL), log(NULL), srchParams({"", 0, 0})
+      srchParams({"", 0, 0})
 {
     cout << "Controller constructor" << endl;
 
@@ -61,6 +62,16 @@ void Controller::setLoginModel(LoginModel *ptr)
 void Controller::resetLoginModel()
 {
     log = NULL;
+}
+
+void Controller::setCamCap(CamCap *ptr)
+{
+    cam = ptr;
+}
+
+void Controller::resetCamCap()
+{
+    cam = NULL;
 }
 
 void Controller::checkModelsCondition()
@@ -153,8 +164,6 @@ void Controller::ftcEventHandler(char *event, Controller *self)
 {
     cout << "Controller ftc event handler" << endl;
 
-    qDebug() << "User messages" << (self->usrmsgs == NULL);
-
     if(strcmp(event, FTC_Events::usr_present) == 0){
         /* notify user it has been detected */
     }
@@ -193,9 +202,7 @@ void Controller::ftcEventHandler(char *event, Controller *self)
         bool priv = (usr->getPermission() != Permissions::NON_PRIVILEDGED) ? (true) : (false);
         qDebug() << "usr" << usr->getName().c_str();
         self->log->logIn(QString(usr->getName().c_str()), priv);
-        qDebug() << "before";
         self->usrmsgs->insertData(conv(usr->getMessages()));
-        qDebug() << "after";
     }
     else{
         /* literally wtf */
