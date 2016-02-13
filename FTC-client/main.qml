@@ -10,8 +10,6 @@ Window {
 
     color: 'white'
 
-
-
     SwipeDetect{
         id: swipping
         property bool allowed: false
@@ -56,5 +54,27 @@ Window {
     }
 
     Frame{}
+
+    Rectangle{
+        width: 500
+        height: 200
+        anchors.centerIn: parent
+        color: '#B33A3A'
+        border.width: 5
+        radius: 10
+        Text{
+            anchors.centerIn: parent
+            text: "FUCKING LOL!"
+            font.pointSize: 35
+            font.bold: true
+        }
+        MouseArea{
+            onPressed: {
+
+            }
+        }
+    }
+
+
 }
 

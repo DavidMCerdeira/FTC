@@ -12,8 +12,8 @@ Controller::Controller()
 {
     cout << "Controller constructor" << endl;
 
-    jobs = con.getJobs();
-    departments = con.getDepartments();
+//    jobs = con.getJobs();
+//    departments = con.getDepartments();
     ftc.run();
     pthread_create(&ftcListen_handle, NULL, ftcListen_thread, this);
 }
@@ -204,6 +204,10 @@ void Controller::ftcEventHandler(char *event, Controller *self)
         self->log->logIn(QString(usr->getName().c_str()), priv);
         self->usrmsgs->insertData(conv(usr->getMessages()));
     }
+    else if(strcmp(event, FTC_Events::need_photo) == 0){
+        qDebug() << "Need photo";
+        self->ftc.setFace(QImage());
+    }
     else{
         /* literally wtf */
         errx(1, "Unknown message from message queue:%s\n"
@@ -234,9 +238,7 @@ void Controller::setJob(int idx)
 
 QStringList Controller::search()
 {
-    list<string> temp = con.getSearchResult(srchParams.name,
-                                            departments[srchParams.department],
-            jobs[srchParams.job]);
+    list<string> temp;
 
     QStringList a;
 

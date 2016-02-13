@@ -279,6 +279,7 @@ void Request_Manager::addRespectiveResponse(string idx, string data)
     if (i == NR_OF_REQUESTS)
     {
         syslog(LOG_ERR, "Request_Manager::addRespectiveResponse: not a request");
+        warnx("Request_Manager::addRespectiveResponse: not a request");
         return;
     }
 

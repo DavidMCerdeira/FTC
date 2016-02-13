@@ -5,21 +5,21 @@ CamCap::CamCap()
       mutex(PTHREAD_MUTEX_INITIALIZER), buff_mutex(PTHREAD_MUTEX_INITIALIZER),
       m_imgBuffer(new QImage)
 {
-    cap = cv::VideoCapture(0);
-    if(!cap.isOpened()){ // check if we succeeded
-        err(1, "Error opening default camera");
-    }
+//    cap = cv::VideoCapture(0);
+//    if(!cap.isOpened()){ // check if we succeeded
+//        err(1, "Error opening default camera");
+//    }
 
-    pthread_attr_t attr;
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+//    pthread_attr_t attr;
+//    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
-    int ret = pthread_create(&thread_handle, &attr, CamCap::camStream_thread, this);
+//    int ret = pthread_create(&thread_handle, &attr, CamCap::camStream_thread, this);
 
-    if(ret != 0){
-        err(1, "Couldn't create pthread on CamCap");
-    }
+//    if(ret != 0){
+//        err(1, "Couldn't create pthread on CamCap");
+//    }
 
-    Controller::getInstance()->setCamCap(this);
+//    Controller::getInstance()->setCamCap(this);
 }
 
 CamCap::~CamCap()

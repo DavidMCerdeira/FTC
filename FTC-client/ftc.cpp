@@ -59,13 +59,13 @@ void* FTC::handleUserDetected_thread(void *arg)
 
     /* turn on screen? */
 
-    /* capture face */
-    self->messageQ.sendMsg(FTC_Events::need_photo);
-    self->imgSem.wait();
+//    /* capture face */
+//    self->messageQ.sendMsg(FTC_Events::need_photo);
+//    self->imgSem.wait();
 
     /* send face to server for recognition */
     validUsr = true;
-    int len = face.byteCount();
+    int len = self->face.byteCount();
     userId = 1;
 
     /* evaluate result */
@@ -79,7 +79,20 @@ void* FTC::handleUserDetected_thread(void *arg)
         if(self->m_userInfo != NULL){
             err(1, "A user logged on, before another could log out");
         }
-        self->m_userInfo = self->m_serverCon->getUserLoginInfo(userId);
+        cout << "User info request sent\n" << endl;
+        Json::Value ret = self->m_serverCon->getRequestManager()->getUserInfo(userId);
+        cout << "User info got: " << ret << endl;
+//        if(!ret.is("nothing")){
+//            errx(1, "No data received from user info");
+//        }
+        UserBasicInfo *basic = new UserBasicInfo;
+
+        basic->m_strName = ret["name"].asString();
+        basic->m_nId = ret["id"].asInt();
+        int priv = ret["priviledge"].asInt();
+        basic->m_permission = (priv == 1) ? Permissions::NON_PRIVILEDGED : Permissions::PRIVILEDGED;
+        bool clocked = ret["clocked"].asBool();
+        //self->m_userInfo = new UserInfo(basic, true,);
 
         self->messageQ.sendMsg(FTC_Events::usr_infRdy);
     }

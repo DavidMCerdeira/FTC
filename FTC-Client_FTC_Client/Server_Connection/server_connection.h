@@ -14,23 +14,24 @@
 #include <syslog.h>
 #include <cstdlib>
 #include "request_manager.h"
+#include <err.h>
 
 #define MAX_LINE_BUFF 1024 //bytes
 #define SIG_CON_CLOSED (SIGRTMIN + 1)
 
 #define _PORT_NUMBER 8888
-#define _IP_ADDR "127.0.0.1"
+#define _IP_ADDR "192.168.2.110"
 #define _BUFFER_SIZE 0xFF
 
 using namespace std;
 
-class Server_Connection
+class ServerCon
 {
     int cur_numConnections;
 
 public:
-    Server_Connection();
-    ~Server_Connection();
+    ServerCon();
+    ~ServerCon();
 
     int get_clientSock();
     bool openConnection();

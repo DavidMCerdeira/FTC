@@ -28,20 +28,20 @@ ColumnLayout{
         Layout.minimumWidth: 250
         Layout.minimumHeight: 250
 
-        Image {
-            id: image
-            cache: false;
-            anchors.centerIn: parent
-            width: parent.width - 2*parent.border.width
-            height: parent.height - 2*parent.border.width
-            Timer{
-                interval: 10; running: true; repeat: true
-                onTriggered: {
-                    /* force image reload */
-                    image.source = "image://WebCam/" + Math.random();
-                }
-            }
-        }
+//        Image {
+//            id: image
+//            cache: false;
+//            anchors.centerIn: parent
+//            width: parent.width - 2*parent.border.width
+//            height: parent.height - 2*parent.border.width
+//            Timer{
+//                interval: 10; running: true; repeat: true
+//                onTriggered: {
+//                    /* force image reload */
+//                    image.source = "image://WebCam/" + Math.random();
+//                }
+//            }
+//        }
 
         MouseArea{
             anchors.fill: parent

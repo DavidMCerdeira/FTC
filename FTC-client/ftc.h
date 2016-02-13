@@ -12,6 +12,7 @@
 
 #include "usrinfo.h"
 #include "mysemaphore.h"
+#include <json/json.h>
 
 #define FTC_EVENT_MSGQ_NAME      "/ftc_events_msgQ"
 #define FTC_USR_PRSNC_SEMPH_NAME "/user_presence_semaph"
