@@ -1,5 +1,5 @@
-#ifndef CLIENT_CONNECTION_H
-#define CLIENT_CONNECTION_H
+#ifndef SERVER_CONNECTION_H
+#define SERVER_CONNECTION_H
 
 #include <pthread.h>
 #include <iostream>
@@ -11,28 +11,33 @@
 #include <signal.h>
 #include <unistd.h>
 #include <ctime>
+#include <syslog.h>
 #include "request_manager.h"
-#include "ftc_error.h"
 
 #define MAX_LINE_BUFF 1024 //bytes
 #define SIG_CON_CLOSED (SIGRTMIN + 1)
 
+#define _PORT_NUMBER 8888
+#define _IP_ADDR "192.168.43.219"
+#define _BUFFER_SIZE 0xFF
+
 using namespace std;
 
-class Client_Connection
+class Server_Connection
 {    int cur_numConnections;
 
 public:
-    Client_Connection(int sock);
-    ~Client_Connection();
+    Server_Connection();
+    ~Server_Connection();
 
     int get_clientSock();
+    bool openConnection();
 
     /*debug purposes*/
      void print_sock();
 
 private:
-    /* Guarantees the rec1eption of data */
+    /* Guarantees the reception of data */
     pthread_t thread_connection_receive;
     static void* connection_receive(void *arg);
 
@@ -56,8 +61,13 @@ private:
     Request_Manager *clReqManager;
 
     bool conState; // Connection state. If true is alive
-    int clSock;    // Socket ID
+    int sockfd;    // Socket ID
+
+    struct sockaddr_in serv_addr;
+    struct hostent *server;
+    const unsigned int BUFFER_SIZE;
+
     time_t last_communication_time; // Saves the time of last communication
 };
 
-#endif // CLIENT_CONNECTION_H
+#endif // Server_CONNECTION_H

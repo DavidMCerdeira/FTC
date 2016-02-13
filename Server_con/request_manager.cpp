@@ -9,8 +9,7 @@ Request_Manager::Request_Manager()
     pthread_mutex_init(&mux_pendingReq, NULL);
 
     /* Structures to syncronize the pending responses list access */
-    if(sem_init(&sem_pendingResp, 0, 0) != 0)
-        syslog(LOG_ERR, "Request::Request_Manager: semaphore init");
+    if(sem_init(&sem_pendingResp, 0, 0) != 0);
 
     pthread_mutex_init(&mux_pendingResp, NULL);
 
@@ -41,9 +40,11 @@ void* Request_Manager::req_interpreter(void *arg)
         /* identifie which request was received */
         own->req_handler = own->factory.which_handler(cur_request_frame);
 
-        /* handle the specific request */        
+        /* handle the specific request */
         if(own->req_handler->handler())
-            cur_response_frame = new FTC_Frame(own->req_handler->get_reqSpecific()+"_success", own->req_handler->get_result_data());
+            cur_response_frame = new FTC_Frame(own->req_handler->get_reqSpecific()+"_success", own->req_handler->get_result_data())
+            //Error
+            ;
         else
             cur_response_frame = new FTC_Frame(own->req_handler->get_reqSpecific()+"_unsuccess", "{\"nothing\":0}");
 

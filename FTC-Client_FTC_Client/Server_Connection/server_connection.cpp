@@ -1,11 +1,17 @@
-﻿#include "client_connection.h"
+﻿#include "server_connection.h"
+#include <errno.h>
 
 #define TIMEOUTINTERVAL 60.00
 
-Client_Connection::Client_Connection(int _clSock) : clSock(_clSock)
+Server_Connection::Server_Connection(): BUFFER_SIZE(_BUFFER_SIZE)
 {
     pthread_attr_t tAttr;
 
+    if(!this->openConnection())
+     {
+        syslog(LOG_ERR, "Server_Connection::Server_Connection: Not connecting\n");
+        pthread_exit(0);
+     }
     /* Connection Main thread creation */
     conState = true;
 
@@ -16,46 +22,84 @@ Client_Connection::Client_Connection(int _clSock) : clSock(_clSock)
     clReqManager =  new Request_Manager();
 
     if(pthread_create(&this->thread_connection_receive, &tAttr, &connection_receive, static_cast<void*>(this)) != 0)
-        syslog(LOG_ERR, "Client_Connection: Error creating thread_connection_receive");
+        syslog(LOG_ERR, "Server_Connection: Error creating thread_connection_receive");
 
     if(pthread_create(&this->thread_connection_send, &tAttr, &connection_send,static_cast<void*>(this)) != 0)
-        syslog(LOG_ERR, "Client_Connection: Error creating thread_connection_send");
+        syslog(LOG_ERR, "Server_Connection: Error creating thread_connection_send");
 
     pthread_mutex_init(&this->write_mutex, NULL);
 
     if(pthread_create(&this->thread_check_connection_state, &tAttr, &check_connection_state,static_cast<void*>(this)) != 0)
-        syslog(LOG_ERR, "Client_Connection: Error creating thread_check_connection_state");
+        syslog(LOG_ERR, "Server_Connection: Error creating thread_check_connection_state");
 
     /* var initialization for the timeout evaluation */
     time(&last_communication_time);
 }
 
-Client_Connection::~Client_Connection()
+Server_Connection::~Server_Connection()
 {    
     /* Clean up all the threads */
     pthread_cancel(this->thread_connection_receive);
     pthread_cancel(this->thread_connection_receive);
     pthread_cancel(this->thread_connection_send);
     
-    close(this->clSock);
+    close(this->sockfd);
     
     delete clReqManager;
 }
 
-void* Client_Connection::connection_receive(void *arg)
+bool Server_Connection::openConnection(){
+        /* create TCP socket */
+        int errn;
+
+        /* get host address */
+        server = gethostbyname(_IP_ADDR);
+
+        if(server == NULL)
+        {
+            syslog(LOG_ERR, "Server_Connectio::open_connection: Host not found");
+            return false;
+        }
+
+        sockfd = socket(PF_INET, SOCK_STREAM, 0);
+
+        if(sockfd < 0)
+        {
+            syslog(LOG_ERR, "Server_Connection::openConnection: create socket");
+            return false;
+        }
+
+        memset(&serv_addr, 0, sizeof(serv_addr));       /* create & zero struct */
+        serv_addr.sin_family = AF_INET;                 /* select internet protocol */
+        serv_addr.sin_port = port;               /* set the port # */
+        serv_addr.sin_addr.s_addr = *((long*)(server->h_addr_list[0]));  /* set the addr */
+
+        if( ::connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+        {
+            errn = errno;
+            syslog(LOG_ERR, "Server_Connection::open_connection: ERROR Connecting to server");
+            return false;
+        }
+}
+
+Request_Manager* Server_Connection::getRequestManager(){
+    return clReqManager;
+}
+
+void* Server_Connection::connection_receive(void *arg)
 {
-    Client_Connection *own = reinterpret_cast<Client_Connection*>(arg);
+    Server_Connection *own = reinterpret_cast<Server_Connection*>(arg);
     int status;
 
     /*While connection active*/
     while(own->conState == true)
     {
-        status = recv(own->clSock, &own->reqBuffer[0],  MAX_LINE_BUFF, 0);
+        status = recv(own->sockfd, &own->reqBuffer[0],  MAX_LINE_BUFF, 0);
 
         if(status > 0)
         {
             /*Call request Manager*/
-            own->clReqManager->add_request(own->reqBuffer);
+            own->clReqManager->add_response(own->reqBuffer);
             
             /* Save time of current communication */
             time(&(own->last_communication_time));
@@ -65,25 +109,25 @@ void* Client_Connection::connection_receive(void *arg)
     pthread_exit(0);
 }
 
-void* Client_Connection::connection_send(void *arg)
+void* Server_Connection::connection_send(void *arg)
 {
-    Client_Connection *own = reinterpret_cast<Client_Connection*>(arg);
+    Server_Connection *own = reinterpret_cast<Server_Connection*>(arg);
     string send_content;
 
     while(1)
     {
         /* Waiting for the response to send */
-        send_content = own->clReqManager->get_response();
+        send_content = own->clReqManager->get_request();
 
         if(!own->c_send(send_content))
-            syslog(LOG_ERR, "Client_Connection::connection_send: error c_send");
+            syslog(LOG_ERR,"Server_Connection::connection_send: error c_send");
     }
     pthread_exit(0);
 }
 
-void* Client_Connection::check_connection_state(void *arg)
+void* Server_Connection::check_connection_state(void *arg)
 {
-    Client_Connection *own = static_cast<Client_Connection*>(arg);
+    Server_Connection *own = static_cast<Server_Connection*>(arg);
     double sleepTime = TIMEOUTINTERVAL, curInterval;
     time_t wakeupTime;
     sigval sig_par;
@@ -105,7 +149,7 @@ void* Client_Connection::check_connection_state(void *arg)
             else
             {
                 /* Notify server object that it has to remove this object */
-                sig_par.sival_int = own->clSock;
+                sig_par.sival_int = own->sockfd;
                 sigqueue(getpid(), SIG_CON_CLOSED, sig_par);
             }
         }
@@ -119,12 +163,12 @@ void* Client_Connection::check_connection_state(void *arg)
     pthread_exit(0);
 }
 
-bool Client_Connection::c_send(string buff)
+bool Server_Connection::c_send(string buff)
 {
     /* Guarantees that no one is trying to write at the same time */
     pthread_mutex_lock(&write_mutex);                  
 
-    if(send(this->clSock, buff.c_str(), sizeof(buff), MSG_NOSIGNAL) == -1)
+    if(send(this->sockfd, buff.c_str(), sizeof(buff), MSG_NOSIGNAL) == -1)
        return false;
 
     pthread_mutex_unlock(&write_mutex);
@@ -132,8 +176,8 @@ bool Client_Connection::c_send(string buff)
     return true;
 }
 
-int Client_Connection::get_clientSock()
+int Server_Connection::get_clientSock()
 {
-    return this->clSock;
+    return this->sockfd;
 }
 

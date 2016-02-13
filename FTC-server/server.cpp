@@ -6,55 +6,55 @@ Server::Server(int l_numConnections) : max_numConnections(l_numConnections)
 
     countConnections =  0;
 
-        servSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    servSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-        /*server socket correctly connected*/
-        if(!(servSocket > 0))
-        {
-            ERROR_LSOCKET_CREATION();
-            pthread_exit(0);
-        }
+    /*server socket correctly connected*/
+    if(!(servSocket > 0))
+    {
+        ERROR_LSOCKET_CREATION();
+        pthread_exit(0);
+    }
 
-        address.sin_addr.s_addr = htonl(INADDR_ANY);
-        address.sin_port = htons(_LISTENPORT);
-        address.sin_family = AF_INET;
+    address.sin_addr.s_addr = htonl(INADDR_ANY);
+    address.sin_port = htons(_LISTENPORT);
+    address.sin_family = AF_INET;
 
-        /*Bind the socket to an address*/
-       if(bind(servSocket, (struct sockaddr*) &address, sizeof(address)) != 0)
-       {
-           ERROR_LSOCKET_BIND();
-           pthread_exit(0);
-       }
+    /*Bind the socket to an address*/
+   if(bind(servSocket, (struct sockaddr*) &address, sizeof(address)) != 0)
+   {
+       ERROR_LSOCKET_BIND();
+       pthread_exit(0);
+   }
 
-       /*socket in listening state*/
-       if(listen(servSocket, 5) != 0)
-       {
-           ERROR_LISTEN();
-           pthread_exit(0);
-       }
+   /*socket in listening state*/
+   if(listen(servSocket, 5) != 0)
+   {
+       ERROR_LISTEN();
+       pthread_exit(0);
+   }
 
-        pthread_attr_init(&tAttr);
-        pthread_attr_setdetachstate(&tAttr, PTHREAD_CREATE_DETACHED);
-        /*list of clients protection*/
-        if(pthread_mutex_init(&lClients_mutex, NULL) != 0)
-        {
-            ERROR_LCLIENT_MUTEX();
-            pthread_exit(0);
-        }
+    pthread_attr_init(&tAttr);
+    pthread_attr_setdetachstate(&tAttr, PTHREAD_CREATE_DETACHED);
+    /*list of clients protection*/
+    if(pthread_mutex_init(&lClients_mutex, NULL) != 0)
+    {
+        ERROR_LCLIENT_MUTEX();
+        pthread_exit(0);
+    }
 
-        /*thread that manages the connections*/
-        if(pthread_create(&thread_remClient, &tAttr, removeClient, static_cast<void*>(this)) != 0)
-        {
-            ERROR_RMCLTHREAD_CREATION();
-            pthread_exit(0);
-        }
+    /*thread that manages the connections*/
+    if(pthread_create(&thread_remClient, &tAttr, removeClient, static_cast<void*>(this)) != 0)
+    {
+        ERROR_RMCLTHREAD_CREATION();
+        pthread_exit(0);
+    }
 
-        /*Creating server thread*/
-        if(pthread_create(&thread_run, &tAttr, run, static_cast<void*>(this)) != 0)
-        {
-            ERROR_RUNTHREAD_CREATION();
-            pthread_exit(0);
-        }
+    /*Creating server thread*/
+    if(pthread_create(&thread_run, &tAttr, run, static_cast<void*>(this)) != 0)
+    {
+        ERROR_RUNTHREAD_CREATION();
+        pthread_exit(0);
+    }
 
     pthread_exit(0);
 }
