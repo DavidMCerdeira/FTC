@@ -17,6 +17,7 @@ Window {
         property bool allowed: false
         // function to switch view on swipe
         function onLeftSwipe() {
+            allowed = false
             console.log("Swipped to home screen");
             pageloader.source = 'Home.qml'
         }

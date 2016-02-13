@@ -21,6 +21,7 @@ public:
 
     void set();
     void reset();
+    void wait();
     int getValue();
 };
 

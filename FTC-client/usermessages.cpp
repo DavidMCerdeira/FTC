@@ -1,7 +1,7 @@
 #include "usermessages.h"
 
 UserMessagesModel::UserMessagesModel(QObject *parent)
-    : QAbstractListModel(parent)
+    : QAbstractListModel(parent), mutex(PTHREAD_MUTEX_INITIALIZER)
 {
     connect(this, SIGNAL(insertData(QString)), this, SLOT(insertNewData(QString)));
     connect(this, SIGNAL(insertData(QStringList)), this, SLOT(insertNewData(QStringList)));
@@ -42,6 +42,17 @@ QVariant UserMessagesModel::data(const QModelIndex &index, int role) const
     }
     // The view asked for other data, just return an empty QVariant
     return QVariant();
+}
+
+void UserMessagesModel::lock()
+{
+    pthread_mutex_lock(&mutex);
+
+}
+
+void UserMessagesModel::unlock()
+{
+    pthread_mutex_unlock(&mutex);
 }
 
 void UserMessagesModel::insertNewData(QString str)

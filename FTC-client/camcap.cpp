@@ -2,7 +2,8 @@
 
 CamCap::CamCap()
     : QQuickImageProvider(QQuickImageProvider::Image),
-      mutex(PTHREAD_MUTEX_INITIALIZER), buff_mutex(PTHREAD_MUTEX_INITIALIZER)
+      mutex(PTHREAD_MUTEX_INITIALIZER), buff_mutex(PTHREAD_MUTEX_INITIALIZER),
+      m_imgBuffer(new QImage)
 {
     cap = cv::VideoCapture(0);
     if(!cap.isOpened()){ // check if we succeeded
@@ -17,34 +18,39 @@ CamCap::CamCap()
     if(ret != 0){
         err(1, "Couldn't create pthread on CamCap");
     }
+
+    Controller::getInstance()->setCamCap(this);
 }
 
 CamCap::~CamCap()
 {
+    qDebug() << "Cam destructor";
     lock();
     pthread_cancel(thread_handle);
     lockBuff();
-    m_imgBuffer.clear();
+    //m_imgBuffer.clear();
 }
 
 QImage CamCap::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
+    Q_UNUSED(id);
+    Q_UNUSED(size);
+    Q_UNUSED(requestedSize);
 
-    qDebug() << "image requested";
 
-    if(m_imgBuffer.isEmpty()){
-        qDebug() << "Nothing returned";
-        QImage im;
+    //qDebug() << "image requested";
+
+    QImage im;
+    lockBuff();
+    if(m_imgBuffer == NULL){
+        //qDebug() << "Nothing returned";
         im.fill(Qt::red);
-        return im;
     }
     else{
-        qDebug() << "Returned front of the queue";
-        lockBuff();
-        QImage im =  m_imgBuffer.takeFirst();
-        unlockBuff();
-        return im;
+        im = *m_imgBuffer;
     }
+    unlockBuff();
+    return  im;
 }
 
 void* CamCap::camStream_thread(void *arg)
@@ -59,10 +65,9 @@ void* CamCap::camStream_thread(void *arg)
         const QImage image(frame->data, frame->cols, frame->rows, frame->step,
                            QImage::Format_RGB888, CamCap::matDeleter, frame);
         self->lockBuff();
-        qDebug() << "Put frame to buffer";
-        self->m_imgBuffer.push_back(image);
+        //qDebug() << "Put frame to buffer";
+        *(self->m_imgBuffer) = image;
         self->unlockBuff();
-        //        emit self->image_ready();
         usleep(100000);
     }
 
@@ -77,6 +82,15 @@ void CamCap::lock()
 void CamCap::unlock()
 {
     pthread_mutex_unlock(&mutex);
+}
+
+QImage CamCap::getFrame()
+{
+    QImage frame;
+    lockBuff();
+    frame = *m_imgBuffer;
+    unlockBuff();
+    return frame;
 }
 
 void CamCap::lockBuff()

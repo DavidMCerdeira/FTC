@@ -19,34 +19,33 @@ ColumnLayout{
     }
 
     Rectangle {
+        id: cam
         anchors.horizontalCenter: parent.horizontalCenter
         color: 'white'
-        border.color: 'black'
-        border.width: 2
+        border.color: 'red'
+        border.width: 4
 
         Layout.minimumWidth: 250
         Layout.minimumHeight: 250
 
-        //CameraCapture{id: cam}
-
         Image {
             id: image
             cache: false;
-            anchors.fill: parent
-        }
-
-        Timer{
-            interval: 100; running: true; repeat: true
-            onTriggered: {
-                image.source = "image://WebCam/" + Math.random();
-                console.log("Update image");
+            anchors.centerIn: parent
+            width: parent.width - 2*parent.border.width
+            height: parent.height - 2*parent.border.width
+            Timer{
+                interval: 10; running: true; repeat: true
+                onTriggered: {
+                    /* force image reload */
+                    image.source = "image://WebCam/" + Math.random();
+                }
             }
         }
 
         MouseArea{
             anchors.fill: parent
             onClicked: {
-                //usrLogout()
                 log.logout()
             }
         }
@@ -72,12 +71,16 @@ ColumnLayout{
                 if(log.logged){
                     if(log.priviledged){
                         priviledgedUser()
+                        cam.border.color = "gold"
+                    }
+                    else{
+                        cam.border.color = "green"
                     }
                 }
                 else{
+                    cam.border.color = "red"
                     usrLogout()
                 }
-
                 update();
             }
         }

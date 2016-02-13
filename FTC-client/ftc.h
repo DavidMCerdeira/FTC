@@ -8,8 +8,10 @@
 #include "imgcapturer.h"
 #include "servercon.h"
 #include <string.h>
+#include <QImage>
 
 #include "usrinfo.h"
+#include "mysemaphore.h"
 
 #define FTC_EVENT_MSGQ_NAME      "/ftc_events_msgQ"
 #define FTC_USR_PRSNC_SEMPH_NAME "/user_presence_semaph"
@@ -20,6 +22,7 @@ struct FTC_Events{
     static char *usr_valid;
     static char *usr_infRdy;
     static char *usr_unkwon;
+    static char *need_photo;
 };
 
 class FTC
@@ -29,13 +32,14 @@ private:
     DistanceSensor ds;
     MyMessageQueue messageQ;
     MyBinarySemaphore usrPrsntSemaph;
-    //ImgCapturer capture;
-    //Mat* face;
     ServerCon *m_serverCon;
     UserInfo *m_userInfo;
 
     pthread_t mainThread_handle;
     pthread_t usrDetectedThread_handle;
+
+    MyBinarySemaphore imgSem;
+    QImage face;
 
 public:
     FTC(ServerCon* serverCon);
@@ -43,6 +47,7 @@ public:
     void run();
     void logout();
     UserInfo* getUserInfo();
+    int setFace(QImage image);
 
 private:
     void handleUserDetected();

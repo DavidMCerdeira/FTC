@@ -5,11 +5,12 @@ char* FTC_Events::usr_absent  = const_cast<char*>("USR_ABSENT");
 char* FTC_Events::usr_valid   = const_cast<char*>("USR_VALID");
 char* FTC_Events::usr_unkwon  = const_cast<char*>("USR_UNKWN");
 char* FTC_Events::usr_infRdy  = const_cast<char*>("USR_INFRDY");
+char* FTC_Events::need_photo  = const_cast<char*>("NEED_PHOTO");
 
 
 FTC::FTC(ServerCon* serverCon)
     :messageQ(FTC_EVENT_MSGQ_NAME), usrPrsntSemaph(FTC_USR_PRSNC_SEMPH_NAME),
-      m_serverCon(serverCon), m_userInfo(NULL)
+      m_serverCon(serverCon), m_userInfo(NULL), imgSem("Image")
 {
 
 }
@@ -18,7 +19,7 @@ void FTC::run()
 {
     int ret = pthread_create(&mainThread_handle,
                              NULL, FTC::main_thread, this);
-    if(ret < 0){
+    if(ret < 0) {
         err(1, "Failed to create ftc's main thread...");
     }
 }
@@ -59,10 +60,12 @@ void* FTC::handleUserDetected_thread(void *arg)
     /* turn on screen? */
 
     /* capture face */
-    //int face = capture.captureStableFace();
+    self->messageQ.sendMsg(FTC_Events::need_photo);
+    self->imgSem.wait();
 
     /* send face to server for recognition */
     validUsr = true;
+    int len = face.byteCount();
     userId = 1;
 
     /* evaluate result */
@@ -103,6 +106,7 @@ void* FTC::main_thread(void *arg)
 
     while(1) {
         /* wait presence */
+        sleep(10);
         self->ds.waitDistanceLessThan(50, 200);
 
         /* deal with user presence */
@@ -122,6 +126,13 @@ void* FTC::main_thread(void *arg)
 
 UserInfo* FTC::getUserInfo()
 {
-   return m_userInfo;
+    return m_userInfo;
+}
+
+int FTC::setFace(QImage image)
+{
+    face = image;
+    imgSem.set();
+    return 1;
 }
 

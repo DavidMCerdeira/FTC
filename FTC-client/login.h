@@ -10,6 +10,11 @@
 class LoginModel : public QAbstractListModel
 {
     Q_OBJECT
+    QString text;
+    bool m_bPrivilege;
+    bool m_bLogged;
+
+    pthread_mutex_t mutex;
 
 public:
     explicit LoginModel(QObject *parent = 0);
@@ -24,6 +29,9 @@ public:
     Q_INVOKABLE void logout();
     Q_INVOKABLE void clockUser();
 
+    void lock();
+    void unlock();
+
 signals:
     void logIn(QString str, bool priv);
     void explicitLogOut();
@@ -33,9 +41,6 @@ private slots:
     void xLogin(QString str, bool priv);
 
 private:
-    QString text;
-    bool m_bPrivilege;
-    bool m_bLogged;
     bool getPriviledge(){return m_bPrivilege;}
     bool getLoggedState(){return m_bLogged;}
     void setNameAndPriv(QString str, bool priv);

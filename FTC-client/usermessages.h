@@ -13,6 +13,7 @@ class UserMessagesModel : public QAbstractListModel
     Q_OBJECT
 private:
     QStringList m_data;
+    pthread_mutex_t mutex;
 
 public:
     explicit UserMessagesModel(QObject *parent = 0);
@@ -20,6 +21,9 @@ public:
     // QAbstractItemModel interface
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
+
+    void lock();
+    void unlock();
 
 signals:
     void insertData(QString str);

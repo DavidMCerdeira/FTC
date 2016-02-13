@@ -67,6 +67,16 @@ void MyBinarySemaphore::reset()
     }
 }
 
+void MyBinarySemaphore::wait()
+{
+    if(sem_wait(semaph) < 0){
+        unlink();
+        err(1, "Error setting semaphore:%s\n",
+                    m_strName);
+    }
+    return;
+}
+
 int MyBinarySemaphore::getValue()
 {
     int value;

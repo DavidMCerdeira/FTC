@@ -120,7 +120,6 @@ vector<string> ServerCon::getDepartments()
     temp.push_back("Materiais");
     temp.push_back("Arquitectura");
     return temp;
-
 }
 
 vector<string> ServerCon::getJobs()
