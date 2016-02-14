@@ -3,6 +3,7 @@
 
 #include "request_handler.h"
 #include "ftc_frame.h"
+#include <err.h>
 
 
 class Handler_Factory

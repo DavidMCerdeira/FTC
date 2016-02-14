@@ -1,4 +1,5 @@
 ﻿#include "client_connection.h"
+#include <stdio.h>
 
 #define TIMEOUTINTERVAL 60.00
 
@@ -33,9 +34,9 @@ Client_Connection::Client_Connection(int _clSock) : clSock(_clSock)
 Client_Connection::~Client_Connection()
 {    
     /* Clean up all the threads */
-    pthread_cancel(this->thread_connection_receive);
-    pthread_cancel(this->thread_connection_receive);
-    pthread_cancel(this->thread_connection_send);
+    pthread_cancel(thread_connection_receive);
+    pthread_cancel(thread_check_connection_state);
+    pthread_cancel(thread_connection_send);
     
     close(this->clSock);
     
@@ -54,9 +55,9 @@ void* Client_Connection::connection_receive(void *arg)
 
         if(status > 0)
         {
+            string req(own->reqBuffer);
             /*Call request Manager*/
             own->clReqManager->add_request(own->reqBuffer);
-            
             /* Save time of current communication */
             time(&(own->last_communication_time));
         }
@@ -121,15 +122,26 @@ void* Client_Connection::check_connection_state(void *arg)
 
 bool Client_Connection::c_send(string buff)
 {
+    bool ret;
     /* Guarantees that no one is trying to write at the same time */
     pthread_mutex_lock(&write_mutex);                  
+    cout << "Send Content" << buff << endl;
 
-    if(send(this->clSock, buff.c_str(), sizeof(buff), MSG_NOSIGNAL) == -1)
-       return false;
+    if(send(this->clSock, buff.c_str(), buff.length(), MSG_NOSIGNAL) == -1)
+    {
+       cout << "send went wrong!!\n" << endl;
+       ret = false;
+    }
+    else
+    {
+        ret = true;
+    }
+
 
     pthread_mutex_unlock(&write_mutex);
+    cout <<"send went ok!" << endl;
 
-    return true;
+    return ret;
 }
 
 int Client_Connection::get_clientSock()

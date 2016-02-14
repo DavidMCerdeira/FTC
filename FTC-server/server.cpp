@@ -59,6 +59,17 @@ Server::Server(int l_numConnections) : max_numConnections(l_numConnections)
     pthread_exit(0);
 }
 
+Server::~Server()
+{
+    /* Closing server Socket */
+    close(servSocket);
+
+    /* Cancelling server threads */
+    pthread_cancel(thread_run);
+    pthread_cancel(thread_remClient);
+    lClients.erase(lClients.begin(), lClients.end());
+}
+
 void* Server::run(void* arg){
 
     Server *own = static_cast<Server*>(arg);
@@ -106,7 +117,6 @@ void*  Server::removeClient(void *arg)
     sigset_t unblocked_sig;
     siginfo_t si;
     Server* own = static_cast<Server*>(arg);
-    int sig;
 
     ///Unblock the Remove signal
     sigemptyset(&unblocked_sig);
