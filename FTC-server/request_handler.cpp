@@ -31,6 +31,9 @@ bool Search_Request::handler()
 {
     /* Initilization of the base query, conditions and the table
      * from which the information will be retrieved */
+
+    cout << "search Request" << inData << endl;
+
     string query("SELECT w.name, w.idWorker "), conditions(" WHERE "), tables("FROM Worker w");
 
     /* Prepare search paramenters, conditions and tables that can be used in the query */
@@ -191,13 +194,13 @@ bool Clock_Request::get_workerClockState(int worker_id, DB_Accesser *db, bool *c
     else
     {
         time_clock[0] = atoi(row[0][0]);
-    }
 
-    if((*row_size[0] != 0) && (*row_size[1] == 0))
-        *clockedState = CLOCKED_IN;
-    else
-    {
-        time_clock[1] = atoi(row[1][0]);
+        if((*row_size[0] != 0) && (*row_size[1] == 0))
+            *clockedState = CLOCKED_IN;
+        else
+        {
+            time_clock[1] = atoi(row[1][0]);
+        }
     }
 
     /* Other then the first clocks */
@@ -256,6 +259,8 @@ bool GetBasicInfo_Request::handler()
     string query = "SELECT w.idWorker, w.name, w.idPrivelege "
                    "FROM Worker w WHERE w.idWorker=";
 
+    cout << "get basic info" << endl;
+
     if(!boolParse)
         return false;
 
@@ -273,7 +278,18 @@ bool GetBasicInfo_Request::handler()
         outData["worker_id"] = atoi(row[0]);
         outData["name"] = row[1];
         outData["privelege"] = row[2];
-        ret = true;
+
+        bool clockState;
+
+        if(Clock_Request::get_workerClockState(outData["worker_id"].asInt(), db, &clockState))
+        {
+            outData["clock_state"] = clockState;
+            ret = true;
+        }
+        else
+        {
+            ret = false;
+        }
     }
     else
         ret = false;
@@ -288,7 +304,7 @@ bool GetMessages_Request::handler()
     MYSQL_RES *qResult = NULL;
     MYSQL_ROW row = NULL;
     Json::Value msgInfo;
-    string query = "SELECT lrm.idMessages, m.content, lsm.dateTime, w.name "
+    string query = "SELECT lrm.idMessages, m.content, UNIX_TIMESTAMP(lsm.dateTime), w.name "
                    "FROM Messages m, List_Sent_Messages lsm, List_Rcvd_Messages lrm, Worker w "
                    "WHERE lsm.idMessages=lrm.idMessages "
                    "AND w.idWorker=lsm.idFromWorker "
@@ -318,4 +334,70 @@ bool GetMessages_Request::handler()
    mysql_free_result(qResult);
 
    return true;
+}
+
+bool GetJobs_Request::handler(){
+    MYSQL_RES *qResult = NULL;
+    MYSQL_ROW row = NULL;
+    Json::Value jobInfo;
+    string query = "SELECT * FROM Jobs";
+
+    if(!boolParse)
+        return false;
+
+    if(db->db_query(query, &qResult))
+     return false;
+
+    outData["jobs_array"] = Json::Value(Json::arrayValue);
+
+    while ((row = mysql_fetch_row(qResult)) != NULL)
+    {
+        jobInfo["job_id"] = row[0];
+        jobInfo["name"] = row[1];
+
+        outData["jobs_array"].append(jobInfo);
+    }
+
+    mysql_free_result(qResult);
+
+    return true;
+}
+
+bool GetDepartments_Request::handler(){
+    MYSQL_RES *qResult = NULL;
+    MYSQL_ROW row = NULL;
+    Json::Value departmentInfo;
+    string query = "SELECT * FROM Department";
+
+    if(!boolParse)
+        return false;
+
+    if(db->db_query(query, &qResult))
+     return false;
+
+    outData["departments_array"] = Json::Value(Json::arrayValue);
+
+    while ((row = mysql_fetch_row(qResult)) != NULL)
+    {
+        departmentInfo["department_id"] = row[1];
+        departmentInfo["name"] = row[0];
+
+        outData["departments_array"].append(departmentInfo);
+    }
+
+    mysql_free_result(qResult);
+
+    return true;
+}
+
+bool GetHour_Request::handler()
+{
+    time_t current_time;
+    char send[20];
+
+    time(&current_time);
+    sprintf(send, "%l", current_time);
+
+    outData["current_time"] = *(new string(send));
+    return true;
 }

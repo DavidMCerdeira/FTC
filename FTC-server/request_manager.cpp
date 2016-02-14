@@ -5,7 +5,11 @@ Request_Manager::Request_Manager()
 {
     /* Structures to syncronize the pending request access */
     if(sem_init(&(this->sem_pendingReq), 0, 0) != 0)
-        return;
+    {
+        syslog(LOG_ERR, "Request::Request_Manager: semaphore init");
+        pthread_exit(0);
+    }
+
     pthread_mutex_init(&mux_pendingReq, NULL);
 
     /* Structures to syncronize the pending responses list access */
@@ -41,20 +45,25 @@ void* Request_Manager::req_interpreter(void *arg)
         /* identifie which request was received */
         own->req_handler = own->factory.which_handler(cur_request_frame);
 
-        /* handle the specific request */        
-        if(own->req_handler->handler())
-            cur_response_frame = new FTC_Frame(own->req_handler->get_reqSpecific()+"_success", own->req_handler->get_result_data());
-        else
-            cur_response_frame = new FTC_Frame(own->req_handler->get_reqSpecific()+"_unsuccess", "{\"nothing\":0}");
+        if(own->req_handler != NULL)
+        {
+            cout << cur_request_frame->get_fullFrame();
 
-        /* Store the response to the send thread */
-        own->add_response(cur_response_frame->get_fullFrame());
+            /* handle the specific request */
+            if(own->req_handler->handler())
+                cur_response_frame = new FTC_Frame(own->req_handler->get_reqSpecific(), own->req_handler->get_result_data());
+            else
+                cur_response_frame = new FTC_Frame(own->req_handler->get_reqSpecific(), "{\"nothing\":0}");
 
-        delete cur_response_frame;
+            warnx(cur_response_frame->get_fullFrame().c_str());
 
-        delete cur_request_frame;
+            /* Store the response to the send thread */
+            own->add_response(cur_response_frame->get_fullFrame());
+            delete cur_response_frame;
+
+            delete cur_request_frame;
+        }
     }
-
     return NULL;
 }
 
@@ -62,11 +71,13 @@ void Request_Manager::add_request(const char* new_rq)
 {
     string cmd(new_rq);
 
+    cout << "add Request:" << cmd << endl;
+
     pthread_mutex_lock(&mux_pendingReq);
 
     /* Add to request buffer */
-    this->pendingReq.push_back(cmd);
-    sem_post(&(this->sem_pendingReq));
+    pendingReq.push_back(cmd);
+    sem_post(&(sem_pendingReq));
 
     pthread_mutex_unlock(&mux_pendingReq);
 }
@@ -75,13 +86,17 @@ string Request_Manager::get_request()
 {
    string nextReq;
 
-    sem_wait(&(this->sem_pendingReq));
-    pthread_mutex_lock(&(this->mux_pendingReq));
+    cout << "Get Request " << endl;
 
-    nextReq = *(this->pendingReq.begin());
-    (this->pendingReq.pop_front());
+    sem_wait(&(sem_pendingReq));
+    pthread_mutex_lock(&(mux_pendingReq));
 
-    pthread_mutex_unlock(&(this->mux_pendingReq));
+    nextReq = *(pendingReq.begin());
+    (pendingReq.pop_front());
+
+    pthread_mutex_unlock(&(mux_pendingReq));
+
+    cout << "Get request finish!" << endl;
     return nextReq;
 }
 
@@ -97,13 +112,13 @@ void Request_Manager::add_response(const string m_resp)
 
 string Request_Manager::get_response()
 {
-    string retResp;
+    string retResp("");
 
     sem_wait(&sem_pendingResp);
     pthread_mutex_lock(&mux_pendingResp);
 
-    retResp = *(this->pendingResp.begin());
-    (this->pendingResp.pop_front());
+    retResp = *(pendingResp.begin());
+    (pendingResp.pop_front());
 
     pthread_mutex_unlock(&mux_pendingResp);
 

@@ -8,6 +8,8 @@
 #include <cstdio>
 #include <vector>
 
+#include "ftc_requests.h"
+
 class Request_Handler
 {
 public:
@@ -29,7 +31,7 @@ public:
     Search_Request(string data)
     : Request_Handler(data)
     {
-        this->reqSpecific = "search";
+        this->reqSpecific = SEARCH_REQUEST;
     }
     bool handler();
 };
@@ -37,7 +39,8 @@ public:
 class Clock_Request: public Request_Handler
 {
 public:
-    Clock_Request(string data, string reqSpecific): Request_Handler(data)
+    Clock_Request(string data, string reqSpecific)
+    : Request_Handler(data)
     {
         this->reqSpecific = reqSpecific;
     }
@@ -49,9 +52,10 @@ public:
 class GetBasicInfo_Request: public Request_Handler
 {
 public:
-    GetBasicInfo_Request(string data): Request_Handler(data)
+    GetBasicInfo_Request(string data)
+    : Request_Handler(data)
     {
-        this->reqSpecific = "getBasicInfo";
+        this->reqSpecific = GETUSRINFO_REQUEST;
     }
     bool handler();
 };
@@ -59,10 +63,46 @@ public:
 class GetMessages_Request: public Request_Handler
 {
 public:
-    GetMessages_Request(string data): Request_Handler(data)
+    GetMessages_Request(string data)
+    : Request_Handler(data)
     {
-        this->reqSpecific = "getMessages";
+        this->reqSpecific = GETMSG_REQUEST;
     }
+    bool handler();
+};
+
+class GetDepartments_Request: public Request_Handler
+{
+public:
+    GetDepartments_Request(string data)
+    : Request_Handler(data)
+    {
+        this->reqSpecific = GETDEP_REQUEST;
+    }
+    bool handler();
+};
+
+class GetJobs_Request: public Request_Handler
+{
+public:
+    GetJobs_Request(string data)
+    : Request_Handler(data)
+    {
+        this->reqSpecific = GETDEP_REQUEST;
+    }
+
+    bool handler();
+};
+
+class GetHour_Request: public Request_Handler
+{
+public:
+    GetHour_Request(string data)
+    : Request_Handler(data)
+    {
+        this->reqSpecific = GETHOUR_REQUEST;
+    }
+
     bool handler();
 };
 

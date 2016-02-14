@@ -27,6 +27,7 @@ HEADERS += \
     request_handler.h \
     json/json-forwards.h \
     json/json.h \
-    db_accesser.h
+    db_accesser.h \
+    ftc_requests.h
 
 
