@@ -70,19 +70,13 @@ void* Request_Manager::resp_redirect(void *arg)
 {
     FTC_Frame *cur_response_frame;
     Request_Manager *own = static_cast<Request_Manager*>(arg);
-    string respHeader, request;
 
     while(1)
     {
         /* Preparing frame for the specific request */
         cur_response_frame = new FTC_Frame(own->get_response());
 
-        respHeader = cur_response_frame->get_frameSpecific();
-
-        request = respHeader.substr(0, respHeader.find_first_of('_', 0));
-
-        own->addRespectiveResponse(request, cur_response_frame->get_frameData());
-        break;
+        own->addRespectiveResponse(cur_response_frame->get_frameSpecific(), cur_response_frame->get_frameData());
 
         delete cur_response_frame;
     }
@@ -162,7 +156,7 @@ Json::Value Request_Manager::getSearchResults(string name, string department, in
     return this->getRespectiveResponseData("search");
 }
 
-Json::Value Request_Manager::clockUser(int id)
+Json::Value Request_Manager::clockUser(int id, string in_out)
 {
     Json::Value reqData;
     Json::StyledWriter writerData;
@@ -175,7 +169,7 @@ Json::Value Request_Manager::clockUser(int id)
     requestData_str = writerData.write(reqData);
 
     /* Preparing frame */
-    FTC_Frame request("clock", requestData_str);
+    FTC_Frame request(("clock_" + in_out), requestData_str);
 
     add_request(request.get_fullFrame());
 

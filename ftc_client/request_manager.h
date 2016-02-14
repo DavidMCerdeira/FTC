@@ -32,7 +32,7 @@ public:
     Json::Value getUserInfo(int id);
     Json::Value getUserMessages(int id);
     Json::Value getSearchResults(string name, string department, int job);
-    Json::Value clockUser(int id);
+    Json::Value clockUser(int id, string in_out);
 
     Json::Value getDepartments();
     Json::Value getJobs();

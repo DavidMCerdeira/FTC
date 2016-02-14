@@ -13,6 +13,7 @@ class LoginModel : public QAbstractListModel
     QString text;
     bool m_bPrivilege;
     bool m_bLogged;
+    bool m_clocked;
 
     pthread_mutex_t mutex;
 
@@ -25,16 +26,20 @@ public:
 
     Q_PROPERTY(bool priviledged READ getPriviledge)
     Q_PROPERTY(bool logged READ getLoggedState)
+    Q_PROPERTY(int clocked READ getClockedInState NOTIFY clockChanged)
 
     Q_INVOKABLE void logout();
     Q_INVOKABLE void clockUser();
 
+    int getClockedInState();
+    void setClockedState();
     void lock();
     void unlock();
 
 signals:
     void logIn(QString str, bool priv);
     void explicitLogOut();
+    void clockChanged();
 
 private slots:
     void xLogout();

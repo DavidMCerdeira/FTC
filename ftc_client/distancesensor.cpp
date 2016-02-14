@@ -1,37 +1,18 @@
 #include "distancesensor.h"
 
-DistanceSensor::DistanceSensor()
+DistanceSensor::DistanceSensor(QObject *parent)
+       : QObject(parent), sem(DIST_SEM)
 {
-
+    sem.reset();
 }
 
-DistanceSensor::~DistanceSensor()
+void DistanceSensor::userDetected()
 {
-
+    sem.set();
 }
 
-void DistanceSensor::waitDistanceLessThan(int cm, int timeSteps)
+void DistanceSensor::userLeft()
 {
-    cm = cm+timeSteps;
-}
-
-void* DistanceSensor::waitDistanceLessThan_thread(void *arg)
-{
-   pthread_exit(arg);
-}
-
-void DistanceSensor::waitDistanceMoreThan(int cm, int timeSteps)
-{
-    cm = cm+timeSteps;
-}
-
-void* DistanceSensor::waitDistanceMoreThan_thread(void *arg)
-{
-
-    pthread_exit(arg);
-}
-
-void stopWaiting()
-{
-
+    qDebug() << "User lll";
+    sem.reset();
 }

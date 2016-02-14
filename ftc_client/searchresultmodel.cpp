@@ -2,6 +2,7 @@
 
 SearchResultModel::SearchResultModel(QObject *parent)
 {
+    Q_UNUSED(parent);
     connect(this, SIGNAL(insertData(QString)), this, SLOT(insertNewData(QString)));
     connect(this, SIGNAL(insertData(QStringList)), this, SLOT(insertNewData(QStringList)));
     connect(this, SIGNAL(clearData()), this, SLOT(clearAllData()));

@@ -3,10 +3,10 @@
 #define LogOutMessage "Not Logged In"
 
 LoginModel::LoginModel(QObject *parent)
-    : QAbstractListModel(parent), mutex(PTHREAD_MUTEX_INITIALIZER)
+    : QAbstractListModel(parent), m_clocked(-1), mutex(PTHREAD_MUTEX_INITIALIZER)
 {
     connect(this, SIGNAL(logIn(QString, bool)), this, SLOT(xLogin(QString, bool)));
-    (this, SIGNAL(explicitLogOut()), this, SLOT(xLogout()));
+    connect(this, SIGNAL(explicitLogOut()), this, SLOT(xLogout()));
     Controller::getInstance()->setLoginModel(this);
     xLogout();
 }
@@ -74,18 +74,25 @@ void LoginModel::xLogout()
 void LoginModel::xLogin(QString str, bool priv)
 {
     m_bLogged = true;
+    m_clocked = false;
+
     setNameAndPriv(str, priv);
 }
 
 void LoginModel::clockUser()
 {
     if(m_bLogged){
-        qDebug() << "User asked to clock";
+        m_clocked = (Controller::getInstance()->clockUser()) ? true : false;
     }
     else{
         qDebug() << "User tried to clock but it's logged in";
         qDebug() << "Maybe you should tell him...";
     }
+}
+
+int LoginModel::getClockedInState()
+{
+    return m_clocked;
 }
 
 void LoginModel::lock()

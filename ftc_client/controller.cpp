@@ -12,8 +12,8 @@ Controller::Controller()
 {
     cout << "Controller constructor" << endl;
 
-//    jobs = con.getJobs();
-//    departments = con.getDepartments();
+    //    jobs = con.getJobs();
+    //    departments = con.getDepartments();
     ftc.run();
     pthread_create(&ftcListen_handle, NULL, ftcListen_thread, this);
 }
@@ -92,6 +92,36 @@ void Controller::logOut()
     if(usrmsgs != NULL){
         usrmsgs->clearData();
     }
+}
+
+int Controller::clockUser()
+{
+    UserInfo *usr = ftc.getUserInfo();
+    int clocked = 0;
+    int id;
+    if(usr->clockUser()){
+        clocked = 1;
+    }
+    else{
+        clocked = 0;
+    }
+
+    Json::Value ret = con.getRequestManager()->clockUser(id = usr->getId(),
+                                            (clocked) ? "out" : "in");
+    if(ret.isMember("nothing")){
+        errx(1, "Tried to clock in but no info recieved");
+    }
+
+    if(id == ret["worker_id"].asInt()){
+        errx(1, "Received a different user id");
+    }
+
+    if(clocked != ret["clock_state"].asInt()){
+        errx(1, "Clock state differs!");
+    }
+
+    //log->setClockedState(clocked);
+    return clocked;
 }
 
 QStringList Controller::getDepartments()

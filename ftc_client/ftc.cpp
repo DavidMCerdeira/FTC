@@ -10,7 +10,7 @@ char* FTC_Events::need_photo  = const_cast<char*>("NEED_PHOTO");
 
 FTC::FTC(ServerCon* serverCon)
     :messageQ(FTC_EVENT_MSGQ_NAME), usrPrsntSemaph(FTC_USR_PRSNC_SEMPH_NAME),
-      m_serverCon(serverCon), m_userInfo(NULL), imgSem("Image")
+      ds(DIST_SEM), m_serverCon(serverCon), m_userInfo(NULL), imgSem("Image")
 {
 
 }
@@ -31,6 +31,7 @@ FTC::~FTC()
 
 void FTC::logout()
 {
+    ds.reset();
     delete m_userInfo;
 }
 
@@ -59,14 +60,14 @@ void* FTC::handleUserDetected_thread(void *arg)
 
     /* turn on screen? */
 
-//    /* capture face */
-//    self->messageQ.sendMsg(FTC_Events::need_photo);
-//    self->imgSem.wait();
+    //    /* capture face */
+    //    self->messageQ.sendMsg(FTC_Events::need_photo);
+    //    self->imgSem.wait();
+    //     int len = self->face.byteCount();
 
     /* send face to server for recognition */
     validUsr = true;
-    int len = self->face.byteCount();
-    userId = 1;
+    userId = 2;
 
     /* evaluate result */
     /* send acceptance to controller */
@@ -79,20 +80,41 @@ void* FTC::handleUserDetected_thread(void *arg)
         if(self->m_userInfo != NULL){
             err(1, "A user logged on, before another could log out");
         }
-        cout << "User info request sent\n" << endl;
         Json::Value ret = self->m_serverCon->getRequestManager()->getUserInfo(userId);
-        cout << "User info got: " << ret << endl;
-//        if(!ret.is("nothing")){
-//            errx(1, "No data received from user info");
-//        }
-        UserBasicInfo *basic = new UserBasicInfo;
 
+        if(ret.isMember("nothing")){
+            errx(1, "No data received from user info");
+        }
+
+        UserBasicInfo *basic = new UserBasicInfo;
         basic->m_strName = ret["name"].asString();
         basic->m_nId = ret["id"].asInt();
         int priv = ret["priviledge"].asInt();
         basic->m_permission = (priv == 1) ? Permissions::NON_PRIVILEDGED : Permissions::PRIVILEDGED;
         bool clocked = ret["clocked"].asBool();
-        //self->m_userInfo = new UserInfo(basic, true,);
+
+        UserPersonalInfo *info = new UserPersonalInfo;
+        list<string> msgs;
+        string msg;
+
+        ret = self->m_serverCon->getRequestManager()->getUserMessages(userId);
+//        time_t uTime;
+//        struct tm *msgTime;
+//        char strtime[30];
+
+        for(Json::Value& msg_it : ret["msgs_array"])
+        {
+            msg = "By " + msg_it["msg_sender"].asString() + ": ";
+            msg += msg_it["msg_content"].asString() + " ";
+//            uTime = msg_it["msg_send_time"].asInt();
+//            msgTime = gmtime(&uTime);
+//            strftime(strtime, 30, "%a %D %R", msgTime);
+//            msg += strtime;
+            msgs.push_back(msg);
+        }
+        info->messages = msgs;
+
+        self->m_userInfo = new UserInfo(basic, clocked, info);
 
         self->messageQ.sendMsg(FTC_Events::usr_infRdy);
     }
@@ -119,16 +141,16 @@ void* FTC::main_thread(void *arg)
 
     while(1) {
         /* wait presence */
-        sleep(10);
-        self->ds.waitDistanceLessThan(50, 200);
+        self->ds.wait();
+        qDebug() << "User detected";
 
         /* deal with user presence */
         self->handleUserDetected();
 
         /* wait absence or explicit logout */
-        sleep(60);
-        self->ds.waitDistanceMoreThan(60, 200);
 
+        //self->ds.waitDistanceMoreThan(60, 200);
+        sleep(60);
         /* deal with absence */
         self->handleUserLeft();
         while(1){

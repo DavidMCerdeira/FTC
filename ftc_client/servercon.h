@@ -21,7 +21,7 @@
 
 #define _PORT_NUMBER 8888
 #define _IP_ADDR "192.168.2.110"
-#define _BUFFER_SIZE 0xFF
+#define _BUFFER_SIZE 1024
 
 using namespace std;
 
@@ -52,7 +52,7 @@ private:
     /* Guarantees that the data is sent */
     pthread_t thread_connection_send;
     static void* connection_send(void* arg);
-    pthread_mutex_t write_mutex;                  // Protects  Write Function
+    pthread_mutex_t write_mutex; // Protects  Write Function
     bool c_send(string buff);
 
     /* Clean up Manager */

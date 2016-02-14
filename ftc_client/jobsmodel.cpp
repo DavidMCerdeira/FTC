@@ -2,6 +2,7 @@
 
 JobsModel::JobsModel(QObject *parent)
 {
+    Q_UNUSED(parent);
     m_data = Controller::getInstance()->getJobs();
 }
 
@@ -17,6 +18,7 @@ void JobsModel::currentItemChanged(int i)
 
 void JobsModel::departmentChanged(int i)
 {
+    Q_UNUSED(i);
     qDebug() << "departmente Changed";
     m_data = Controller::getInstance()->getJobs();
     beginResetModel();

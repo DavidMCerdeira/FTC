@@ -11,6 +11,7 @@
 #include "searchresultmodel.h"
 #include "setnameforsearch.h"
 #include "camcap.h"
+#include "distancesensor.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,6 +25,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<DepartmentsModel>("DepartmentsModel", 1, 0, "DepartmentsModel");
     qmlRegisterType<SearchResultModel>("SearchResultModel", 1, 0, "SearchResulModel");
     qmlRegisterType<setNameForSearch>("SetNameForSearch", 1, 0, "SetNameForSearch");
+    qmlRegisterType<DistanceSensor>("DistanceSensor", 1, 0, "DistanceSensor");
 
     /*make cursor inivisible*/
 //    QPixmap nullCursor(16, 16);

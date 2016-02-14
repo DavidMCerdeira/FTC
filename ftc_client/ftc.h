@@ -13,6 +13,7 @@
 #include "usrinfo.h"
 #include "mysemaphore.h"
 #include <json/json.h>
+#include <time.h>
 
 #define FTC_EVENT_MSGQ_NAME      "/ftc_events_msgQ"
 #define FTC_USR_PRSNC_SEMPH_NAME "/user_presence_semaph"
@@ -30,9 +31,9 @@ class FTC
 {
 private:
     RGBLed led;
-    DistanceSensor ds;
     MyMessageQueue messageQ;
     MyBinarySemaphore usrPrsntSemaph;
+    MyBinarySemaphore ds;
     ServerCon *m_serverCon;
     UserInfo *m_userInfo;
 

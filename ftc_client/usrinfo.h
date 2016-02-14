@@ -45,6 +45,7 @@ public:
     bool setPersonalData(UserPersonalInfo* personal);
 
     std::string getName();
+    int getId(){ return m_basicInfo->m_nId; }
     Permissions getPermission();
     std::list<std::string> getMessages();
     bool isClockedIn();

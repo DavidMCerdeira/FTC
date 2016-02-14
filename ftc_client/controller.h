@@ -67,6 +67,7 @@ public:
     /* home related functions */
     void logOut();
     void login();
+    int clockUser();
 
     /*search related functions */
     void setEmployee(QString name);

@@ -81,6 +81,16 @@ ColumnLayout{
                     cam.border.color = "red"
                     usrLogout()
                 }
+                if(log.clocked === -1){
+                   clockB.text = 'Clock In/Out'
+                }
+                else if(log.clocked === 0){
+                    clockB.text = 'Clock In'
+                }
+                else if(log.clocked === 1){
+                    clockB.text = 'Clock Out'
+                }
+
                 update();
             }
         }
@@ -103,6 +113,7 @@ ColumnLayout{
     }
 
     MyButton{
+        id: clockB
         Layout.minimumHeight: 50
         Layout.minimumWidth: 200
         name_pointSize: 18

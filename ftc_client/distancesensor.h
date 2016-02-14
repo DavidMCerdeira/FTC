@@ -1,30 +1,23 @@
 #ifndef DISTANCESENSOR_H
 #define DISTANCESENSOR_H
 
-#include <pthread.h>
+#include <QObject>
+#include <qdebug.h>
+#include <mysemaphore.h>
 
-struct DistanceSensorParameters{
-    int cm;
-    int timeSteps;
-};
+#define DIST_SEM "distance_sensor"
 
-class DistanceSensor
+class DistanceSensor : public QObject
 {
-private:
-    int fd;
-
+    Q_OBJECT
+    MyBinarySemaphore sem;
 public:
-    DistanceSensor();
-    ~DistanceSensor();
+    explicit DistanceSensor(QObject *parent = 0);
+    Q_INVOKABLE void userDetected();
+    Q_INVOKABLE void userLeft();
+signals:
 
-    /*waits for treshold measure*/
-    void waitDistanceLessThan(int cm, int timeSteps);
-    void waitDistanceMoreThan(int cm, int timeSteps);
-    void stopWaiting();
-
-private:
-    void* waitDistanceLessThan_thread(void *arg);
-    void* waitDistanceMoreThan_thread(void *arg);
+public slots:
 };
 
 #endif // DISTANCESENSOR_H

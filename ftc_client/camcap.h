@@ -17,8 +17,8 @@ class CamCap: public QQuickImageProvider
     pthread_t thread_handle;
     pthread_mutex_t mutex;
     cv::VideoCapture cap;
-    QImage* m_imgBuffer;
     pthread_mutex_t buff_mutex;
+    QImage* m_imgBuffer;
 
 public:
     CamCap();
