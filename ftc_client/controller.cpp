@@ -107,12 +107,12 @@ int Controller::clockUser()
     }
 
     Json::Value ret = con.getRequestManager()->clockUser(id = usr->getId(),
-                                            (clocked) ? "out" : "in");
+                                            (clocked) ? "in" : "out");
     if(ret.isMember("nothing")){
         errx(1, "Tried to clock in but no info recieved");
     }
 
-    if(id == ret["worker_id"].asInt()){
+    if(id != ret["worker_id"].asInt()){
         errx(1, "Received a different user id");
     }
 
@@ -120,7 +120,7 @@ int Controller::clockUser()
         errx(1, "Clock state differs!");
     }
 
-    //log->setClockedState(clocked);
+//    log->setClockedState(clocked);
     return clocked;
 }
 
@@ -232,6 +232,7 @@ void Controller::ftcEventHandler(char *event, Controller *self)
         bool priv = (usr->getPermission() != Permissions::NON_PRIVILEDGED) ? (true) : (false);
         qDebug() << "usr" << usr->getName().c_str();
         self->log->logIn(QString(usr->getName().c_str()), priv);
+        self->log->setClockedState(usr->isClockedIn());
         self->usrmsgs->insertData(conv(usr->getMessages()));
     }
     else if(strcmp(event, FTC_Events::need_photo) == 0){

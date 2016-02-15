@@ -28,20 +28,20 @@ ColumnLayout{
         Layout.minimumWidth: 250
         Layout.minimumHeight: 250
 
-//        Image {
-//            id: image
-//            cache: false;
-//            anchors.centerIn: parent
-//            width: parent.width - 2*parent.border.width
-//            height: parent.height - 2*parent.border.width
-//            Timer{
-//                interval: 10; running: true; repeat: true
-//                onTriggered: {
-//                    /* force image reload */
-//                    image.source = "image://WebCam/" + Math.random();
-//                }
-//            }
-//        }
+        //        Image {
+        //            id: image
+        //            cache: false;
+        //            anchors.centerIn: parent
+        //            width: parent.width - 2*parent.border.width
+        //            height: parent.height - 2*parent.border.width
+        //            Timer{
+        //                interval: 10; running: true; repeat: true
+        //                onTriggered: {
+        //                    /* force image reload */
+        //                    image.source = "image://WebCam/" + Math.random();
+        //                }
+        //            }
+        //        }
 
         MouseArea{
             anchors.fill: parent
@@ -80,18 +80,21 @@ ColumnLayout{
                 else{
                     cam.border.color = "red"
                     usrLogout()
+                    clockB.name = 'Clock In/Out'
                 }
-                if(log.clocked === -1){
-                   clockB.text = 'Clock In/Out'
-                }
-                else if(log.clocked === 0){
-                    clockB.text = 'Clock In'
-                }
-                else if(log.clocked === 1){
-                    clockB.text = 'Clock Out'
-                }
-
                 update();
+            }
+            onClockChanged:{
+                console.log("Clock changed");
+                console.log("Logged: " + clockedIn)
+                if( clockedIn ){
+                    console.log("aaa")
+                    clockB.name = 'Clock Out'
+                }
+                else{
+                    console.log("bbb")
+                    clockB.name = 'Clock In'
+                }
             }
         }
 
@@ -104,6 +107,8 @@ ColumnLayout{
             font.pointSize: 15
         }
     }
+
+
 
 
     Text {
@@ -127,6 +132,10 @@ ColumnLayout{
             else{
                 console.log("You're not logged in!")
             }
+        }
+        onTextChanged: {
+            console.log(("Text changed: " + text))
+            text = text
         }
     }
 }

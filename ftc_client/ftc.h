@@ -54,6 +54,7 @@ public:
 private:
     void handleUserDetected();
     void handleUserLeft();
+    int faceValidate();
 
     static void* main_thread(void *);
     static void* handleUserDetected_thread(void *);

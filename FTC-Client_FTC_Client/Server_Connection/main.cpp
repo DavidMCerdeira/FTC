@@ -8,16 +8,20 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+    (void)argc;
+    (void)argv;
     //*
     ServerCon con;
     Json::Value ret;
     Request_Manager* myManager = con.getRequestManager();
 
-    //ret = myManager->getSearchResults("david", "esrg", 1);
+    ret = myManager->getUserMessages(2);
+
+    cout << ret;
+
     ret = myManager->getUserInfo(2);
 
-    cout << ret << endl;
-    cout << "All done!" << endl;
+    cout << ret << "All done!" << endl;
 /*/
     struct hostent* host;
     struct sockaddr_in addr;
@@ -40,7 +44,7 @@ int main(int argc, char *argv[])
         return 0;
     }
     err(1, "Coulddn't connect");
-
     //*/
-    return 0;
+
+    pthread_exit(0);
 }

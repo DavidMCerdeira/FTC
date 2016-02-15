@@ -82,7 +82,9 @@ void LoginModel::xLogin(QString str, bool priv)
 void LoginModel::clockUser()
 {
     if(m_bLogged){
+        qDebug() << "clocking user";
         m_clocked = (Controller::getInstance()->clockUser()) ? true : false;
+        clockChanged(m_clocked);
     }
     else{
         qDebug() << "User tried to clock but it's logged in";
@@ -90,9 +92,16 @@ void LoginModel::clockUser()
     }
 }
 
-int LoginModel::getClockedInState()
+bool LoginModel::getClockedInState()
 {
     return m_clocked;
+}
+
+void LoginModel::setClockedState(bool clockedIn)
+{
+    qDebug() << "Clock set to: " << clockedIn;
+    m_clocked = clockedIn;
+    clockChanged(clockedIn);
 }
 
 void LoginModel::lock()

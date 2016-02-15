@@ -61,12 +61,14 @@ void* FTC::handleUserDetected_thread(void *arg)
     /* turn on screen? */
 
     //    /* capture face */
-    //    self->messageQ.sendMsg(FTC_Events::need_photo);
-    //    self->imgSem.wait();
-    //     int len = self->face.byteCount();
+    userId = self->faceValidate();
 
-    /* send face to server for recognition */
-    validUsr = true;
+    if(userId > 0){
+        validUsr = true;
+    }
+    else{
+        validUsr = false;
+    }
     userId = 2;
 
     /* evaluate result */
@@ -88,28 +90,28 @@ void* FTC::handleUserDetected_thread(void *arg)
 
         UserBasicInfo *basic = new UserBasicInfo;
         basic->m_strName = ret["name"].asString();
-        basic->m_nId = ret["id"].asInt();
+        basic->m_nId = ret["worker_id"].asInt();
         int priv = ret["priviledge"].asInt();
         basic->m_permission = (priv == 1) ? Permissions::NON_PRIVILEDGED : Permissions::PRIVILEDGED;
-        bool clocked = ret["clocked"].asBool();
+        bool clocked = ret["clock_state"].asBool();
 
         UserPersonalInfo *info = new UserPersonalInfo;
         list<string> msgs;
         string msg;
 
         ret = self->m_serverCon->getRequestManager()->getUserMessages(userId);
-//        time_t uTime;
-//        struct tm *msgTime;
-//        char strtime[30];
+        //        time_t uTime;
+        //        struct tm *msgTime;
+        //        char strtime[30];
 
         for(Json::Value& msg_it : ret["msgs_array"])
         {
             msg = "By " + msg_it["msg_sender"].asString() + ": ";
             msg += msg_it["msg_content"].asString() + " ";
-//            uTime = msg_it["msg_send_time"].asInt();
-//            msgTime = gmtime(&uTime);
-//            strftime(strtime, 30, "%a %D %R", msgTime);
-//            msg += strtime;
+            //            uTime = msg_it["msg_send_time"].asInt();
+            //            msgTime = gmtime(&uTime);
+            //            strftime(strtime, 30, "%a %D %R", msgTime);
+            //            msg += strtime;
             msgs.push_back(msg);
         }
         info->messages = msgs;
@@ -133,6 +135,18 @@ void FTC::handleUserLeft()
     messageQ.sendMsg(FTC_Events::usr_absent);
 
     /* cancel handle_user_detected thread */
+}
+
+int FTC::faceValidate()
+{
+    /*
+    self->messageQ.sendMsg(FTC_Events::need_photo);
+    self->imgSem.wait();
+    int len = self->face.byteCount();
+
+    */
+
+    return 2;
 }
 
 void* FTC::main_thread(void *arg)

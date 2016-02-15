@@ -17,17 +17,25 @@ Request_Manager::Request_Manager()
     pthread_mutex_init(&mux_pendingResp, NULL);
 
     int i = 0;
-    requests.emplace(requests.end(), "search");
+    requests.emplace(requests.end(), SEARCH_REQUEST);
     i++;
-    requests.emplace(requests.end(), "getBasicInfo");
+    requests.emplace(requests.end(), GETUSRINFO_REQUEST);
     i++;
-    requests.emplace(requests.end(), "getMessages");
+    requests.emplace(requests.end(), GETMSG_REQUEST);
     i++;
-    requests.emplace(requests.end(), "clockUser");
+    requests.emplace(requests.end(), CLOCKIN_REQUEST);
+    i++;
+    requests.emplace(requests.end(), CLOCKOUT_REQUEST);
+    i++;
+    requests.emplace(requests.end(), GETJOBS_REQUEST);
+    i++;
+    requests.emplace(requests.end(), GETHOUR_REQUEST);
+    i++;
+    requests.emplace(requests.end(), VALIDATION_REQUEST);
+    i++;
+    requests.emplace(requests.end(), GETDEP_REQUEST);
     i++;
 
-    //requests.emplace(requests.end(), "getBasInfo");
-    //i++;
     NUMBER_OF_REQUESTS = i;
 
     sem_redirectResp = new sem_t [NUMBER_OF_REQUESTS];
@@ -97,10 +105,10 @@ Json::Value Request_Manager::getUserInfo(int id)
     requestData_str = writerData.write(reqData);
 
     /* Preparing frame */
-    FTC_Frame requestFrame("getBasicInfo", requestData_str);
+    FTC_Frame requestFrame(GETUSRINFO_REQUEST, requestData_str);
     add_request(requestFrame.get_fullFrame());
 
-    return getRespectiveResponseData("getBasicInfo");
+    return getRespectiveResponseData(GETUSRINFO_REQUEST);
 }
 
 Json::Value Request_Manager::getUserMessages(int id)
@@ -116,10 +124,10 @@ Json::Value Request_Manager::getUserMessages(int id)
     requestData_str = writerData.write(reqData);
 
     /* Preparing frame */
-    FTC_Frame request("getMessages", requestData_str);
+    FTC_Frame request(GETMSG_REQUEST, requestData_str);
     add_request(request.get_fullFrame());
 
-    return this->getRespectiveResponseData("getMessages");
+    return this->getRespectiveResponseData(GETMSG_REQUEST);
 }
 
 Json::Value Request_Manager::getSearchResults(string name, string department, int job)
@@ -147,13 +155,13 @@ Json::Value Request_Manager::getSearchResults(string name, string department, in
 
     str = writer.write(reqData);
 
-    FTC_Frame request("search", str);
+    FTC_Frame request(SEARCH_REQUEST, str);
 
     cout << "Full frame: " << request.get_fullFrame() << endl;
 
     add_request(request.get_fullFrame());
 
-    return this->getRespectiveResponseData("search");
+    return this->getRespectiveResponseData(SEARCH_REQUEST);
 }
 
 Json::Value Request_Manager::clockUser(int id, string in_out)
@@ -168,13 +176,33 @@ Json::Value Request_Manager::clockUser(int id, string in_out)
     /*convert it to string*/
     requestData_str = writerData.write(reqData);
 
+    string wt;
+
     /* Preparing frame */
-    FTC_Frame request(("clock_" + in_out), requestData_str);
+    if(in_out == "in")
+    {
+       wt = CLOCKIN_REQUEST;
+    }
+    else if(in_out == "out")
+    {
+       wt = CLOCKOUT_REQUEST;
+    }
+    else
+    {
+       wt = "";
+    }
 
-    add_request(request.get_fullFrame());
 
-    return this->getRespectiveResponseData("clock");
+    if(wt != "")
+    {
+        FTC_Frame request((wt), requestData_str);
 
+        add_request(request.get_fullFrame());
+
+        return this->getRespectiveResponseData(wt);
+    }
+    else
+        return "{\"nothing\":0}";
 }
 
 void Request_Manager::add_request(const string new_rq)
@@ -234,13 +262,13 @@ Json::Value Request_Manager::getRespectiveResponseData(string idx)
     Json::Value ret;
     int i;
 
-    for(i = 0; i < NR_OF_REQUESTS; i++)
+    for(i = 0; i < NUMBER_OF_REQUESTS; i++)
     {
         if(requests[i] == idx)
             break;
     }
 
-    if(i == NR_OF_REQUESTS)
+    if(i == NUMBER_OF_REQUESTS)
     {
         syslog(LOG_ERR, "Request_Manager::getRespectiveResponseData: not a request");
         warnx("Request_Manager::getRespectiveResponseData: not a request");
@@ -264,13 +292,13 @@ void Request_Manager::addRespectiveResponse(string idx, string data)
     Json::Reader rString;
     int i;
 
-    for(i = 0; i < NR_OF_REQUESTS; i++)
+    for(i = 0; i < NUMBER_OF_REQUESTS; i++)
     {
         if(requests[i] == idx)
             break;
     }
 
-    if (i == NR_OF_REQUESTS)
+    if (i == NUMBER_OF_REQUESTS)
     {
         syslog(LOG_ERR, "Request_Manager::addRespectiveResponse: not a request");
         warnx("Request_Manager::addRespectiveResponse: not a request");

@@ -34,7 +34,6 @@ private slots:
     void insertNewData(QString str);
     void insertNewData(QStringList str);
     void clearAllData();
-
 };
 
 #endif // USERMESSAGES_H

@@ -12,8 +12,7 @@
 #include <err.h>
 
 #include "ftc_frame.h"
-
-#define NR_OF_REQUESTS 4
+#include "ftc_requests.h"
 
 using namespace std;
 

@@ -3,6 +3,7 @@
 
 #define TIMEOUTINTERVAL 60.00
 
+
 ServerCon::ServerCon(): BUFFER_SIZE(_BUFFER_SIZE), port(_PORT_NUMBER)
 {
     pthread_attr_t tAttr;
@@ -56,8 +57,6 @@ ServerCon::~ServerCon()
 }
 
 bool ServerCon::openConnection(){
-    /* create TCP socket */
-
     /* get host address */
     server = gethostbyname(_IP_ADDR);
 
@@ -102,14 +101,17 @@ void* ServerCon::connection_receive(void *arg)
     while(own->conState == true)
     {
         status = recv(own->sockfd, &own->reqBuffer[0],  MAX_LINE_BUFF, 0);
-        cout << "Rcvd: " << own->reqBuffer << endl;
         if(status > 0)
         {
+            cout << "Rcvd: " << own->reqBuffer << endl;
             /*Call request Manager*/
             own->clReqManager->add_response(own->reqBuffer);
 
             /* Save time of current communication */
             time(&(own->last_communication_time));
+        }
+        else{
+            errx(1, "Nothing received, maybe socket is closed?");
         }
         memset(own->reqBuffer, 0, MAX_LINE_BUFF);
     }

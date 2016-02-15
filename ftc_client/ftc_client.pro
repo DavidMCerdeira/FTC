@@ -74,4 +74,5 @@ HEADERS += \
     servercon.h \
     setnameforsearch.h \
     usermessages.h \
-    usrinfo.h
+    usrinfo.h \
+    ftc_requests.h

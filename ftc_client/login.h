@@ -6,6 +6,7 @@
 #include <QString>
 #include <QDebug>
 #include "controller.h"
+#include "ftc_requests.h"
 
 class LoginModel : public QAbstractListModel
 {
@@ -26,20 +27,20 @@ public:
 
     Q_PROPERTY(bool priviledged READ getPriviledge)
     Q_PROPERTY(bool logged READ getLoggedState)
-    Q_PROPERTY(int clocked READ getClockedInState NOTIFY clockChanged)
+    Q_PROPERTY(int clocked READ getClockedInState)
 
     Q_INVOKABLE void logout();
     Q_INVOKABLE void clockUser();
 
-    int getClockedInState();
-    void setClockedState();
+    bool getClockedInState();
+    void setClockedState(bool clockedIn);
     void lock();
     void unlock();
 
 signals:
     void logIn(QString str, bool priv);
     void explicitLogOut();
-    void clockChanged();
+    void clockChanged(bool clockedIn);
 
 private slots:
     void xLogout();

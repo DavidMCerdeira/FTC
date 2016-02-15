@@ -47,7 +47,7 @@ ServerCon::~ServerCon()
 {    
     /* Clean up all the threads */
     pthread_cancel(this->thread_connection_receive);
-    pthread_cancel(this->thread_connection_receive);
+    pthread_cancel(this->thread_check_connection_state);
     pthread_cancel(this->thread_connection_send);
     
     close(this->sockfd);
@@ -55,10 +55,8 @@ ServerCon::~ServerCon()
     delete clReqManager;
 }
 
-bool ServerCon::openConnection(){
-    /* create TCP socket */
-    int errn;
-
+bool ServerCon::openConnection()
+{
     /* get host address */
     server = gethostbyname(_IP_ADDR);
 
@@ -83,7 +81,6 @@ bool ServerCon::openConnection(){
 
     if( ::connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
-        errn = errno;
         err(1, "Couldn't connect");
         syslog(LOG_ERR, "Server_Connection::open_connection: ERROR Connecting to server");
         return false;
@@ -99,20 +96,27 @@ void* ServerCon::connection_receive(void *arg)
 {
     ServerCon *own = reinterpret_cast<ServerCon*>(arg);
     int status;
+    static int iteq = 0;
 
     /*While connection active*/
     while(own->conState == true)
     {
         status = recv(own->sockfd, &own->reqBuffer[0],  MAX_LINE_BUFF, 0);
 
+        if(iteq++ > 0)
+            cout << iteq << endl;
+
         if(status > 0)
         {
+            cout << "Rcvd: " << own->reqBuffer << endl;
+
             /*Call request Manager*/
             own->clReqManager->add_response(own->reqBuffer);
             
             /* Save time of current communication */
             time(&(own->last_communication_time));
         }
+        memset(own->reqBuffer, 0, MAX_LINE_BUFF);
     }
 
     pthread_exit(0);
@@ -158,6 +162,7 @@ void* ServerCon::check_connection_state(void *arg)
                 sleepTime =TIMEOUTINTERVAL;
             else
             {
+
                 /* Notify server object that it has to remove this object */
                 sig_par.sival_int = own->sockfd;
                 sigqueue(getpid(), SIG_CON_CLOSED, sig_par);
@@ -175,22 +180,25 @@ void* ServerCon::check_connection_state(void *arg)
 
 bool ServerCon::c_send(string buff)
 {
+    bool ret;
     /* Guarantees that no one is trying to write at the same time */
     pthread_mutex_lock(&write_mutex);
     cout << "Sending: " << buff.c_str() << endl;
     if(send(this->sockfd, buff.c_str(), buff.length(), MSG_NOSIGNAL) == -1){
-        //err(1, "Coulnd't send");
-        return false;
+        err(1, "Coulnd't send");
+        ret = false;
     }
-
+    else{
+        ret = true;
+    }
 
     pthread_mutex_unlock(&write_mutex);
 
-    return true;
+    return ret;
 }
 
 int ServerCon::get_clientSock()
 {
-    return this->sockfd;
+    return sockfd;
 }
 

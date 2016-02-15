@@ -70,19 +70,14 @@ void* Request_Manager::resp_redirect(void *arg)
 {
     FTC_Frame *cur_response_frame;
     Request_Manager *own = static_cast<Request_Manager*>(arg);
-    string respHeader, request;
 
     while(1)
     {
         /* Preparing frame for the specific request */
         cur_response_frame = new FTC_Frame(own->get_response());
 
-        respHeader = cur_response_frame->get_frameSpecific();
+        own->addRespectiveResponse(cur_response_frame->get_frameSpecific(), cur_response_frame->get_frameData());
 
-        request = respHeader.substr(0, respHeader.find_first_of('_', 0));
-
-        own->addRespectiveResponse(request, cur_response_frame->get_frameData());
-        break;
 
         delete cur_response_frame;
     }
@@ -125,7 +120,7 @@ Json::Value Request_Manager::getUserMessages(int id)
     FTC_Frame request("getMessages", requestData_str);
     add_request(request.get_fullFrame());
 
-    return this->getRespectiveResponseData("getMessages");
+    return getRespectiveResponseData("getMessages");
 }
 
 Json::Value Request_Manager::getSearchResults(string name, string department, int job)
@@ -149,13 +144,9 @@ Json::Value Request_Manager::getSearchResults(string name, string department, in
         reqData["job_id"] = job;
     }
 
-    cout << "reqData: " << reqData << endl;
-
     str = writer.write(reqData);
 
     FTC_Frame request("search", str);
-
-    cout << "Full frame: " << request.get_fullFrame() << endl;
 
     add_request(request.get_fullFrame());
 
@@ -227,8 +218,8 @@ string Request_Manager::get_response()
     sem_wait(&sem_pendingResp);
     pthread_mutex_lock(&mux_pendingResp);
 
-    retResp = *(this->pendingResp.begin());
-    (this->pendingResp.pop_front());
+    retResp = *(pendingResp.begin());
+    (pendingResp.pop_front());
 
     pthread_mutex_unlock(&mux_pendingResp);
 
@@ -255,6 +246,7 @@ Json::Value Request_Manager::getRespectiveResponseData(string idx)
     }
 
     sem_wait(&sem_redirectResp[i]);
+
     pthread_mutex_lock(&mux_redirectResp[i]);
 
     ret = *(this->respectiveData[i].begin());
@@ -269,6 +261,8 @@ void Request_Manager::addRespectiveResponse(string idx, string data)
     Json::Value converted;
     Json::Reader rString;
     int i;
+
+    cout << "Add respective response: " <<idx << " " << data << endl;
 
     for(i = 0; i < NR_OF_REQUESTS; i++)
     {
@@ -287,7 +281,7 @@ void Request_Manager::addRespectiveResponse(string idx, string data)
 
     pthread_mutex_lock(&mux_redirectResp[i]);
 
-    respectiveData[i].push_back(converted);
+    respectiveData[i].push_front(converted);
     sem_post(&sem_redirectResp[i]);
 
     pthread_mutex_unlock(&mux_redirectResp[i]);
