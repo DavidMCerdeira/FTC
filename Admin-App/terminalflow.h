@@ -3,6 +3,9 @@
 
 #include <QObject>
 #include <QTableWidget>
+#include <QDate>
+#include <pthread.h>
+#include <unistd.h> //sleep
 
 class TerminalFlow : public QObject
 {
@@ -10,12 +13,12 @@ class TerminalFlow : public QObject
     QTableWidget *m_table;
     bool m_update;
     QStringList m_header;
+    pthread_t pollForData_handle;
 
 public:
     explicit TerminalFlow(QObject *parent = 0);
 
     void setTable(QTableWidget *table);
-    void setAutoUpdate(bool state);
 
 private:
     void createTable();
@@ -24,6 +27,9 @@ private:
 signals:
 
 public slots:
+    void checkForData();
+    void setAutoUpdate(bool state);
+
 };
 
 #endif // TERMINALFLOW_H

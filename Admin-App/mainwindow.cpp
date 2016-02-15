@@ -15,27 +15,86 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug() << name << password;
     /* validate */
 
+    QStringList departments;
+    QStringList jobs;
+    QStringList permissions;
+
+    departments.push_back("Lol1");
+    departments.push_back("Lol2");
+    departments.push_back("Lol3");
+
+    jobs.push_back("top1");
+    jobs.push_back("top2");
+    jobs.push_back("top3");
+
+    permissions.push_back("No Priviledge");
+    permissions.push_back("Priviledged");
+    permissions.push_back("Admin");
+
     ui->setupUi(this);
     connect(ui->tabs, SIGNAL(currentChanged(int)), this, SLOT(slot_tabChanged(int)));
 
     /* regist tab--> */
+    camera = new QCamera;
+
+    ui->regist_cameraPushButton->setEnabled(false);
     connect(ui->regist_addUserPushButton, SIGNAL(pressed()), this, SLOT(regist_commit()));
+    ui->regist_departmentsComboBox->insertItems(0, departments);
+    ui->regist_jobComboBox->insertItems(0, jobs);
+    ui->regist_permissionComboBox->insertItems(0, permissions);
+    /* camera--> */
+    setCamera(QCameraInfo::defaultCamera());
+//    foreach (const QCameraInfo &cameraInfo, QCameraInfo::availableCameras()) {
+//        ui->regist_cameraComboBox->insertItem(ui->regist_cameraComboBox->count(), cameraInfo.description(), QVariant::fromValue(cameraInfo));
+//    }
+    /* <--camera */
     /* <--regist tab */
 
     /* search tab--> */
     connect(ui->search_searchPushButton, SIGNAL(pressed()), this, SLOT(search_commit()));
+    ui->search_departmentsComboBox->insertItems(0, departments);
+    ui->search_jobsComboBox->insertItems(0, jobs);
+    ui->search_permissionsComboBox->insertItems(0, permissions);
     /* <--search tab */
 
     /* send message tab--> */
     connect(ui->msgs_sendPushButton, SIGNAL(pressed()), this, SLOT(sendMsg_commit()));
     /* <--send message tab */
 
+    /* flow tab--> */
+    connect(ui->flow_autoUpdateCheckBox, SIGNAL(clicked(bool)), &flow, SLOT(setAutoUpdate(bool)));
+    connect(ui->flow_reloadPushButton, SIGNAL(pressed()), &flow, SLOT(checkForData()));
+    ui->flow_autoUpdateCheckBox->setChecked(true);
+    flow.setAutoUpdate(true);
     flow.setTable(ui->flow_tableWidget);
+    /* <--flow tab*/
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::setCamera(QCameraInfo cameraInfo)
+{
+    delete imageCapture;
+    delete camera;
+
+    camera = new QCamera(cameraInfo);
+
+    imageCapture = new QCameraImageCapture(camera);
+
+//    camera->setViewfinder(ui->viewfinder);
+
+//    connect(imageCapture, SIGNAL(readyForCaptureChanged(bool)), this, SLOT(readyForCapture(bool)));
+    connect(imageCapture, SIGNAL(imageCaptured(int,QImage)), this, SLOT(processCapturedImage(int,QImage)));
+//    connect(imageCapture, SIGNAL(imageSaved(int,QString)), this, SLOT(imageSaved(int,QString)));
+//    connect(imageCapture, SIGNAL(error(int,QCameraImageCapture::Error,QString)), this,
+//            SLOT(displayCaptureError(int,QCameraImageCapture::Error,QString)));
+    connect(ui->regist_cameraPushButton, SIGNAL(pressed()), imageCapture, SLOT(capture(QString)));
+
+    camera->start();
 }
 
 void MainWindow::slot_tabChanged(int idx)
@@ -80,6 +139,22 @@ void MainWindow::regist_commit()
     regist.setPermissionsIdx(ui->regist_permissionComboBox->currentIndex());
     regist.setBirth(ui->regist_birthDateEdit->date());
     regist.commitUser();
+}
+
+void MainWindow::camera_select()
+{
+//    setCamera(static_cast<QCameraInfo>(ui->regist_cameraComboBox->currentData(ui->regist_cameraComboBox->currentIndex())));
+    setCamera(QCameraInfo::defaultCamera());
+}
+
+void MainWindow::camera_readyForCapture()
+{
+    ui->regist_cameraPushButton->setEnabled(true);
+}
+
+void MainWindow::camera_captureImage(int, QImage)
+{
+
 }
 
 void MainWindow::search_name()

@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QCamera>
+#include <QCameraImageCapture>
+#include <QCameraInfo>
+#include <qmediarecorder.h>
 #include "register.h"
 #include "searchemployee.h"
 #include "sendmessage.h"
@@ -19,6 +22,8 @@ class MainWindow : public QMainWindow
     SearchEmployee search;
     SendMessage sendMsg;
     TerminalFlow flow;
+    QCamera *camera;
+    QCameraImageCapture *imageCapture;
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -26,6 +31,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    void setCamera(QCameraInfo cameraInfo);
 
 private slots:
     void slot_tabChanged(int idx);
@@ -36,6 +42,11 @@ private slots:
     void regist_email();
     //void regist_photo();
     void regist_commit();
+    /* camera--> */
+    void camera_select();
+    void camera_readyForCapture();
+    void camera_captureImage(int, QImage);
+    /* <--camera */
     /* <--regist tab */
 
     /* search tab--> */
@@ -46,9 +57,6 @@ private slots:
     /* send message tab--> */
     void sendMsg_commit();
     /* <--send message tab */
-
-    /* flow tab--> */
-    /* <--flow tab */
 
     void quit();
 };

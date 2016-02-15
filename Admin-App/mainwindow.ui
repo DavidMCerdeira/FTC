@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>837</width>
-    <height>602</height>
+    <width>777</width>
+    <height>567</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,7 +31,7 @@
     <item>
      <widget class="QTabWidget" name="tabs">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="registTab">
        <attribute name="title">
@@ -73,7 +73,10 @@
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_13">
                 <item>
-                 <widget class="QGraphicsView" name="regist_camGraphicsView"/>
+                 <widget class="QGraphicsView" name="regist_cameraGraphicsView"/>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="regist_cameraComboBox"/>
                 </item>
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -106,7 +109,7 @@
                      </spacer>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="regist_photoPushButton">
+                     <widget class="QPushButton" name="regist_cameraPushButton">
                       <property name="text">
                        <string>Take Photo</string>
                       </property>
@@ -211,7 +214,11 @@
                            </widget>
                           </item>
                           <item>
-                           <widget class="QDateEdit" name="regist_birthDateEdit"/>
+                           <widget class="QDateEdit" name="regist_birthDateEdit">
+                            <property name="displayFormat">
+                             <string>dd/MM/yyyy</string>
+                            </property>
+                           </widget>
                           </item>
                          </layout>
                         </item>
@@ -386,6 +393,13 @@
            <widget class="QPushButton" name="flow_reloadPushButton">
             <property name="text">
              <string>Reload</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="flow_autoUpdateCheckBox">
+            <property name="text">
+             <string>Auto Update</string>
             </property>
            </widget>
           </item>
@@ -784,7 +798,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>837</width>
+     <width>777</width>
      <height>25</height>
     </rect>
    </property>
