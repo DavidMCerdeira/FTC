@@ -5,7 +5,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow), isTakingPhoto(false)
 {
     QString name, password;
     LoginDialog *login = new LoginDialog(&name, &password);
@@ -36,17 +36,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
     /* regist tab--> */
     camera = new QCamera;
+    imageCapture = new QCameraImageCapture(0);
 
     ui->regist_cameraPushButton->setEnabled(false);
     connect(ui->regist_addUserPushButton, SIGNAL(pressed()), this, SLOT(regist_commit()));
+    connect(ui->regist_cameraPushButton, SIGNAL(pressed()), this, SLOT(camera_takePicture()));
     ui->regist_departmentsComboBox->insertItems(0, departments);
     ui->regist_jobComboBox->insertItems(0, jobs);
     ui->regist_permissionComboBox->insertItems(0, permissions);
+
     /* camera--> */
     setCamera(QCameraInfo::defaultCamera());
-//    foreach (const QCameraInfo &cameraInfo, QCameraInfo::availableCameras()) {
-//        ui->regist_cameraComboBox->insertItem(ui->regist_cameraComboBox->count(), cameraInfo.description(), QVariant::fromValue(cameraInfo));
-//    }
+    //    foreach (const QCameraInfo &cameraInfo, QCameraInfo::availableCameras()) {
+    //        ui->regist_cameraComboBox->insertItem(ui->regist_cameraComboBox->count(), cameraInfo.description(), QVariant::fromValue(cameraInfo));
+    //    }
     /* <--camera */
     /* <--regist tab */
 
@@ -65,8 +68,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->flow_autoUpdateCheckBox, SIGNAL(clicked(bool)), &flow, SLOT(setAutoUpdate(bool)));
     connect(ui->flow_reloadPushButton, SIGNAL(pressed()), &flow, SLOT(checkForData()));
     ui->flow_autoUpdateCheckBox->setChecked(true);
-    flow.setAutoUpdate(true);
     flow.setTable(ui->flow_tableWidget);
+    flow.setAutoUpdate(true);
     /* <--flow tab*/
 
 }
@@ -85,15 +88,14 @@ void MainWindow::setCamera(QCameraInfo cameraInfo)
 
     imageCapture = new QCameraImageCapture(camera);
 
-//    camera->setViewfinder(ui->viewfinder);
+    connect(imageCapture, SIGNAL(imageCaptured(int,QImage)), this, SLOT(camera_captureImage(int,QImage)));
+    connect(imageCapture, SIGNAL(readyForCaptureChanged(bool)), this, SLOT(camera_readyForCapture(bool)));
+    connect(imageCapture, SIGNAL(error(int,QCameraImageCapture::Error,QString)), this,
+            SLOT(displayCaptureError(int,QCameraImageCapture::Error,QString)));
 
-//    connect(imageCapture, SIGNAL(readyForCaptureChanged(bool)), this, SLOT(readyForCapture(bool)));
-    connect(imageCapture, SIGNAL(imageCaptured(int,QImage)), this, SLOT(processCapturedImage(int,QImage)));
-//    connect(imageCapture, SIGNAL(imageSaved(int,QString)), this, SLOT(imageSaved(int,QString)));
-//    connect(imageCapture, SIGNAL(error(int,QCameraImageCapture::Error,QString)), this,
-//            SLOT(displayCaptureError(int,QCameraImageCapture::Error,QString)));
-    connect(ui->regist_cameraPushButton, SIGNAL(pressed()), imageCapture, SLOT(capture(QString)));
+    //    connect(ui->regist_cameraPushButton, SIGNAL(pressed()), , SLOT());
 
+    camera->setViewfinder(ui->cameraOutput);
     camera->start();
 }
 
@@ -143,18 +145,30 @@ void MainWindow::regist_commit()
 
 void MainWindow::camera_select()
 {
-//    setCamera(static_cast<QCameraInfo>(ui->regist_cameraComboBox->currentData(ui->regist_cameraComboBox->currentIndex())));
+    //    setCamera(static_cast<QCameraInfo>(ui->regist_cameraComboBox->currentData(ui->regist_cameraComboBox->currentIndex())));
     setCamera(QCameraInfo::defaultCamera());
 }
 
-void MainWindow::camera_readyForCapture()
+void MainWindow::camera_readyForCapture(bool ready)
 {
-    ui->regist_cameraPushButton->setEnabled(true);
+    ui->regist_cameraPushButton->setEnabled(ready);
 }
 
-void MainWindow::camera_captureImage(int, QImage)
+void MainWindow::camera_captureImage(int requestId, QImage img)
 {
+    Q_UNUSED(requestId);
 
+    regist.addFace(img);
+
+    isTakingPhoto = false;
+}
+
+void MainWindow::camera_takePicture()
+{
+    if(!isTakingPhoto){
+        isTakingPhoto = true;
+        imageCapture->capture();
+    }
 }
 
 void MainWindow::search_name()

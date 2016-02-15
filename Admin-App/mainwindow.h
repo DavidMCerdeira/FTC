@@ -6,6 +6,7 @@
 #include <QCameraImageCapture>
 #include <QCameraInfo>
 #include <qmediarecorder.h>
+#include <qcameraviewfinder.h>
 #include "register.h"
 #include "searchemployee.h"
 #include "sendmessage.h"
@@ -24,6 +25,7 @@ class MainWindow : public QMainWindow
     TerminalFlow flow;
     QCamera *camera;
     QCameraImageCapture *imageCapture;
+    bool isTakingPhoto;
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -44,8 +46,9 @@ private slots:
     void regist_commit();
     /* camera--> */
     void camera_select();
-    void camera_readyForCapture();
-    void camera_captureImage(int, QImage);
+    void camera_readyForCapture(bool ready);
+    void camera_captureImage(int requestId, QImage img);
+    void camera_takePicture();
     /* <--camera */
     /* <--regist tab */
 
